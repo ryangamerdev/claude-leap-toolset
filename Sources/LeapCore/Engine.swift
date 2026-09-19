@@ -27,11 +27,24 @@ public actor Engine {
         }
     }
 
-    /// Poll for a key window (apps that were just launched need a moment).
+    /// All of the app's windows with their titles (for the state header and `window:` targeting).
+    func windows(_ s: AppSession) -> [(AXUIElement, String)] {
+        let ws: [AXUIElement] = AX.attr(s.axApp, kAXWindowsAttribute) ?? []
+        return ws.map { ($0, (AX.attr($0, kAXTitleAttribute) as String?) ?? "") }
+    }
+
+    /// Poll for the target window: the pinned one (by title substring) if set, else the key window.
+    /// Apps that were just launched need a moment, hence the polling.
     func waitForWindow(_ s: AppSession, timeout: TimeInterval = 6) async throws -> AXUIElement {
         let deadline = Date().addingTimeInterval(timeout)
         while true {
-            if let w = walker.keyWindow(of: s.axApp) { return w }
+            if let pin = s.pinnedWindow {
+                let all = windows(s)
+                if let hit = all.first(where: { $0.1.localizedCaseInsensitiveContains(pin) }) { return hit.0 }
+                if Date() > deadline {
+                    throw LeapError.unsupported("\(s.displayName) has no window matching \"\(pin)\". Windows: " + all.map { "\"\($0.1)\"" }.joined(separator: ", "))
+                }
+            } else if let w = walker.keyWindow(of: s.axApp) { return w }
             if Date() > deadline { throw LeapError.noWindow(s.displayName) }
             try await Task.sleep(nanoseconds: 200_000_000)
         }
@@ -55,9 +68,10 @@ public actor Engine {
 
     /// `announce` shows the "thinking" face over the window; used by the explicit
     /// get_app_state tool, not by the state that follows an action (which keeps the action's face).
-    public func state(app query: String, _ opts: StateOptions = .init(), announce: Bool = false) async throws -> State {
+    public func state(app query: String, _ opts: StateOptions = .init(), announce: Bool = false, window: String? = nil) async throws -> State {
         try requireAX()
         let s = try await session(for: query)
+        if let window { s.pinnedWindow = window.isEmpty ? nil : window }
         let st = try await state(session: s, opts)
         if announce { await signal(indicatorPoint(s, nil), .observe) }
         return st
@@ -72,6 +86,10 @@ public actor Engine {
         }
         let (full, diff) = s.render(snap, walker: walker)
         var text = (opts.disableDiff ? full : (diff ?? full))
+        let others = windows(s).filter { !CFEqual($0.0, snap.window) }.map { $0.1 }
+        if !others.isEmpty {
+            text += "\nOther windows of \(s.displayName): " + others.map { "\"\($0)\"" }.joined(separator: ", ") + " — target one with get_app_state(window: \"<title part>\")."
+        }
         var shot: Screenshot?
         var warning: String?
         if opts.includeScreenshot {
@@ -390,6 +408,25 @@ public actor Engine {
         try await withInput(s, mode) { d in Input.paste(text, html: html, d) }
         await signal(indicatorPoint(s, nil), .edit)
         return "pasted \(text.count) characters"
+    }
+
+    /// Resolve a human label (title / description / value / placeholder) to an element index
+    /// in the latest state. Exact (case-insensitive) matches win; otherwise a unique substring
+    /// match; otherwise an error listing the candidates so the model can pick.
+    public func findElement(app query: String, label: String) async throws -> Int {
+        try requireAX()
+        let s = try await session(for: query)
+        try await ensureIndexed(s)
+        let needle = label.trimmingCharacters(in: .whitespaces).lowercased()
+        func texts(_ n: AXNode) -> [String] { [n.title, n.description, n.value, n.placeholder].compactMap { $0?.lowercased() } }
+        let all = s.elements.values.sorted { $0.index < $1.index }
+        let exact = all.filter { texts($0.node).contains(needle) }
+        if exact.count == 1 { return exact[0].index }
+        let partial = exact.isEmpty ? all.filter { texts($0.node).contains { $0.contains(needle) } } : exact
+        if partial.count == 1 { return partial[0].index }
+        if partial.isEmpty { throw LeapError.unsupported("No element labelled \"\(label)\" in the latest state of \(s.displayName).") }
+        let list = partial.prefix(8).map { "[\($0.index)] \($0.node.role.dropFirst(2)) \($0.node.title ?? $0.node.description ?? $0.node.value ?? "")" }
+        throw LeapError.unsupported("\"\(label)\" is ambiguous (\(partial.count) matches): " + list.joined(separator: "; ") + ". Use element_index.")
     }
 
     /// Frame of the app's key window in screen points (used for window-center defaults).

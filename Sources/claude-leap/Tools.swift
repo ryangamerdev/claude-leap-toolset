@@ -23,8 +23,11 @@ private let appProp = prop("string", "Target app: display name (\"Blender\"), bu
 private let foregroundProp = prop("boolean", "Default false — the app is NEVER activated and the user keeps their frontmost window, keyboard focus and mouse. Set true only for apps that ignore posted events (some games, custom GL/Metal canvases); this steals focus, so ask the user first.")
 private let thenStateProp = prop("boolean", "Default true: append the app's updated accessibility state (diff) to the result so you don't need a separate get_app_state call.")
 
+private let labelProp = prop("string", "Alternative to element_index: the element's visible title/description/value, e.g. \"Save notes\". Case-insensitive; exact match wins, else a unique substring match. Errors list candidates if ambiguous.")
+
 private let targetProps: [String: Value] = [
     "element_index": prop("integer", "Element index from the latest state text, e.g. 42 for \"[42] Button ...\". Preferred over coordinates."),
+    "label": labelProp,
     "x": prop("number", "Window-relative x in points (see the window size in the state header). With element_index, x/y are relative to that element."),
     "y": prop("number", "Window-relative y in points."),
 ]
@@ -45,6 +48,7 @@ enum LeapTools {
                 "include_screenshot": prop("boolean", "Default true. Set false to save tokens when the tree is enough."),
                 "disable_diff": prop("boolean", "Default false. Set true to get the full tree instead of the diff."),
                 "scale": prop("number", "Screenshot scale, 0.1–1.0 (default 1.0 = 1 px per point so pixel coords equal window points)."),
+                "window": prop("string", "Target a specific window by title substring (e.g. \"iPhone 16\" in Simulator). Sticks for later actions on this app; pass \"\" to go back to the key window."),
              ], required: ["app"]),
              annotations: .init(readOnlyHint: true)),
 
@@ -55,6 +59,7 @@ enum LeapTools {
                 "x": prop("number", "Crop origin x (window points)."), "y": prop("number", "Crop origin y."),
                 "width": prop("number", "Crop width."), "height": prop("number", "Crop height."),
                 "scale": prop("number", "0.1–1.0, default 1.0."),
+                "save_path": prop("string", "Also write the image to this file path (PNG or JPEG by extension), e.g. for before/after documentation."),
              ], required: ["app"]),
              annotations: .init(readOnlyHint: true)),
 
@@ -103,6 +108,7 @@ enum LeapTools {
                 "app": appProp,
                 "text": prop("string", "Text to type."),
                 "element_index": prop("integer", "Optional: focus this element before typing."),
+                "label": labelProp,
                 "foreground": foregroundProp, "then_state": thenStateProp,
              ], required: ["app", "text"])),
 
@@ -111,18 +117,20 @@ enum LeapTools {
              inputSchema: schema([
                 "app": appProp,
                 "element_index": prop("integer", "Editable element index."),
+                "label": labelProp,
                 "value": prop("string", "New value."),
                 "then_state": thenStateProp,
-             ], required: ["app", "element_index", "value"])),
+             ], required: ["app", "value"])),
 
         Tool(name: "perform_action",
              description: "Invoke a secondary accessibility action listed in the element's actions= field, e.g. ShowMenu, Increment, Decrement, Confirm, Cancel, Expand, Collapse, Raise.",
              inputSchema: schema([
                 "app": appProp,
                 "element_index": prop("integer", ""),
+                "label": labelProp,
                 "action": prop("string", "Action name as shown in the state text (case-insensitive)."),
                 "then_state": thenStateProp,
-             ], required: ["app", "element_index", "action"])),
+             ], required: ["app", "action"])),
 
         Tool(name: "paste",
              description: "Insert text (or HTML) via the pasteboard, then restore the user's previous clipboard. Best for multi-line or formatted content.",
@@ -198,7 +206,7 @@ enum LeapTools {
             opts.includeScreenshot = a.bool("include_screenshot") ?? true
             opts.disableDiff = a.bool("disable_diff") ?? false
             if let s = a.double("scale") { opts.scale = s }
-            let st = try await engine.state(app: try a.app(), opts, announce: true)
+            let st = try await engine.state(app: try a.app(), opts, announce: true, window: a.string("window"))
             return result(text: st.text, shot: st.screenshot)
 
         case "screenshot":
@@ -207,7 +215,14 @@ enum LeapTools {
                 region = CGRect(x: x, y: y, width: w, height: h)
             }
             let shot = try await engine.screenshot(app: try a.app(), region: region, scale: a.double("scale") ?? 1.0)
-            return result(text: "screenshot \(shot.pixelWidth)x\(shot.pixelHeight) px, \(String(format: "%.2f", shot.pointsPerPixel)) points/px" + (region.map { " (region \(Int($0.minX)),\(Int($0.minY)) \(Int($0.width))x\(Int($0.height)))" } ?? ""), shot: shot)
+            var saved = ""
+            if let path = a.string("save_path"), !path.isEmpty {
+                let url = URL(fileURLWithPath: (path as NSString).expandingTildeInPath)
+                try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+                try shot.data.write(to: url)
+                saved = " — saved to \(url.path)"
+            }
+            return result(text: "screenshot \(shot.pixelWidth)x\(shot.pixelHeight) px, \(String(format: "%.2f", shot.pointsPerPixel)) points/px" + (region.map { " (region \(Int($0.minX)),\(Int($0.minY)) \(Int($0.width))x\(Int($0.height)))" } ?? "") + saved, shot: shot)
 
         case "activate":
             return try await engine.activate(app: try a.app()).result
@@ -268,8 +283,15 @@ enum LeapTools {
     static let actionTools: Set<String> = ["click", "drag", "scroll", "press_key", "type_text", "set_value", "perform_action", "paste"]
 
     /// Executes one input action and returns a one-line description of what happened.
-    static func performAction(_ name: String, _ a: Args, _ engine: Engine) async throws -> String {
-        let app = try a.app()
+    static func performAction(_ name: String, _ argsIn: Args, _ engine: Engine) async throws -> String {
+        let app = try argsIn.app()
+        // `label` is sugar for element_index: resolve it once here so every action supports it.
+        var a = argsIn
+        if a.int("element_index") == nil, let label = a.string("label"), !label.isEmpty {
+            var raw = a.raw
+            raw["element_index"] = .int(try await engine.findElement(app: app, label: label))
+            a = Args(raw)
+        }
         let mode = Engine.InputMode(foreground: a.bool("foreground") ?? false)
         switch name {
         case "click":
@@ -297,10 +319,10 @@ enum LeapTools {
             guard let text = a.string("text") else { throw LeapError.unsupported("type_text needs text") }
             return try await engine.typeText(app: app, text: text, elementIndex: a.int("element_index"), mode: mode)
         case "set_value":
-            guard let i = a.int("element_index"), let v = a.string("value") else { throw LeapError.unsupported("set_value needs element_index and value") }
+            guard let i = a.int("element_index"), let v = a.string("value") else { throw LeapError.unsupported("set_value needs element_index (or label) and value") }
             return try await engine.setValue(app: app, elementIndex: i, value: v)
         case "perform_action":
-            guard let i = a.int("element_index"), let act = a.string("action") else { throw LeapError.unsupported("perform_action needs element_index and action") }
+            guard let i = a.int("element_index"), let act = a.string("action") else { throw LeapError.unsupported("perform_action needs element_index (or label) and action") }
             return try await engine.performAction(app: app, elementIndex: i, action: act)
         case "paste":
             guard let text = a.string("text") else { throw LeapError.unsupported("paste needs text") }

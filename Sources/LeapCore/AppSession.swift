@@ -23,6 +23,8 @@ public final class AppSession {
     public private(set) var lastWindow: AXUIElement?
     public private(set) var lastWindowFrame: CGRect = .zero
     public var lastActionAt: Date = .distantPast
+    /// Title substring chosen with get_app_state(window:); nil = the app's key window.
+    public var pinnedWindow: String?
 
     public init(app: NSRunningApplication) {
         self.app = app
