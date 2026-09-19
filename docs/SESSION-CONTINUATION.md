@@ -59,8 +59,11 @@ recorded Codex session for Ryan's Gameday app, not against guesses.
 - "The user changed X. Re-query…" = its stale-state guard (I have staleElement).
 
 ## In flight right now
-1. **Full-detail review of the Codex transcript by sub-agents**: slices in `/tmp/astra/slice-*.txt`
-   (re-split by record size to ≤~450 KB each). Each agent must read its slice end-to-end (no grep) and
+1. **Full-detail review of the Codex transcript by sub-agents** — LAUNCHED 2026-09-18 ~19:45 PT: 17 agents,
+   one per `/tmp/astra/slice-00..16.txt`, checklist in `/tmp/astra/REVIEW-CHECKLIST.md`, reports to
+   `/tmp/astra/report-NN.md`. NEXT STEP after compaction: check which reports exist (`ls /tmp/astra/report-*.md`),
+   read them (they are compact), consolidate into `docs/SKY-BEHAVIOR.md` in this repo, then turn findings into
+   leap changes. Do not re-run the review. Each agent must read its slice end-to-end (no grep) and
    write `/tmp/astra/report-<slice>.md` answering: per pressKey key → did state change; typeText/setValue/
    paste/selectText behavior+failures; click/drag/scroll by coordinate; Simulator specifics (rotation,
    tvOS focus); anything about activation/focus/cursor/overlay; exact state grammar; timings; error
