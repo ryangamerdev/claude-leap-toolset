@@ -157,6 +157,7 @@ public final class AppSession {
             parts.append("@\(Int(f.minX - windowFrame.minX)),\(Int(f.minY - windowFrame.minY)) \(Int(f.width))x\(Int(f.height))")
         }
         if n.settable { parts.append("[settable]") }
+        if n.offscreen { parts.append("[offscreen: coords unreliable, use element_index/label]") }
         if !n.enabled { parts.append("[disabled]") }
         if n.selected { parts.append("[selected]") }
         if n.focused || (focused != nil && CFEqual(focused, n.element)) { parts.append("[focused]") }

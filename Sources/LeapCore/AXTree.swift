@@ -20,6 +20,10 @@ public struct AXNode {
     public let actions: [String]
     /// Whether kAXValue can be written (text fields, sliders, checkboxes, ...).
     public let settable: Bool
+    /// Frame lies outside the window. Kept (not dropped) because some hosts — notably the iOS
+    /// Simulator after a rotation — report frames in an untransformed space while the element
+    /// is perfectly visible and pressable via accessibility actions.
+    public let offscreen: Bool
     public let depth: Int
     public let key: String
 }
@@ -208,11 +212,12 @@ public struct AXWalker {
         let selected = (a[kAXSelectedAttribute] as? Bool) ?? false
         let children = (a[kAXChildrenAttribute] as? [AXUIElement]) ?? []
 
-        // Offscreen / zero-size subtrees are skipped entirely (hidden tabs, collapsed panes).
+        // Zero-size subtrees are skipped (hidden tabs, collapsed panes). Off-window elements are
+        // kept and flagged: their coordinates are untrustworthy but AX actions on them work.
+        var offscreen = false
         if clipToWindow, let f = frame, depth > 0 {
-            if f.width <= 0 || f.height <= 0 || !f.intersects(windowFrame.insetBy(dx: -1, dy: -1)) {
-                return
-            }
+            if f.width <= 0 || f.height <= 0 { return }
+            offscreen = !f.intersects(windowFrame.insetBy(dx: -1, dy: -1))
         }
 
         let label = identifier ?? title ?? description ?? placeholder ?? ""
@@ -229,7 +234,7 @@ public struct AXWalker {
             nodes.append(AXNode(element: el, role: role, subrole: subrole, title: title, value: value,
                                 description: description, identifier: identifier, placeholder: placeholder,
                                 frame: frame, enabled: enabled, focused: focused, selected: selected,
-                                actions: actions, settable: settable, depth: depth, key: key))
+                                actions: actions, settable: settable, offscreen: offscreen, depth: depth, key: key))
             childDepth = depth + 1
         }
 
