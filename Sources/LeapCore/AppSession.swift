@@ -77,7 +77,7 @@ public final class AppSession {
     /// Render a snapshot into indexed text, updating the element table.
     /// Returns the full text and, when a previous render exists for the same window,
     /// a diff-only text.
-    public func render(_ snap: AXWindowSnapshot, walker: AXWalker) -> (full: String, diff: String?) {
+    public func render(_ snap: AXWindowSnapshot, walker: AXWalker, includeFrames: Bool = false) -> (full: String, diff: String?) {
         // Never renumber: `indexByKey` is keyed by a content-addressed AX path, so an index
         // keeps pointing at the same element for the life of the session. AX hands back fresh
         // AXUIElement objects (e.g. after the window moves), so element identity must not be
@@ -97,7 +97,7 @@ public final class AppSession {
         var table: [Int: ElementRecord] = [:]
         for node in snap.nodes {
             let idx = index(for: node.key)
-            lines[idx] = Self.line(node, windowFrame: snap.frame, focused: snap.focusedElement)
+            lines[idx] = Self.line(node, windowFrame: snap.frame, focused: snap.focusedElement, includeFrames: includeFrames)
             order.append(idx)
             table[idx] = ElementRecord(index: idx, node: node)
         }
@@ -110,6 +110,8 @@ public final class AppSession {
             full += String(repeating: "  ", count: max(0, depth - 1)) + "[\(idx)] " + lines[idx]! + "\n"
         }
         if snap.truncated { full += "… (tree truncated at \(walker.maxNodes) elements; scroll or use a query)\n" }
+        let footer = Self.focusedFooter(snap: snap, table: table, order: order)
+        full += footer
 
         var diff: String?
         if !lastLines.isEmpty {
@@ -123,14 +125,15 @@ public final class AppSession {
             let unchanged = order.count - added.count - changed.count
             let churn = added.count + changed.count + removed.count
             if churn == 0 {
-                diff = header + "\n(no accessibility changes since the previous state; \(order.count) elements unchanged)\n"
+                diff = header + "\n(no accessibility changes since the previous state; \(order.count) elements unchanged)\n" + footer
             } else if churn * 10 < max(order.count, 1) * 7 { // < 70% churn → diff is worth it
                 var d = header + "\n## Diff vs previous state (\(unchanged) unchanged elements omitted; indices are stable)\n"
                 for idx in order {
                     if added.contains(idx) { d += "+ [\(idx)] \(lines[idx]!)\n" }
                     else if changed.contains(idx) { d += "~ [\(idx)] \(lines[idx]!)\n" }
                 }
-                for idx in removed { d += "- [\(idx)] \(lastLines[idx]!)\n" }
+                if !removed.isEmpty { d += "Removed element indices: " + Self.ranges(removed) + "\n" }
+                d += footer
                 diff = d
             }
         }
@@ -139,15 +142,40 @@ public final class AppSession {
         return (full, diff)
     }
 
+    /// "10-12, 14-16, 75" — the compact form Sky uses for removed IDs.
+    static func ranges(_ values: [Int]) -> String {
+        let v = values.sorted()
+        var out: [String] = []
+        var i = 0
+        while i < v.count {
+            var j = i
+            while j + 1 < v.count && v[j + 1] == v[j] + 1 { j += 1 }
+            out.append(j > i ? "\(v[i])-\(v[j])" : "\(v[i])")
+            i = j + 1
+        }
+        return out.joined(separator: ", ")
+    }
+
+    /// Trailing line naming the focused element, whether or not it was rendered.
+    static func focusedFooter(snap: AXWindowSnapshot, table: [Int: ElementRecord], order: [Int]) -> String {
+        guard let f = snap.focusedElement else { return "" }
+        if let idx = order.first(where: { CFEqual(table[$0]!.node.element, f) }) {
+            return "Focused element: [\(idx)]\n"
+        }
+        let role = (AX.attr(f, kAXRoleAttribute) as String?) ?? "AXUnknown"
+        let title = (AX.attr(f, kAXTitleAttribute) as String?) ?? ""
+        return "Focused element: \(role.dropFirst(2)) \"\(title)\" (not in the rendered tree)\n"
+    }
+
     static func header(snap: AXWindowSnapshot, session: AppSession) -> String {
         let f = snap.frame
         var h = "## \(session.displayName) — window \"\(snap.title ?? "")\" \(Int(f.width))x\(Int(f.height)) at screen (\(Int(f.minX)),\(Int(f.minY)))"
         h += session.app.isActive ? " [frontmost]" : " [background]"
-        h += "\nCoordinates below are window-relative points (x,y w×h). Screenshot pixels map 1:1 to these when scale=1."
+        h += "\nIndices are stable; act with element_index or label. Screenshot pixels are window points at scale=1; pass include_frames=true for per-element coordinates."
         return h
     }
 
-    static func line(_ n: AXNode, windowFrame: CGRect, focused: AXUIElement?) -> String {
+    static func line(_ n: AXNode, windowFrame: CGRect, focused: AXUIElement?, includeFrames: Bool = false) -> String {
         var parts: [String] = []
         var role = n.role.hasPrefix("AX") ? String(n.role.dropFirst(2)) : n.role
         if let sub = n.subrole, sub != "AXUnknown" {
@@ -159,7 +187,7 @@ public final class AppSession {
         if let p = n.placeholder { parts.append("placeholder=\"\(p)\"") }
         if let d = n.description, d != n.title { parts.append("desc=\"\(d)\"") }
         if let id = n.identifier { parts.append("id=\(id)") }
-        if let f = n.frame {
+        if includeFrames, let f = n.frame {
             parts.append("@\(Int(f.minX - windowFrame.minX)),\(Int(f.minY - windowFrame.minY)) \(Int(f.width))x\(Int(f.height))")
         }
         if n.settable { parts.append("[settable]") }

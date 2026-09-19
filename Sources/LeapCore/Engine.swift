@@ -57,6 +57,9 @@ public actor Engine {
         public var disableDiff = false
         public var scale: CGFloat = 1.0
         public var jpegQuality: CGFloat? = 0.8
+        /// Per-element window-relative frames in the tree. Off by default (Sky's tree has none;
+        /// the screenshot carries geometry) — saves ~20 tokens per element.
+        public var includeFrames = false
         public init() {}
     }
 
@@ -84,7 +87,7 @@ public actor Engine {
         guard let snap = walker.snapshot(window: window, app: s.axApp) else {
             throw LeapError.axFailure("window frame", .cannotComplete)
         }
-        let (full, diff) = s.render(snap, walker: walker)
+        let (full, diff) = s.render(snap, walker: walker, includeFrames: opts.includeFrames)
         var text = (opts.disableDiff ? full : (diff ?? full))
         let others = windows(s).filter { !CFEqual($0.0, snap.window) }.map { $0.1 }
         if !others.isEmpty {

@@ -42,13 +42,14 @@ enum LeapTools {
              annotations: .init(readOnlyHint: true)),
 
         Tool(name: "get_app_state",
-             description: "Read the target app's key window: an indexed accessibility tree (roles, titles, values, window-relative coordinates, extra actions) plus a window screenshot. Indices are stable across calls; by default only the diff since the previous state is returned. Call this before acting on an app and after actions whose result you need to see.",
+             description: "Read the target app's key window: an indexed accessibility tree (roles, titles, values, extra actions; coordinates only with include_frames) plus a window screenshot. Indices are stable across calls; by default only the diff since the previous state is returned. Call this before acting on an app and after actions whose result you need to see.",
              inputSchema: schema([
                 "app": appProp,
                 "include_screenshot": prop("boolean", "Default true. Set false to save tokens when the tree is enough."),
                 "disable_diff": prop("boolean", "Default false. Set true to get the full tree instead of the diff."),
                 "scale": prop("number", "Screenshot scale, 0.1–1.0 (default 1.0 = 1 px per point so pixel coords equal window points)."),
                 "window": prop("string", "Target a specific window by title substring (e.g. \"iPhone 16\" in Simulator). Sticks for later actions on this app; pass \"\" to go back to the key window."),
+                "include_frames": prop("boolean", "Default false. Add each element's window-relative @x,y w×h (only needed for coordinate clicks/drags on canvases)."),
              ], required: ["app"]),
              annotations: .init(readOnlyHint: true)),
 
@@ -207,6 +208,7 @@ enum LeapTools {
             opts.includeScreenshot = a.bool("include_screenshot") ?? true
             opts.disableDiff = a.bool("disable_diff") ?? false
             if let s = a.double("scale") { opts.scale = s }
+            opts.includeFrames = a.bool("include_frames") ?? false
             let st = try await engine.state(app: try a.app(), opts, announce: true, window: a.string("window"))
             return result(text: st.text, shot: st.screenshot)
 
