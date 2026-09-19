@@ -167,6 +167,7 @@ enum LeapTools {
     // MARK: - Dispatch
 
     static func call(_ params: CallTool.Parameters, engine: Engine) async -> CallTool.Result {
+        Inactivity.touch()
         let args = Args(params.arguments ?? [:])
         do {
             return try await dispatch(params.name, args, engine)

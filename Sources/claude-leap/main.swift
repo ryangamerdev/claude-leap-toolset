@@ -55,6 +55,7 @@ func runServer() async throws {
 final class LeapAppDelegate: NSObject, NSApplicationDelegate {
     // `Notification` is qualified: the MCP SDK also declares a `Notification` protocol.
     func applicationDidFinishLaunching(_ notification: Foundation.Notification) {
+        Inactivity.start()
         Task.detached(priority: .userInitiated) {
             do {
                 try await runServer()
