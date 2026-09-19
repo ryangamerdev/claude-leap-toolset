@@ -58,7 +58,11 @@ recorded Codex session for Ryan's Gameday app, not against guesses.
   "The focused UI element is …" line; append-only IDs (mine are stable by content — better; keep).
 - "The user changed X. Re-query…" = its stale-state guard (I have staleElement).
 
-## In flight right now
+## In flight right now (state as of 2026-09-18 ~19:55 PT, just before compaction)
+Last commit: d39998e. Bundle rebuilt and matches HEAD; Ryan has NOT yet restarted the session since
+the last rebuild — tell him to restart so the registered `leap` server picks up: AX-first press_key,
+Chromium tree support, include_frames/ranges/footer, idle timeout.
+
 1. **Full-detail review of the Codex transcript by sub-agents** — LAUNCHED 2026-09-18 ~19:45 PT: 17 agents,
    one per `/tmp/astra/slice-00..16.txt`, checklist in `/tmp/astra/REVIEW-CHECKLIST.md`, reports to
    `/tmp/astra/report-NN.md`. NEXT STEP after compaction: check which reports exist (`ls /tmp/astra/report-*.md`),
@@ -73,8 +77,9 @@ recorded Codex session for Ryan's Gameday app, not against guesses.
    `log stream` (→ `system.log`). Waiting for Ryan to send Astra a short task
    ("Use Computer Use to open the Formations tab in the Gameday Mac app and take a screenshot") to capture
    the badge/cursor overlay windows (owner/layer/bounds) and confirm frontmost never changes.
-3. Adopt Sky's tree format economies: frames off by default (`include_frames`), menu bar in tree,
-   removed-ID ranges in diffs, explicit focused-element footer.
+3. DONE (commit d39998e): frames off by default (`include_frames`), removed-ID ranges, focused footer.
+   STILL TODO: menu bar in the tree — wait for the reviewer reports to see how Sky's state behaves
+   after clicking a menu-bar item before copying it.
 4. Bigger follow-ups: singleton service + thin client architecture; per-window "remote control" badge;
    optional live preview panel; typing into background **Electron/Chromium** editors does not work
    (Codex uses CDP for browsers) — ChatGPT's composer could not be filled by leap.
