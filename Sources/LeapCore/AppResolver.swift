@@ -7,6 +7,7 @@ public enum LeapError: Error, CustomStringConvertible {
     case noWindow(String)
     case axFailure(String, AXError)
     case noSuchElement(Int)
+    case staleElement(Int, String)
     case unsupported(String)
     case capture(String)
     case permission(String)
@@ -20,6 +21,8 @@ public enum LeapError: Error, CustomStringConvertible {
         case .axFailure(let what, let err): return "Accessibility call \(what) failed: \(err.name)"
         case .noSuchElement(let i):
             return "No element with index \(i) in the latest state; call get_app_state and use a fresh index."
+        case .staleElement(let i, let why):
+            return "The UI changed since the last state: element [\(i)] \(why). Nothing was done. Call get_app_state and act on the fresh tree (the user may have interacted with the app)."
         case .unsupported(let what): return what
         case .capture(let why): return "Screenshot failed: \(why)"
         case .permission(let what): return what

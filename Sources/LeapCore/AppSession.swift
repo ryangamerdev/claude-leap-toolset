@@ -34,6 +34,27 @@ public final class AppSession {
 
     public func element(_ index: Int) throws -> ElementRecord {
         guard let rec = elements[index] else { throw LeapError.noSuchElement(index) }
+        // The UI may have changed under us (the user clicked something, a sheet opened, the
+        // app navigated). Refuse to act on an element that is gone or has become something
+        // else, and tell the model to re-read state — acting on a stale index is how agents
+        // click the wrong thing.
+        let live = AX.attrs(rec.node.element, [kAXRoleAttribute, kAXPositionAttribute, kAXSizeAttribute])
+        guard let role = live[kAXRoleAttribute] as? String else {
+            throw LeapError.staleElement(index, "it no longer exists")
+        }
+        if role != rec.node.role {
+            throw LeapError.staleElement(index, "it is now a \(role.dropFirst(2)), was \(rec.node.role.dropFirst(2))")
+        }
+        if let old = rec.node.frame, let p = AX.point(live[kAXPositionAttribute]), let s = AX.size(live[kAXSizeAttribute]) {
+            let new = CGRect(origin: p, size: s)
+            if new.width <= 0 || new.height <= 0 {
+                throw LeapError.staleElement(index, "it is no longer visible")
+            }
+            // Position drift is normal (window moved); a size change means a relayout.
+            if abs(new.width - old.width) > 2 || abs(new.height - old.height) > 2 {
+                throw LeapError.staleElement(index, "its size changed (\(Int(old.width))x\(Int(old.height)) → \(Int(new.width))x\(Int(new.height)))")
+            }
+        }
         return rec
     }
 

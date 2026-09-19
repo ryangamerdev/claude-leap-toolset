@@ -1,0 +1,18 @@
+[
+  {"name": "get_app_state", "arguments": {"app": "Gameday", "include_screenshot": false, "disable_diff": true}},
+  {"name": "@capture", "arguments": {"pattern": "\\[(\\d+)\\] TextField[^\\n]*Search plays", "var": "field"}},
+
+  {"name": "set_value", "arguments": {"app": "Gameday", "element_index": "$field", "value": "", "then_state": false}},
+
+  {"name": "press_key", "arguments": {"app": "Gameday", "key": "T", "then_state": false}},
+  {"name": "press_key", "arguments": {"app": "Gameday", "key": "E", "then_state": false}},
+  {"name": "press_key", "arguments": {"app": "Gameday", "key": "M", "then_state": false}},
+  {"name": "press_key", "arguments": {"app": "Gameday", "key": "P", "then_state": false}},
+  {"name": "press_key", "arguments": {"app": "Gameday", "key": "O"}},
+  {"name": "@capture", "arguments": {"pattern": "\\[(\\d+)\\] TextField value=\"(TEMPO)\"", "var": "typedIndex"}},
+
+  {"name": "type_text", "arguments": {"app": "Gameday", "text": " X", "then_state": false}},
+  {"name": "get_app_state", "arguments": {"app": "Gameday", "include_screenshot": false, "disable_diff": true}},
+
+  {"name": "set_value", "arguments": {"app": "Gameday", "element_index": "$field", "value": "", "then_state": false}}
+]
