@@ -119,8 +119,10 @@ public actor Engine {
         }
         var shot: Screenshot?
         var warning: String?
+        let info = WindowInfo.match(pid: s.pid, frame: snap.frame, title: snap.title)
+        if let info { await ShareIndicator.shared.hold(info.id) }
         if opts.includeScreenshot {
-            if let info = WindowInfo.match(pid: s.pid, frame: snap.frame, title: snap.title) {
+            if let info {
                 do {
                     shot = try await Capture.window(info, scale: opts.scale, jpegQuality: opts.jpegQuality)
                     text += "\n(screenshot: \(shot!.pixelWidth)x\(shot!.pixelHeight) px, \(String(format: "%.2f", shot!.pointsPerPixel)) points/px)"

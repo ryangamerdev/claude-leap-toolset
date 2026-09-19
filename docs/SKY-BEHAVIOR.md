@@ -252,6 +252,6 @@ add to it in slice 16).
 | No window parameter (handle follows key window) | `get_app_state(window:)` pins a window; header lists the others | exceeded |
 | `super+q` via Raise + key chord | `press_key` maps ⌘-chords to the matching menu item (File › Quit) without activation | matched |
 | Arrow keys reach the Mac app; tvOS unproven | posted keystrokes to the pid; tvOS untested here too | matched; **open**: test tvOS focus keys with a screenshot diff |
-| Live thumbnails / remote-control badge in the ChatGPT window (RemoteHostedPIP, SCStream) | face-emoji virtual pointer + sonar ripple; no live thumbnail/badge | gap (cosmetic; on the follow-up list) |
+| Continuous `SCStream` of the controlled window → macOS's screen-recording indicator (Control Center `AudioVideoModule` menu-bar item, names the app and window); live thumbnails and a badge in the ChatGPT window (RemoteHostedPIP) | `ShareIndicator` holds a 1 fps `SCStream` on the window being worked on, so the same system indicator shows while a session is active (verified with `scripts/check-indicator.swift`); released after 90 s idle or exit; `LEAP_SHARE_INDICATOR=0` disables. No thumbnail panel (Claude Code has no place to show one) | matched (indicator); gap (thumbnails, cosmetic) |
 | Singleton service + thin clients (`computeruse.sock`), `turn-ended` hook | one server per Claude Code session, idle reaper | gap (architecture follow-up) |
 | Auto-relaunch after reinstall (`getApp` by path) | `AppResolver.resolve` launches in the background if not running | matched |

@@ -32,6 +32,13 @@ expands and fades at each interaction (coral = click, teal = edit, blue = scroll
 drag). It is a click-through overlay at screen-saver window level, so it floats over
 everything, is never clickable, and never takes focus. `LEAP_OVERLAY=0` disables it.
 
+**macOS shows it too.** While a session is working in a window, leap holds a tiny
+ScreenCaptureKit stream on that window, so macOS lights its own screen-recording indicator in
+the menu bar (the Control Center item whose menu names the capturing app and the window). That
+is the same system signal you see during ChatGPT's computer use; it is not a remote-desktop
+feature, just a consequence of streaming a window. Frames are discarded; the stream is released
+after 90 s idle. `LEAP_SHARE_INDICATOR=0` disables it; `tests/share-indicator.json` verifies it.
+
 Verify it is really there without needing Screen Recording:
 
 ```bash

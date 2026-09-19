@@ -1,0 +1,5 @@
+[
+  {"name": "@shell", "arguments": {"cmd": "swiftc -O scripts/check-indicator.swift -o /tmp/check-indicator 2>&1 | grep -v warning; /tmp/check-indicator | grep 'INDICATOR OFF'"}},
+  {"name": "get_app_state", "arguments": {"app": "Simulator", "include_screenshot": false, "disable_diff": true}},
+  {"name": "@shell", "arguments": {"cmd": "sleep 1; /tmp/check-indicator | grep 'INDICATOR ON'"}}
+]

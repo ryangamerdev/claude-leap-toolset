@@ -104,3 +104,6 @@ Chromium tree support, include_frames/ranges/footer, idle timeout.
   read-back (Sky's weakest spot); (2) tvOS focus keys with screenshot diff; (3) long iOS lists vs
   the 1,500-node cap; (4) singleton service + thin clients; (5) per-window remote-control badge /
   live thumbnail panel.
+- ShareIndicator (SCStream on the controlled window) added so macOS's own screen-recording
+  indicator shows during a session, like Sky. Test: `tests/share-indicator.json`. Bundle rebuilt;
+  **restart the session again** to load it.
