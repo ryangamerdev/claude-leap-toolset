@@ -9,6 +9,7 @@ Usage:
 Script steps besides tool calls:
   {"name": "@capture", "arguments": {"pattern": "regex with one group", "var": "x"}}  from the last result
   {"name": "@expect", "arguments": {"var": "x", "value": "..."}}
+  {"name": "@absent", "arguments": {"pattern": "regex"}}                                  must NOT match the last result
   {"name": "@shell", "arguments": {"cmd": "..."}}                                   run a shell command
   a tool call with "expect_error": "regex"  must fail (isError) with matching text
 
@@ -191,6 +192,15 @@ def main():
                     break
                 captured[var] = m.group(1)
                 print(f"@capture {var} = {m.group(1)!r}")
+                continue
+            if c["name"] == "@absent":
+                # {"name": "@absent", "arguments": {"pattern": "..."}} — the previous result must NOT match.
+                pattern = str(args["pattern"])
+                if re.search(pattern, last_text):
+                    print(f"@absent FAILED: /{pattern}/ found in previous result")
+                    ok = False
+                    break
+                print(f"@absent ok: /{pattern}/ not present")
                 continue
             if c["name"] == "@expect":
                 # Compare as text: substitution may have coerced "$var" to an int.

@@ -1,0 +1,12 @@
+[
+  {"name": "get_app_state", "arguments": {"app": "Gameday", "include_screenshot": false, "disable_diff": true}},
+  {"name": "@capture", "arguments": {"pattern": "\\[(\\d+)\\] Button desc=\"Select play: ", "var": "play"}},
+  {"name": "@capture", "arguments": {"pattern": "\\[(\\d+)\\] TextField[^\\n]*Search plays", "var": "field"}},
+  {"name": "@absent", "arguments": {"pattern": "START WITH ALIGNMENT|Delete 2X2 SLOTS|New formation"}},
+  {"name": "click", "arguments": {"app": "Gameday", "label": "Formations"}},
+  {"name": "@capture", "arguments": {"pattern": "(New formation)", "var": "formations"}},
+  {"name": "@absent", "arguments": {"pattern": "\\+ \\[\\d+\\] Button desc=\"Select play: "}},
+  {"name": "get_app_state", "arguments": {"app": "Gameday", "include_screenshot": false, "disable_diff": true}},
+  {"name": "@absent", "arguments": {"pattern": "Select play: |Search plays"}},
+  {"name": "click", "arguments": {"app": "Gameday", "label": "Playbook", "then_state": false}}
+]

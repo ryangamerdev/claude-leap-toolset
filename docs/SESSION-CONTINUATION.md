@@ -122,3 +122,10 @@ Chromium tree support, include_frames/ranges/footer, idle timeout.
   serialized tool calls, honest partial-success reporting, verified/dispatched wording, numeric
   clamps, clipboard change-count guard, allow-list, secure-field redaction. Tests:
   `tests/wait-for-and-batch.json`. Open items listed at the end of the review doc.
+- User showed a screenshot and said the tree was "nothing like" the screen. Verified: leap's
+  own screenshot matched the user's; the real defect was SwiftUI's inactive TabView page
+  (Formations, ~200 elements, marked disabled) rendered as if visible. Fixed with an occlusion
+  hit-test on shallow containers (`AXWalker.isVisible`); Playbook tree 317 → 123 elements,
+  Simulator tree unaffected. The blue outlines on RUN/TEMPO/49ERS are the *active play's*
+  attributes, not active filters (no AXSelected; 86 matching plays = unfiltered) — the tree was
+  right about that. Test: `tests/hidden-tab-content.json` (runner gained `@absent`).

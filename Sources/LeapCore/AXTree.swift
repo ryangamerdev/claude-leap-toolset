@@ -195,6 +195,34 @@ public struct AXWalker {
     public var maxDepth = 60
     /// Only render elements intersecting the window (menus/popovers are captured separately).
     public var clipToWindow = true
+    /// Containers at or above this depth are hit-tested for occlusion (see `isVisible`).
+    public var hitTestDepth = 3
+
+    /// Whether the element at the centre of `frame` (as the app reports it) is `el` or one of
+    /// its descendants — a hidden or covered layer fails this test. Ancestor chain is walked
+    /// by AXParent, so AX object identity quirks don't matter; role/frame equality is the tiebreak.
+    static func isVisible(_ el: AXUIElement, frame: CGRect, window: CGRect) -> Bool {
+        let cx = frame.midX, cy = frame.midY
+        var pidValue: pid_t = 0
+        guard AXUIElementGetPid(el, &pidValue) == .success else { return true }
+        let app = AXUIElementCreateApplication(pidValue)
+        var hit: AXUIElement?
+        guard AXUIElementCopyElementAtPosition(app, Float(cx), Float(cy), &hit) == .success, var cur = hit else {
+            return true // hit-testing unsupported: keep the element rather than drop it
+        }
+        for _ in 0..<40 {
+            if CFEqual(cur, el) { return true }
+            let a = AX.attrs(cur, [kAXRoleAttribute, kAXPositionAttribute, kAXSizeAttribute])
+            if let p = AX.point(a[kAXPositionAttribute]), let sz = AX.size(a[kAXSizeAttribute]),
+               (a[kAXRoleAttribute] as? String) == (AX.attr(el, kAXRoleAttribute) as String?),
+               abs(p.x - frame.minX) < 1, abs(p.y - frame.minY) < 1, abs(sz.width - frame.width) < 1, abs(sz.height - frame.height) < 1 {
+                return true
+            }
+            guard let parent: AXUIElement = AX.attr(cur, kAXParentAttribute) else { break }
+            cur = parent
+        }
+        return false
+    }
 
     public init() {}
 
@@ -315,6 +343,14 @@ public struct AXWalker {
         if clipToWindow, let f = frame, depth > 0 {
             if f.width <= 0 || f.height <= 0 { return }
             offscreen = !f.intersects(windowFrame.insetBy(dx: -1, dy: -1))
+            // SwiftUI keeps inactive TabView pages (and other hidden layers) in the tree with
+            // real frames, so a Playbook state carried the whole Formations page — ~200 elements
+            // the user could not see. Hit-test the centre of shallow containers: if the element
+            // there is not this one or a descendant, the subtree is occluded/hidden. Skip it.
+            if !offscreen, depth <= hitTestDepth, f.width >= 40, f.height >= 40,
+               AXWalker.containerRoles.contains(role), !AXWalker.isVisible(el, frame: f, window: windowFrame) {
+                return
+            }
         }
 
         let label = identifier ?? title ?? description ?? placeholder ?? ""
