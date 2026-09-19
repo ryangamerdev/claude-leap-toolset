@@ -6,7 +6,7 @@ import MCP
 let instructions = """
 claude-leap: native macOS computer use (accessibility-first, background-first). Full playbook: the `claude-leap` skill (scripts/install.py installs it). Keep this short: Claude Code truncates long server instructions.
 
-Loop: get_app_state(app) → act by element_index or label (click, set_value, select_text, type_text, press_key, perform_action, scroll, drag, paste) → read the returned diff → repeat; batch predictable sequences. State after an action waits for the UI to settle; never sleep.
+Loop: get_app_state(app) reads the accessibility tree as text with NO screenshot by default (the tree IS the observation, like a screen reader; in practice only about 1 read in 4 needs an image). Act by element_index or label (click, set_value, select_text, type_text, press_key, perform_action, scroll, drag, paste); each action returns the updated diff, so read it and continue. Pass include_screenshot=true only when the answer is visual and the tree cannot express it (a zoom level, a drag/pan offset, a canvas/diagram, a rendering glitch). Batch predictable sequences; the state after an action waits for the UI to settle, so never sleep.
 
 The user keeps their computer: nothing activates an app or moves the real cursor (foreground=true is the exception — it interrupts the user; only when an app ignores background input, and say so). A face pointer + ripple shows where you act.
 

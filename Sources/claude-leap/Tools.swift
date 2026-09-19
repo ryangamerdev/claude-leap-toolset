@@ -45,7 +45,7 @@ enum LeapTools {
              description: "Read the target app's key window: an indexed accessibility tree (roles, titles, values, extra actions; coordinates only with include_frames) plus a window screenshot. Indices are stable across calls; by default only the diff since the previous state is returned. Call this before acting on an app and after actions whose result you need to see.",
              inputSchema: schema([
                 "app": appProp,
-                "include_screenshot": prop("boolean", "Default true. Set false to save tokens when the tree is enough."),
+                "include_screenshot": prop("boolean", "Default FALSE: the accessibility tree is the observation, like a screen reader. Set true only when the answer is visual and the tree cannot express it — a zoom level, a drag/pan offset, a canvas/diagram, a rendering glitch. A screenshot is ~110 KB; do not attach one by habit."),
                 "disable_diff": prop("boolean", "Default false. Set true to get the full tree instead of the diff."),
                 "scale": prop("number", "Screenshot scale, 0.1–1.0 (default 1.0 = 1 px per point so pixel coords equal window points)."),
                 "window": prop("string", "Target a specific window by title substring (e.g. \"iPhone 16\" in Simulator). Sticks for later actions on this app; pass \"\" to go back to the key window."),
@@ -232,7 +232,7 @@ enum LeapTools {
 
         case "get_app_state":
             var opts = Engine.StateOptions()
-            opts.includeScreenshot = a.bool("include_screenshot") ?? true
+            opts.includeScreenshot = a.bool("include_screenshot") ?? false
             opts.disableDiff = a.bool("disable_diff") ?? false
             if let s = a.double("scale") { opts.scale = s }
             opts.includeFrames = a.bool("include_frames") ?? false

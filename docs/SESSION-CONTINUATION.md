@@ -129,3 +129,9 @@ Chromium tree support, include_frames/ranges/footer, idle timeout.
   Simulator tree unaffected. The blue outlines on RUN/TEMPO/49ERS are the *active play's*
   attributes, not active filters (no AXSelected; 86 matching plays = unfiltered) — the tree was
   right about that. Test: `tests/hidden-tab-content.json` (runner gained `@absent`).
+- Analysed the live Codex "finish app" session (docs/SESSION-ANALYSIS-finish-app.md). Bulk of the
+  session bytes are `compacted` records (664 MB, base64 screenshots) and `event_msg` (246 MB);
+  inspect `response_item` only. No image sub-agent: GPT-6 reads PNGs directly; images are kept
+  scarce (27% of sky calls) and dropped at compaction (retained_context has none). Applied the one
+  real divergence: get_app_state now defaults to text-only (include_screenshot=false), badge still
+  lights on any read. **Restart to load the new default.**

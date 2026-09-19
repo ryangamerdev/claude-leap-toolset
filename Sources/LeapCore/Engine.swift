@@ -171,10 +171,10 @@ public actor Engine {
         var shot: Screenshot?
         var warning: String?
         let info = WindowInfo.match(pid: s.pid, frame: snap.frame, title: snap.title)
+        // Hold the capture indicator while leap is actively reading/driving this window, so the
+        // user sees the same "this window is being watched" badge Sky shows. Released after idle.
+        if let info { await ShareIndicator.shared.hold(info.id) }
         if opts.includeScreenshot {
-            // Visual observation: this is when the window is being captured, so this is when
-            // macOS's capture indicator should say so. Accessibility-only reads start no capture.
-            if let info { await ShareIndicator.shared.hold(info.id) }
             if let info {
                 do {
                     shot = try await Capture.window(info, scale: opts.scale, jpegQuality: opts.jpegQuality)

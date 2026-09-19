@@ -11,9 +11,15 @@ lights its screen-recording indicator for the window you are working in.
 
 ## Loop
 
-1. `get_app_state(app)` — indexed accessibility tree of the key window + screenshot. Launches
-   the app in the background if needed. `app` is a display name, bundle id or `.app` path; if a
-   name fails, retry with the bundle id from `list_apps` before anything else.
+1. `get_app_state(app)` — the indexed accessibility tree of the key window, as **text, no
+   screenshot by default**. The tree is your observation, the way a screen reader works; you read
+   controls by role, label and value, not by looking. Launches the app in the background if needed.
+   `app` is a display name, bundle id or `.app` path; if a name fails, retry with the bundle id
+   from `list_apps` first. Pass `include_screenshot=true` **only** when the answer is visual and the
+   tree cannot express it: a zoom level, a drag/pan offset, a custom canvas or play diagram, a
+   rendering glitch. As a calibration, in a long Sky/Codex session only ~1 read in 4 attached an
+   image; the rest were pure text. A screenshot is ~110 KB — attaching one every time is the main
+   way these sessions get slow and bloated, so make it the exception, not the habit.
 2. Act by `element_index` (or `label`, the visible text): `click`, `set_value`, `select_text`,
    `type_text`, `press_key`, `perform_action`, `scroll`, `drag`, `paste`.
 3. Every action returns the updated state as a **diff** (`+` added, `~` changed,
