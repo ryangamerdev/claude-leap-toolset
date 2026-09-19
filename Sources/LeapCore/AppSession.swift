@@ -25,6 +25,11 @@ public final class AppSession {
     public var lastActionAt: Date = .distantPast
     /// Title substring chosen with get_app_state(window:); nil = the app's key window.
     public var pinnedWindow: String?
+    /// Set when this session replaced one for the same app whose process went away (the app
+    /// quit, crashed or was reinstalled). Actions are refused until a state read clears it, so a
+    /// stale element_index from the old process can never land on a different element. Sky
+    /// does the same ("The user changed '<app>'. Re-query the latest state...").
+    public var relaunchedFrom: pid_t?
 
     public init(app: NSRunningApplication) {
         self.app = app
@@ -36,7 +41,13 @@ public final class AppSession {
         // Apps that don't know them return attributeUnsupported, which is harmless.
         AXUIElementSetAttributeValue(axApp, "AXManualAccessibility" as CFString, kCFBooleanTrue)
         AXUIElementSetAttributeValue(axApp, "AXEnhancedUserInterface" as CFString, kCFBooleanTrue)
+        // A busy or hung app must yield an error, not hang the whole server. Sky's calls surface
+        // `timeoutReached` at ~5 s; the AX API has a per-app messaging timeout for exactly this.
+        AXUIElementSetMessagingTimeout(axApp, Self.messagingTimeout)
     }
+
+    /// Seconds an accessibility request may block before failing with cannotComplete.
+    public static let messagingTimeout: Float = 5
 
     public var displayName: String { app.localizedName ?? app.bundleIdentifier ?? "pid \(pid)" }
 
@@ -156,21 +167,30 @@ public final class AppSession {
         return out.joined(separator: ", ")
     }
 
-    /// Trailing line naming the focused element, whether or not it was rendered.
+    /// Trailing lines naming the focused element, whether or not it was rendered, and the text
+    /// the user has selected in it (Sky appends a `Selected text:` block: what the user is
+    /// looking at is often what they mean).
     static func focusedFooter(snap: AXWindowSnapshot, table: [Int: ElementRecord], order: [Int]) -> String {
         guard let f = snap.focusedElement else { return "" }
+        var out: String
         if let idx = order.first(where: { CFEqual(table[$0]!.node.element, f) }) {
-            return "Focused element: [\(idx)]\n"
+            out = "Focused element: [\(idx)]\n"
+        } else {
+            let role = (AX.attr(f, kAXRoleAttribute) as String?) ?? "AXUnknown"
+            let title = (AX.attr(f, kAXTitleAttribute) as String?) ?? ""
+            out = "Focused element: \(role.dropFirst(2)) \"\(title)\" (not in the rendered tree)\n"
         }
-        let role = (AX.attr(f, kAXRoleAttribute) as String?) ?? "AXUnknown"
-        let title = (AX.attr(f, kAXTitleAttribute) as String?) ?? ""
-        return "Focused element: \(role.dropFirst(2)) \"\(title)\" (not in the rendered tree)\n"
+        if let sel = AX.string(AX.attr(f, kAXSelectedTextAttribute) as CFTypeRef?, limit: 400) {
+            out += "Selected text: \"\(sel)\"\n"
+        }
+        return out
     }
 
     static func header(snap: AXWindowSnapshot, session: AppSession) -> String {
         let f = snap.frame
         var h = "## \(session.displayName) — window \"\(snap.title ?? "")\" \(Int(f.width))x\(Int(f.height)) at screen (\(Int(f.minX)),\(Int(f.minY)))"
         h += session.app.isActive ? " [frontmost]" : " [background]"
+        if session.relaunchedFrom != nil { h += " [new process since the previous state; indices restart]" }
         h += "\nIndices are stable; act with element_index or label. Screenshot pixels are window points at scale=1; pass include_frames=true for per-element coordinates."
         return h
     }

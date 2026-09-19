@@ -1,0 +1,17 @@
+[
+  {"name": "set_value", "arguments": {"app": "Gameday", "element_index": 5, "value": "x"},
+   "expect_error": "No state has been read for Gameday"},
+
+  {"name": "get_app_state", "arguments": {"app": "Gameday", "include_screenshot": false, "disable_diff": true}},
+  {"name": "@capture", "arguments": {"pattern": "\\[(\\d+)\\] Button desc=\"Formations\"", "var": "playbook"}},
+
+  {"name": "@shell", "arguments": {"cmd": "osascript -e 'quit app \"Gameday\"' && sleep 2 && open -g -a /Users/ryan/Applications/Gameday.app && sleep 3 && pgrep -fl Gameday.app/Contents/MacOS"}},
+
+  {"name": "click", "arguments": {"app": "Gameday", "element_index": "$playbook"},
+   "expect_error": "Gameday was relaunched \\(new process\\)"},
+
+  {"name": "get_app_state", "arguments": {"app": "Gameday", "include_screenshot": false, "disable_diff": true}},
+  {"name": "@capture", "arguments": {"pattern": "(new process since the previous state)", "var": "flag"}},
+  {"name": "@capture", "arguments": {"pattern": "\\[(\\d+)\\] Button desc=\"Formations\"", "var": "playbook2"}},
+  {"name": "click", "arguments": {"app": "Gameday", "element_index": "$playbook2", "then_state": false}}
+]

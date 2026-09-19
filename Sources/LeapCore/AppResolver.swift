@@ -11,9 +11,20 @@ public enum LeapError: Error, CustomStringConvertible {
     case unsupported(String)
     case capture(String)
     case permission(String)
+    /// The app's process changed under us (quit/crash/reinstall); actions need a fresh state.
+    case processChanged(String)
+    /// An element_index/label action arrived before any state was read for the app.
+    case notActive(String)
+    case ambiguousApp(String, [String])
 
     public var description: String {
         switch self {
+        case .processChanged(let name):
+            return "\(name) was relaunched (new process) since the last state; nothing was done. Call get_app_state to read the fresh tree before sending more actions — the old indices are void."
+        case .notActive(let name):
+            return "No state has been read for \(name) in this session; nothing was done. Call get_app_state first so element indices and labels refer to what you have seen."
+        case .ambiguousApp(let q, let paths):
+            return "Ambiguous app \"\(q)\": several copies share it — " + paths.joined(separator: ", ") + ". Use the full .app path."
         case .appNotFound(let q):
             return "No running or installed app matches \"\(q)\". Try a bundle id (list_apps shows them)."
         case .launchFailed(let q, let why): return "Failed to launch \"\(q)\": \(why)"
@@ -68,8 +79,12 @@ public enum AppResolver {
     /// Resolve by display name, bundle identifier, process name, or .app path.
     /// Launches (without activating) when not running and `launch` is set.
     public static func resolve(_ query: String, launch: Bool = true) async throws -> NSRunningApplication {
-        if let running = findRunning(query) { return running }
+        if let running = try findRunning(query) { return running }
         guard launch else { throw LeapError.appNotFound(query) }
+        if !query.contains("/") {
+            let copies = NSWorkspace.shared.urlsForApplications(withBundleIdentifier: query)
+            if copies.count > 1 { throw LeapError.ambiguousApp(query, copies.map { $0.path }) }
+        }
         guard let url = installedURL(for: query) else { throw LeapError.appNotFound(query) }
         let config = NSWorkspace.OpenConfiguration()
         config.activates = false
@@ -91,11 +106,25 @@ public enum AppResolver {
         return t
     }
 
-    public static func findRunning(_ query: String) -> NSRunningApplication? {
+    /// Several running copies of one app (e.g. Gameday.app in ~/Applications and a build dir):
+    /// the frontmost one wins, else the only one with windows on screen, else it is a genuine
+    /// ambiguity and — like Sky — we refuse rather than guess, listing the paths.
+    static func pickOne(_ candidates: [NSRunningApplication], _ query: String) throws -> NSRunningApplication? {
+        if candidates.count <= 1 { return candidates.first }
+        if let active = candidates.first(where: { $0.isActive }) { return active }
+        let counts = WindowInfo.onScreenWindowCounts()
+        let withWindows = candidates.filter { (counts[$0.processIdentifier] ?? 0) > 0 }
+        if withWindows.count == 1 { return withWindows[0] }
+        throw LeapError.ambiguousApp(query, candidates.map { $0.bundleURL?.path ?? "pid \($0.processIdentifier)" })
+    }
+
+    public static func findRunning(_ query: String) throws -> NSRunningApplication? {
         let q = normalized(query)
         let apps = NSWorkspace.shared.runningApplications
-        if let byBundle = apps.first(where: { $0.bundleIdentifier?.lowercased() == q }) { return byBundle }
-        if let byName = apps.first(where: { normalized($0.localizedName ?? "") == q }) { return byName }
+        let byBundle = apps.filter { $0.bundleIdentifier?.lowercased() == q }
+        if let one = try pickOne(byBundle, query) { return one }
+        let byName = apps.filter { normalized($0.localizedName ?? "") == q }
+        if let one = try pickOne(byName, query) { return one }
         if query.contains("/") {
             let path = (query as NSString).expandingTildeInPath
             if let byPath = apps.first(where: {

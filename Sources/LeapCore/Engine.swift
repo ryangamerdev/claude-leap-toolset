@@ -13,11 +13,34 @@ public actor Engine {
 
     // MARK: - Sessions
 
+    /// bundle path → pid of the session we last handed out for that app, so a relaunch
+    /// (new pid, same app) is recognised and reported instead of silently re-indexed.
+    var pidByIdentity: [String: pid_t] = [:]
+
     public func session(for query: String, launch: Bool = true) async throws -> AppSession {
         let app = try await AppResolver.resolve(query, launch: launch)
         if let s = sessions[app.processIdentifier], !s.app.isTerminated { return s }
+        let identity = app.bundleURL?.path ?? app.bundleIdentifier ?? "pid \(app.processIdentifier)"
         let s = AppSession(app: app)
+        if let oldPid = pidByIdentity[identity], oldPid != app.processIdentifier, sessions[oldPid] != nil {
+            sessions[oldPid] = nil
+            s.relaunchedFrom = oldPid
+        }
         sessions[app.processIdentifier] = s
+        pidByIdentity[identity] = app.processIdentifier
+        return s
+    }
+
+    /// Session for an *action*. Refuses — like Sky's "The user changed '<app>'" and "Computer
+    /// Use is not active for '<app>'" errors — when the process was replaced since the last
+    /// state, or when an element_index/label arrives before any state was ever read: in both
+    /// cases the caller's indices refer to a tree it has not seen. Coordinate-only actions
+    /// still index silently (they only need the window frame).
+    func actionSession(_ query: String, needsElements: Bool) async throws -> AppSession {
+        let s = try await session(for: query)
+        if s.relaunchedFrom != nil { throw LeapError.processChanged(s.displayName) }
+        if needsElements && s.elements.isEmpty { throw LeapError.notActive(s.displayName) }
+        try await ensureIndexed(s)
         return s
     }
 
@@ -88,6 +111,7 @@ public actor Engine {
             throw LeapError.axFailure("window frame", .cannotComplete)
         }
         let (full, diff) = s.render(snap, walker: walker, includeFrames: opts.includeFrames)
+        s.relaunchedFrom = nil
         var text = (opts.disableDiff ? full : (diff ?? full))
         let others = windows(s).filter { !CFEqual($0.0, snap.window) }.map { $0.1 }
         if !others.isEmpty {
@@ -266,8 +290,7 @@ public actor Engine {
     public func click(app query: String, target: Target, button: MouseButton = .left, count: Int = 1,
                       modifiers: String? = nil, mode: InputMode = .init()) async throws -> String {
         try requireAX()
-        let s = try await session(for: query)
-        try await ensureIndexed(s)
+        let s = try await actionSession(query, needsElements: target.elementIndex != nil)
         let (p, rec) = try screenPoint(s, target)
         let flags = try modifierFlags(modifiers)
         defer { s.lastActionAt = Date() }
@@ -291,8 +314,7 @@ public actor Engine {
     public func drag(app query: String, from: Target, to: Target, steps: Int = 12, modifiers: String? = nil,
                      mode: InputMode = .init()) async throws -> String {
         try requireAX()
-        let s = try await session(for: query)
-        try await ensureIndexed(s)
+        let s = try await actionSession(query, needsElements: from.elementIndex != nil || to.elementIndex != nil)
         let (a, _) = try screenPoint(s, from)
         let (b, _) = try screenPoint(s, to)
         let flags = try modifierFlags(modifiers)
@@ -305,8 +327,7 @@ public actor Engine {
     public func scroll(app query: String, target: Target, direction: String, pages: Double = 1,
                        pixels: Int? = nil, mode: InputMode = .init()) async throws -> String {
         try requireAX()
-        let s = try await session(for: query)
-        try await ensureIndexed(s)
+        let s = try await actionSession(query, needsElements: target.elementIndex != nil)
         let (p, rec) = try screenPoint(s, target)
         let extent = rec?.node.frame ?? s.lastWindowFrame
         defer { s.lastActionAt = Date() }
@@ -327,8 +348,7 @@ public actor Engine {
 
     public func pressKey(app query: String, key: String, mode: InputMode = .init()) async throws -> String {
         try requireAX()
-        let s = try await session(for: query)
-        try await ensureIndexed(s)
+        let s = try await actionSession(query, needsElements: false)
         let chord = try Keys.parse(key)
         defer { s.lastActionAt = Date() }
         // Accessibility first, the way the Sky service does it (its binary imports no
@@ -365,6 +385,11 @@ public actor Engine {
             return nil
         }
         guard chord.flags.isEmpty, let code = chord.keyCode else { return nil }
+        if code == 53, let menu = openMenu(s) { // Escape closes an open menu-bar menu
+            if AXUIElementPerformAction(menu, kAXCancelAction as CFString) == .success {
+                return "closed the open menu via accessibility (Escape)"
+            }
+        }
         guard let target = focused else { return nil }
         let actions = AX.actions(target)
         switch code {
@@ -414,6 +439,18 @@ public actor Engine {
         }
     }
 
+    /// The AXMenu of a menu-bar title that is currently open (non-zero frame, visible items).
+    func openMenu(_ s: AppSession) -> AXUIElement? {
+        guard let bar: AXUIElement = AX.attr(s.axApp, kAXMenuBarAttribute),
+              let items: [AXUIElement] = AX.attr(bar, kAXChildrenAttribute) else { return nil }
+        for item in items {
+            for menu in (AX.attr(item, kAXChildrenAttribute) as [AXUIElement]?) ?? [] {
+                if let f = AX.frame(menu), f.width > 0, f.height > 0 { return menu }
+            }
+        }
+        return nil
+    }
+
     struct MenuHit { let element: AXUIElement; let path: String }
 
     /// Find the menu item whose key equivalent matches the chord (Edit › Select All for ⌘A).
@@ -451,8 +488,7 @@ public actor Engine {
 
     public func typeText(app query: String, text: String, elementIndex: Int? = nil, mode: InputMode = .init()) async throws -> String {
         try requireAX()
-        let s = try await session(for: query)
-        try await ensureIndexed(s)
+        let s = try await actionSession(query, needsElements: elementIndex != nil)
         defer { s.lastActionAt = Date() }
         if let i = elementIndex {
             let rec = try s.element(i)
@@ -471,8 +507,7 @@ public actor Engine {
 
     public func setValue(app query: String, elementIndex: Int, value: String) async throws -> String {
         try requireAX()
-        let s = try await session(for: query)
-        try await ensureIndexed(s)
+        let s = try await actionSession(query, needsElements: true)
         let rec = try s.element(elementIndex)
         defer { s.lastActionAt = Date() }
         // 1. Text elements: replace the selection through the text system (fires change notifications,
@@ -499,8 +534,7 @@ public actor Engine {
 
     public func performAction(app query: String, elementIndex: Int, action: String) async throws -> String {
         try requireAX()
-        let s = try await session(for: query)
-        try await ensureIndexed(s)
+        let s = try await actionSession(query, needsElements: true)
         let rec = try s.element(elementIndex)
         let wanted = action.lowercased().replacingOccurrences(of: " ", with: "")
         guard let name = rec.node.actions.first(where: {
@@ -518,8 +552,7 @@ public actor Engine {
 
     public func paste(app query: String, text: String, html: String? = nil, mode: InputMode = .init()) async throws -> String {
         try requireAX()
-        let s = try await session(for: query)
-        try await ensureIndexed(s)
+        let s = try await actionSession(query, needsElements: false)
         defer { s.lastActionAt = Date() }
         try await withInput(s, mode) { d in Input.paste(text, html: html, d) }
         await signal(indicatorPoint(s, nil), .edit)
@@ -531,13 +564,19 @@ public actor Engine {
     /// match; otherwise an error listing the candidates so the model can pick.
     public func findElement(app query: String, label: String) async throws -> Int {
         try requireAX()
-        let s = try await session(for: query)
-        try await ensureIndexed(s)
+        let s = try await actionSession(query, needsElements: true)
         let needle = label.trimmingCharacters(in: .whitespaces).lowercased()
         func texts(_ n: AXNode) -> [String] { [n.title, n.description, n.value, n.placeholder].compactMap { $0?.lowercased() } }
         let all = s.elements.values.sorted { $0.index < $1.index }
-        let exact = all.filter { texts($0.node).contains(needle) }
+        var exact = all.filter { texts($0.node).contains(needle) }
         if exact.count == 1 { return exact[0].index }
+        // A button "Playbook" and a heading "PLAYBOOK" both match exactly; the one that can be
+        // acted on is what a caller giving a label means.
+        if exact.count > 1 {
+            let actionable = exact.filter { $0.node.actions.contains(kAXPressAction) || $0.node.settable }
+            if actionable.count == 1 { return actionable[0].index }
+            if !actionable.isEmpty { exact = actionable }
+        }
         let partial = exact.isEmpty ? all.filter { texts($0.node).contains { $0.contains(needle) } } : exact
         if partial.count == 1 { return partial[0].index }
         if partial.isEmpty { throw LeapError.unsupported("No element labelled \"\(label)\" in the latest state of \(s.displayName).") }

@@ -136,6 +136,7 @@ enum AX {
     static func usefulIdentifier(_ id: String?) -> String? {
         guard let id else { return nil }
         if id.contains("SwiftUI.") || id.contains("ModifiedContent<") || id.count > 64 { return nil }
+        if id.hasPrefix("_NS:") { return nil } // AppKit nib object numbers, meaningless to a reader
         return id
     }
 
@@ -168,7 +169,7 @@ public struct AXWalker {
 
     // AXShowMenu is omitted because Chromium/Electron stamps it on every element; it stays
     // invocable through perform_action, which matches against the live action list.
-    static let hiddenActions: Set<String> = ["AXPress", "AXScrollToVisible", "AXRaise", "AXShowMenu"]
+    static let hiddenActions: Set<String> = ["AXPress", "AXScrollToVisible", "AXRaise", "AXShowMenu", "AXPick"]
 
     /// Roles where a synthesized click (which places the caret) beats the AX Press action.
     static let textRoles: Set<String> = [
@@ -205,8 +206,47 @@ public struct AXWalker {
         var truncated = false
         walk(window, depth: 0, parentKey: "w", siblingOrdinal: 0, windowFrame: frame,
              nodes: &nodes, count: &count, truncated: &truncated)
+        if let bar: AXUIElement = AX.attr(app, kAXMenuBarAttribute) {
+            walkMenuBar(bar, nodes: &nodes, count: &count, truncated: &truncated)
+        }
         return AXWindowSnapshot(window: window, title: title, frame: frame, focusedElement: focused,
                                 nodes: nodes, truncated: truncated)
+    }
+
+    /// The app's menu bar: its titles always, and the items of any menu that is currently open.
+    ///
+    /// The Codex/Sky session lists the menu bar in every full tree and, after clicking a menu
+    /// title, returns that menu's items — that is how it switched Simulator device windows
+    /// (Window › "iPhone 16 – iOS 18.0") and quit apps (Quit Gameday). AXPress on a title opens
+    /// the menu even for a background app and leaves the frontmost app alone (verified);
+    /// a closed menu has a zero-size frame and no visible children, an open one has both.
+    private func walkMenuBar(_ bar: AXUIElement, nodes: inout [AXNode], count: inout Int, truncated: inout Bool) {
+        guard let items: [AXUIElement] = AX.attr(bar, kAXChildrenAttribute), !items.isEmpty else { return }
+        let barKey = "mb"
+        nodes.append(AXNode(element: bar, role: "AXMenuBar", subrole: nil, title: nil, value: nil, description: nil,
+                            identifier: nil, placeholder: nil, frame: AX.frame(bar), enabled: true, focused: false,
+                            selected: false, actions: [], settable: false, offscreen: false, depth: 0, key: barKey))
+        count += 1
+        for (i, item) in items.enumerated() {
+            if count >= maxNodes { truncated = true; return }
+            let a = AX.attrs(item, [kAXTitleAttribute, kAXSelectedAttribute, kAXEnabledAttribute, kAXChildrenAttribute])
+            let title = AX.string(a[kAXTitleAttribute]) ?? ""
+            if title == "Apple" { continue } // the system menu, not the app's (Sky omits it too)
+            let selected = (a[kAXSelectedAttribute] as? Bool) ?? false
+            let key = "\(barKey)/AXMenuBarItem[\(title)]#\(i)"
+            nodes.append(AXNode(element: item, role: "AXMenuBarItem", subrole: nil, title: title.isEmpty ? nil : title,
+                                value: nil, description: nil, identifier: nil, placeholder: nil, frame: AX.frame(item),
+                                enabled: (a[kAXEnabledAttribute] as? Bool) ?? true, focused: false, selected: selected,
+                                actions: AX.actions(item), settable: false, offscreen: false, depth: 1, key: key))
+            count += 1
+            // Only an open menu is worth rendering; closed ones are reachable by clicking the title.
+            for menu in (a[kAXChildrenAttribute] as? [AXUIElement]) ?? [] {
+                guard let mf = AX.frame(menu), mf.width > 0, mf.height > 0,
+                      let visible: [AXUIElement] = AX.attr(menu, kAXVisibleChildrenAttribute), !visible.isEmpty else { continue }
+                walk(menu, depth: 2, parentKey: key, siblingOrdinal: 0, windowFrame: mf,
+                     nodes: &nodes, count: &count, truncated: &truncated)
+            }
+        }
     }
 
     private func walk(_ el: AXUIElement, depth: Int, parentKey: String, siblingOrdinal: Int,
@@ -239,6 +279,7 @@ public struct AXWalker {
         }
 
         let label = identifier ?? title ?? description ?? placeholder ?? ""
+        if role == "AXMenuItem" && title == nil && description == nil && value == nil { return } // separator
         let key = "\(parentKey)/\(role)[\(label)]#\(siblingOrdinal)"
         let actions = AX.actions(el)
         let settable = (value != nil || AXWalker.editableRoles.contains(role)) && AX.isSettable(el, kAXValueAttribute)

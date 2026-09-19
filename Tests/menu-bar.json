@@ -1,0 +1,15 @@
+[
+  {"name": "get_app_state", "arguments": {"app": "Simulator", "include_screenshot": false, "disable_diff": true}},
+  {"name": "@capture", "arguments": {"pattern": "\\[(\\d+)\\] MenuBarItem \"Window\" actions", "var": "windowMenu"}},
+
+  {"name": "click", "arguments": {"app": "Simulator", "element_index": "$windowMenu"}},
+  {"name": "@capture", "arguments": {"pattern": "\\+ \\[(\\d+)\\] MenuItem \"iPhone 16 – iOS 18.0\" id=makeKeyAndOrderFront:", "var": "iphoneItem"}},
+  {"name": "@capture", "arguments": {"pattern": "~ \\[(\\d+)\\] MenuBarItem \"Window\" \\[selected\\]", "var": "openTitle"}},
+  {"name": "@expect", "arguments": {"var": "openTitle", "value": "$windowMenu"}},
+
+  {"name": "press_key", "arguments": {"app": "Simulator", "key": "Escape"}},
+  {"name": "@capture", "arguments": {"pattern": "(closed the open menu via accessibility)", "var": "escape"}},
+  {"name": "get_app_state", "arguments": {"app": "Simulator", "include_screenshot": false, "disable_diff": true}},
+  {"name": "@capture", "arguments": {"pattern": "\\[(\\d+)\\] MenuBarItem \"Window\" actions", "var": "closedTitle"}},
+  {"name": "@expect", "arguments": {"var": "closedTitle", "value": "$windowMenu"}}
+]

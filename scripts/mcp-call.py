@@ -6,6 +6,12 @@ Usage:
   mcp-call.py call NAME '{"json":"args"}'   # one call
   mcp-call.py script FILE.json              # [{"name":..., "arguments":{...}}, ...] in ONE session
 
+Script steps besides tool calls:
+  {"name": "@capture", "arguments": {"pattern": "regex with one group", "var": "x"}}  from the last result
+  {"name": "@expect", "arguments": {"var": "x", "value": "..."}}
+  {"name": "@shell", "arguments": {"cmd": "..."}}                                   run a shell command
+  a tool call with "expect_error": "regex"  must fail (isError) with matching text
+
 Prints every request/response in full. Image content is written to /tmp/leap-shots/
 and the path is printed. Exits non-zero on transport errors or isError results.
 """
@@ -158,10 +164,12 @@ def main():
 
         def substitute(value):
             if isinstance(value, str):
-                for k, v in captured.items():
+                # Longest names first so "$playbook" never eats the front of "$playbook2".
+                for k in sorted(captured, key=len, reverse=True):
+                    v = captured[k]
                     if value == "$" + k:
                         return int(v) if v.lstrip("-").isdigit() else v
-                    value = value.replace("$" + k, v)
+                    value = re.sub(r"\$" + re.escape(k) + r"(?![A-Za-z0-9_])", v, value)
                 return value
             if isinstance(value, dict):
                 return {k: substitute(v) for k, v in value.items()}
@@ -194,10 +202,33 @@ def main():
                     break
                 print(f"@expect ok: {var} == {want!r}")
                 continue
+            if c["name"] == "@shell":
+                cmd = str(args["cmd"])
+                print(f"\n===== [{i}] @shell {cmd}")
+                r = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+                print((r.stdout + r.stderr).rstrip())
+                if r.returncode != 0:
+                    print(f"@shell FAILED: exit {r.returncode}")
+                    ok = False
+                    break
+                continue
             print(f"\n===== [{i}] {c['name']} {json.dumps(args)}")
             reply = client.request("tools/call", {"name": c["name"], "arguments": args})
             last_text = "\n".join(p.get("text", "") for p in reply.get("result", {}).get("content", []))
-            if not show_result(f"{i} {c['name']}", reply):
+            succeeded = show_result(f"{i} {c['name']}", reply)
+            if "expect_error" in c:
+                pattern = str(c["expect_error"])
+                if succeeded:
+                    print(f"expect_error FAILED: call succeeded, wanted an error matching /{pattern}/")
+                    ok = False
+                    break
+                if not re.search(pattern, last_text):
+                    print(f"expect_error FAILED: error text does not match /{pattern}/")
+                    ok = False
+                    break
+                print(f"expect_error ok: /{pattern}/")
+                continue
+            if not succeeded:
                 ok = False
                 break
     else:

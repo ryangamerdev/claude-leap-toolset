@@ -1,7 +1,42 @@
 [
-  {"name": "get_app_state", "arguments": {"app": "Gameday", "include_screenshot": false, "disable_diff": true}},
-  {"name": "click", "arguments": {"app": "Gameday", "label": "Flashcards"}},
-  {"name": "screenshot", "arguments": {"app": "Gameday", "scale": 0.5, "save_path": "/tmp/leap-docs/flashcards-after.jpg"}},
-  {"name": "click", "arguments": {"app": "Gameday", "label": "Playbook", "then_state": false}},
-  {"name": "click", "arguments": {"app": "Gameday", "label": "does-not-exist", "then_state": false}}
+  {
+    "name": "get_app_state",
+    "arguments": {
+      "app": "Gameday",
+      "include_screenshot": false,
+      "disable_diff": true
+    }
+  },
+  {
+    "name": "click",
+    "arguments": {
+      "app": "Gameday",
+      "label": "Flashcards"
+    }
+  },
+  {
+    "name": "screenshot",
+    "arguments": {
+      "app": "Gameday",
+      "scale": 0.5,
+      "save_path": "/tmp/leap-docs/flashcards-after.jpg"
+    }
+  },
+  {
+    "name": "click",
+    "arguments": {
+      "app": "Gameday",
+      "label": "Playbook",
+      "then_state": false
+    }
+  },
+  {
+    "name": "click",
+    "arguments": {
+      "app": "Gameday",
+      "label": "does-not-exist",
+      "then_state": false
+    },
+    "expect_error": "No element labelled \"does-not-exist\""
+  }
 ]
