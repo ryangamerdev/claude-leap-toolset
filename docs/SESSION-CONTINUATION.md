@@ -89,3 +89,18 @@ Chromium tree support, include_frames/ranges/footer, idle timeout.
   (udid 08385748-DE3D-45D0-A0DA-75F69B0191B5) booted with `local.gameday.ios`; app is landscape-only
   by Codex's design (rotate via Simulator toolbar "Rotate"). Gameday Mac app: `~/Applications/Gameday.app`.
 - Stale claude-leap processes once blocked all SCK captures (replayd churn) — kill them; idle timeout now reaps.
+
+## Post-compaction status (2026-09-18, after the transcript review)
+
+- All 17 reviewer reports were read; consolidated into `docs/SKY-BEHAVIOR.md` (grammar, ID
+  semantics, input evidence, control-plane errors, timing, parity map). Do **not** re-run the review.
+- Implemented from it (commit ba8d3d0, bundle rebuilt in `dist/claude-leap.app`): menu bar + open
+  menus in the tree, Escape cancels an open menu, relaunch / not-active guards (`actionSession`),
+  AX messaging timeout 5 s, `Selected text:` footer, ambiguous-app refusal, label ties prefer the
+  pressable element. Tests: `tests/menu-bar.json`, `tests/relaunch-guard.json` (quits and relaunches
+  Gameday), plus the three older ones — all pass with `scripts/mcp-call.py script`.
+- **The registered `leap` MCP server is still the old bundle until the user restarts the session.**
+- Open items, in priority order: (1) verify `type_text` on an iOS Simulator text field with
+  read-back (Sky's weakest spot); (2) tvOS focus keys with screenshot diff; (3) long iOS lists vs
+  the 1,500-node cap; (4) singleton service + thin clients; (5) per-window remote-control badge /
+  live thumbnail panel.
