@@ -21,6 +21,8 @@ ap.add_argument("--home", default=os.environ.get("CODEX_HOME", str(Path.home() /
 ap.add_argument("--samples", type=int, default=25, help="how many js calls to print in full")
 ap.add_argument("--result-chars", type=int, default=1200, help="result text shown per call")
 ap.add_argument("--server", default="cua_repl", help="MCP server whose calls to print")
+ap.add_argument("--stats", action="store_true",
+                help="aggregate view instead of samples: API methods used, apps targeted, failure taxonomy")
 args = ap.parse_args()
 
 root = Path(args.home).expanduser()
@@ -84,6 +86,40 @@ for (server, status), n in sorted(statuses.items(), key=lambda kv: -kv[1]):
 
 sel = [r for r in records if r[1] == args.server]
 print(f"\n## {args.server} calls: {len(sel)} total, {sum(r[7] for r in sel)} image results")
+
+if args.stats:
+    import re
+    methods = Counter()
+    apps = Counter()
+    per_call_actions = Counter()
+    failures = Counter()
+    failure_samples = {}
+    for ts, server, tool, arguments, result_text, status, duration, images in sel:
+        code = arguments.get("code", "") if isinstance(arguments, dict) else str(arguments)
+        names = re.findall(r"\.(getAXState|getScreenshot|getAXStateAndScreenshot|click|typeText|setValue|pressKey|scroll|drag|paste|selectText|performSecondaryAction|getApp|listApps|getState|createBrowserTab|getTab|goto)\(", code)
+        methods.update(names)
+        per_call_actions[len([n for n in names if n not in ("getAXState", "getScreenshot", "getAXStateAndScreenshot", "getApp", "listApps", "getState")])] += 1
+        apps.update(re.findall(r"getApp\(\s*[\"']([^\"']+)[\"']", code))
+        if status != "completed":
+            first = result_text.strip().splitlines()[0][:110] if result_text.strip() else "(empty)"
+            key = re.sub(r"\d+", "N", first)
+            key = re.sub(r"[\"'][^\"']*[\"']", "'…'", key)
+            failures[key] += 1
+            failure_samples.setdefault(key, (ts, code[:160]))
+    print("\n## API methods called (occurrences in code)")
+    for m, n in methods.most_common():
+        print(f"  {n:5d}  {m}")
+    print("\n## actions per call (0 = observe only) → how much it batches")
+    for k in sorted(per_call_actions):
+        print(f"  {per_call_actions[k]:5d} calls with {k} action(s)")
+    print("\n## apps targeted via getApp")
+    for a_, n in apps.most_common():
+        print(f"  {n:5d}  {a_}")
+    print(f"\n## failure taxonomy ({sum(failures.values())} failed calls)")
+    for k, n in failures.most_common():
+        ts, code = failure_samples[k]
+        print(f"  {n:4d}  {k}\n        e.g. {ts}  {code}")
+    raise SystemExit(0)
 shown = 0
 for ts, server, tool, arguments, result_text, status, duration, images in sel:
     if shown >= args.samples:

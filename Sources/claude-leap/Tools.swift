@@ -195,7 +195,7 @@ enum LeapTools {
             opts.includeScreenshot = a.bool("include_screenshot") ?? true
             opts.disableDiff = a.bool("disable_diff") ?? false
             if let s = a.double("scale") { opts.scale = s }
-            let st = try await engine.state(app: try a.app(), opts)
+            let st = try await engine.state(app: try a.app(), opts, announce: true)
             return result(text: st.text, shot: st.screenshot)
 
         case "screenshot":

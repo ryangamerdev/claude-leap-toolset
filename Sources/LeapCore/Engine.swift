@@ -53,10 +53,14 @@ public actor Engine {
         public var warning: String?
     }
 
-    public func state(app query: String, _ opts: StateOptions = .init()) async throws -> State {
+    /// `announce` shows the "thinking" face over the window; used by the explicit
+    /// get_app_state tool, not by the state that follows an action (which keeps the action's face).
+    public func state(app query: String, _ opts: StateOptions = .init(), announce: Bool = false) async throws -> State {
         try requireAX()
         let s = try await session(for: query)
-        return try await state(session: s, opts)
+        let st = try await state(session: s, opts)
+        if announce { await signal(indicatorPoint(s, nil), .observe) }
+        return st
     }
 
     public func state(session s: AppSession, _ opts: StateOptions = .init()) async throws -> State {
