@@ -1,0 +1,141 @@
+import ApplicationServices
+import AppKit
+import Foundation
+
+/// A rendered element the model can refer to by index.
+public struct ElementRecord {
+    public let index: Int
+    public let node: AXNode
+}
+
+/// Per-app state: the stable index registry, the last rendered lines (for diffs)
+/// and the element table backing `element_index` actions.
+public final class AppSession {
+    public let pid: pid_t
+    public let app: NSRunningApplication
+    public let axApp: AXUIElement
+    var indexByKey: [String: Int] = [:]
+    var nextIndex = 1
+    var lastLines: [Int: String] = [:]
+    var lastOrder: [Int] = []
+    var lastWindowTitle: String?
+    public private(set) var elements: [Int: ElementRecord] = [:]
+    public private(set) var lastWindow: AXUIElement?
+    public private(set) var lastWindowFrame: CGRect = .zero
+    public var lastActionAt: Date = .distantPast
+
+    public init(app: NSRunningApplication) {
+        self.app = app
+        self.pid = app.processIdentifier
+        self.axApp = AXUIElementCreateApplication(app.processIdentifier)
+    }
+
+    public var displayName: String { app.localizedName ?? app.bundleIdentifier ?? "pid \(pid)" }
+
+    public func element(_ index: Int) throws -> ElementRecord {
+        guard let rec = elements[index] else { throw LeapError.noSuchElement(index) }
+        return rec
+    }
+
+    func index(for key: String) -> Int {
+        if let i = indexByKey[key] { return i }
+        let i = nextIndex
+        nextIndex += 1
+        indexByKey[key] = i
+        return i
+    }
+
+    /// Render a snapshot into indexed text, updating the element table.
+    /// Returns the full text and, when a previous render exists for the same window,
+    /// a diff-only text.
+    public func render(_ snap: AXWindowSnapshot, walker: AXWalker) -> (full: String, diff: String?) {
+        // A different window resets the index space so stale indices can't alias.
+        if lastWindow == nil || lastWindowTitle != snap.title || !CFEqual(lastWindow, snap.window) {
+            if lastWindow == nil || !CFEqual(lastWindow, snap.window) {
+                indexByKey.removeAll(); nextIndex = 1; lastLines.removeAll(); lastOrder.removeAll()
+            }
+        }
+        lastWindow = snap.window
+        lastWindowTitle = snap.title
+        lastWindowFrame = snap.frame
+
+        var lines: [Int: String] = [:]
+        var order: [Int] = []
+        var table: [Int: ElementRecord] = [:]
+        for node in snap.nodes {
+            let idx = index(for: node.key)
+            lines[idx] = Self.line(node, windowFrame: snap.frame, focused: snap.focusedElement)
+            order.append(idx)
+            table[idx] = ElementRecord(index: idx, node: node)
+        }
+        elements = table
+
+        let header = Self.header(snap: snap, session: self)
+        var full = header + "\n"
+        for idx in order {
+            let depth = table[idx]!.node.depth
+            full += String(repeating: "  ", count: max(0, depth - 1)) + "[\(idx)] " + lines[idx]! + "\n"
+        }
+        if snap.truncated { full += "… (tree truncated at \(walker.maxNodes) elements; scroll or use a query)\n" }
+
+        var diff: String?
+        if !lastLines.isEmpty {
+            var added: [Int] = [], changed: [Int] = [], removed: [Int] = []
+            for idx in order {
+                if let prev = lastLines[idx] {
+                    if prev != lines[idx] { changed.append(idx) }
+                } else { added.append(idx) }
+            }
+            for idx in lastOrder where lines[idx] == nil { removed.append(idx) }
+            let unchanged = order.count - added.count - changed.count
+            let churn = added.count + changed.count + removed.count
+            if churn == 0 {
+                diff = header + "\n(no accessibility changes since the previous state; \(order.count) elements unchanged)\n"
+            } else if churn * 10 < max(order.count, 1) * 7 { // < 70% churn → diff is worth it
+                var d = header + "\n## Diff vs previous state (\(unchanged) unchanged elements omitted; indices are stable)\n"
+                for idx in order {
+                    if added.contains(idx) { d += "+ [\(idx)] \(lines[idx]!)\n" }
+                    else if changed.contains(idx) { d += "~ [\(idx)] \(lines[idx]!)\n" }
+                }
+                for idx in removed { d += "- [\(idx)] \(lastLines[idx]!)\n" }
+                diff = d
+            }
+        }
+        lastLines = lines
+        lastOrder = order
+        return (full, diff)
+    }
+
+    static func header(snap: AXWindowSnapshot, session: AppSession) -> String {
+        let f = snap.frame
+        var h = "## \(session.displayName) — window \"\(snap.title ?? "")\" \(Int(f.width))x\(Int(f.height)) at screen (\(Int(f.minX)),\(Int(f.minY)))"
+        h += session.app.isActive ? " [frontmost]" : " [background]"
+        h += "\nCoordinates below are window-relative points (x,y w×h). Screenshot pixels map 1:1 to these when scale=1."
+        return h
+    }
+
+    static func line(_ n: AXNode, windowFrame: CGRect, focused: AXUIElement?) -> String {
+        var parts: [String] = []
+        var role = n.role.hasPrefix("AX") ? String(n.role.dropFirst(2)) : n.role
+        if let sub = n.subrole, sub != "AXUnknown" {
+            role += "/" + (sub.hasPrefix("AX") ? String(sub.dropFirst(2)) : sub)
+        }
+        parts.append(role)
+        if let t = n.title { parts.append("\"\(t)\"") }
+        if let v = n.value { parts.append("value=\"\(v)\"") }
+        if let p = n.placeholder { parts.append("placeholder=\"\(p)\"") }
+        if let d = n.description, d != n.title { parts.append("desc=\"\(d)\"") }
+        if let id = n.identifier { parts.append("id=\(id)") }
+        if let f = n.frame {
+            parts.append("@\(Int(f.minX - windowFrame.minX)),\(Int(f.minY - windowFrame.minY)) \(Int(f.width))x\(Int(f.height))")
+        }
+        if n.settable { parts.append("[settable]") }
+        if !n.enabled { parts.append("[disabled]") }
+        if n.selected { parts.append("[selected]") }
+        if n.focused || (focused != nil && CFEqual(focused, n.element)) { parts.append("[focused]") }
+        let extra = n.actions.filter { !AXWalker.hiddenActions.contains($0) }
+            .map { $0.hasPrefix("AX") ? String($0.dropFirst(2)) : $0 }
+        if !extra.isEmpty { parts.append("actions=" + extra.joined(separator: ",")) }
+        return parts.joined(separator: " ")
+    }
+}

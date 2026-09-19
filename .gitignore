@@ -1,0 +1,9 @@
+.build/
+.swiftpm/
+*.xcodeproj
+DerivedData/
+Package.resolved.bak
+/tmp/
+*.png
+*.jpg
+!docs/**/*.png

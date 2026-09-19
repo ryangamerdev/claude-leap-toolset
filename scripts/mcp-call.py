@@ -1,0 +1,160 @@
+#!/usr/bin/env python3
+"""Call claude-leap tools over stdio MCP, exactly as an agent would.
+
+Usage:
+  mcp-call.py tools                         # list tools
+  mcp-call.py call NAME '{"json":"args"}'   # one call
+  mcp-call.py script FILE.json              # [{"name":..., "arguments":{...}}, ...] in ONE session
+
+Prints every request/response in full. Image content is written to /tmp/leap-shots/
+and the path is printed. Exits non-zero on transport errors or isError results.
+"""
+import base64
+import json
+import os
+import queue
+import subprocess
+import sys
+import threading
+import time
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TOOLCHAIN_ID = "org.swift.640202609131a"
+SHOTS = "/tmp/leap-shots"
+os.makedirs(SHOTS, exist_ok=True)
+
+
+def binary_path():
+    env = dict(os.environ, TOOLCHAINS=TOOLCHAIN_ID)
+    p = subprocess.run(["swift", "build", "--show-bin-path"], cwd=ROOT, env=env, capture_output=True, text=True)
+    if p.returncode != 0:
+        print("swift build --show-bin-path failed:\n" + p.stdout + p.stderr)
+        sys.exit(1)
+    path = os.path.join(p.stdout.strip().splitlines()[-1], "claude-leap")
+    if not os.path.exists(path):
+        print(f"binary not found at {path}; run scripts/build.py first")
+        sys.exit(1)
+    return path
+
+
+class Client:
+    def __init__(self, cmd):
+        print(f"$ {' '.join(cmd)}")
+        self.p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                  text=True, bufsize=1)
+        assert self.p.stdin and self.p.stdout and self.p.stderr
+        self.stdin = self.p.stdin
+        self.q = queue.Queue()
+        self.err = []
+        threading.Thread(target=self._pump, args=(self.p.stdout, self.q.put), daemon=True).start()
+        threading.Thread(target=self._pump, args=(self.p.stderr, self.err.append), daemon=True).start()
+        self.next_id = 1
+
+    @staticmethod
+    def _pump(stream, sink):
+        for line in stream:
+            sink(line)
+
+    def request(self, method, params=None, timeout=120):
+        rid = self.next_id
+        self.next_id += 1
+        msg = {"jsonrpc": "2.0", "id": rid, "method": method}
+        if params is not None:
+            msg["params"] = params
+        self.stdin.write(json.dumps(msg) + "\n")
+        self.stdin.flush()
+        deadline = time.time() + timeout
+        while time.time() < deadline:
+            if self.p.poll() is not None:
+                print(f"server exited with code {self.p.returncode}\nstderr:\n{''.join(self.err)}")
+                sys.exit(1)
+            try:
+                line = self.q.get(timeout=0.2)
+            except queue.Empty:
+                continue
+            try:
+                m = json.loads(line)
+            except json.JSONDecodeError:
+                print("non-JSON line from server:", line.rstrip())
+                continue
+            if m.get("id") == rid:
+                return m
+        print(f"TIMEOUT waiting for {method} after {timeout}s\nstderr:\n{''.join(self.err)}")
+        self.p.kill()
+        sys.exit(1)
+
+    def notify(self, method, params=None):
+        msg = {"jsonrpc": "2.0", "method": method}
+        if params is not None:
+            msg["params"] = params
+        self.stdin.write(json.dumps(msg) + "\n")
+        self.stdin.flush()
+
+    def close(self):
+        self.stdin.close()
+        try:
+            self.p.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            self.p.kill()
+        if self.err:
+            print("--- server stderr ---\n" + "".join(self.err).rstrip())
+
+
+def show_result(label, m):
+    if "error" in m:
+        print(f"{label} → JSON-RPC ERROR: {json.dumps(m['error'], indent=2)}")
+        return False
+    res = m["result"]
+    ok = not res.get("isError")
+    print(f"{label} → {'ok' if ok else 'TOOL ERROR'}")
+    for i, part in enumerate(res.get("content", [])):
+        if part.get("type") == "text":
+            print(part["text"])
+        elif part.get("type") == "image":
+            ext = "jpg" if "jpeg" in part.get("mimeType", "") else "png"
+            path = os.path.join(SHOTS, f"{int(time.time())}_{label.replace(' ', '_')}_{i}.{ext}")
+            with open(path, "wb") as f:
+                f.write(base64.b64decode(part["data"]))
+            print(f"[image {part.get('mimeType')} → {path} ({os.path.getsize(path) // 1024} KB)]")
+        else:
+            print(json.dumps(part)[:2000])
+    return ok
+
+
+def main():
+    if len(sys.argv) < 2:
+        print(__doc__)
+        sys.exit(2)
+    mode = sys.argv[1]
+    client = Client([binary_path()])
+    init = client.request("initialize", {"protocolVersion": "2025-06-18", "capabilities": {},
+                                         "clientInfo": {"name": "mcp-call", "version": "0"}})
+    print("initialize →", json.dumps(init.get("result", init), indent=2)[:1500])
+    client.notify("notifications/initialized")
+    ok = True
+    if mode == "tools":
+        m = client.request("tools/list", {})
+        for t in m["result"]["tools"]:
+            props = list(t.get("inputSchema", {}).get("properties", {}).keys())
+            print(f"- {t['name']}({', '.join(props)})\n    {t.get('description', '')}")
+    elif mode == "call":
+        name = sys.argv[2]
+        args = json.loads(sys.argv[3]) if len(sys.argv) > 3 else {}
+        ok = show_result(name, client.request("tools/call", {"name": name, "arguments": args}))
+    elif mode == "script":
+        with open(sys.argv[2]) as f:
+            calls = json.load(f)
+        for i, c in enumerate(calls, 1):
+            print(f"\n===== [{i}] {c['name']} {json.dumps(c.get('arguments', {}))}")
+            if not show_result(f"{i} {c['name']}", client.request("tools/call", {"name": c["name"], "arguments": c.get("arguments", {})})):
+                ok = False
+                break
+    else:
+        print(f"unknown mode {mode}")
+        ok = False
+    client.close()
+    sys.exit(0 if ok else 1)
+
+
+if __name__ == "__main__":
+    main()
