@@ -20,8 +20,7 @@ private func schema(_ props: [String: Value], required: [String] = []) -> Value 
 }
 
 private let appProp = prop("string", "Target app: display name (\"Blender\"), bundle id (\"org.blenderfoundation.blender\"), or .app path. Launched in the background if not running.")
-private let foregroundProp = prop("boolean", "Default false: for real mouse/keyboard events the app is activated only for the instant of the action and the user's previous app is restored (~150 ms). Set true to leave the app frontmost afterwards.")
-private let keepBackgroundProp = prop("boolean", "Default false. Set true to deliver events with postToPid without ever activating the app; works for Chromium/Electron apps, but AppKit/SwiftUI apps drop input when they have no key window.")
+private let foregroundProp = prop("boolean", "Default false — the app is NEVER activated and the user keeps their frontmost window, keyboard focus and mouse. Set true only for apps that ignore posted events (some games, custom GL/Metal canvases); this steals focus, so ask the user first.")
 private let thenStateProp = prop("boolean", "Default true: append the app's updated accessibility state (diff) to the result so you don't need a separate get_app_state call.")
 
 private let targetProps: [String: Value] = [
@@ -66,7 +65,7 @@ enum LeapTools {
                 "button": prop("string", "left (default), right, middle", enumValues: ["left", "right", "middle"]),
                 "click_count": prop("integer", "1 (default), 2 for double-click, 3 for triple."),
                 "modifiers": prop("string", "Modifier keys to hold, e.g. \"shift\" or \"cmd+alt\"."),
-                "foreground": foregroundProp, "keep_background": keepBackgroundProp, "then_state": thenStateProp,
+                "foreground": foregroundProp, "then_state": thenStateProp,
              ]) { a, _ in a }, required: ["app"])),
 
         Tool(name: "drag",
@@ -77,7 +76,7 @@ enum LeapTools {
                 "to_x": prop("number", ""), "to_y": prop("number", ""),
                 "steps": prop("integer", "Intermediate move events (default 12)."),
                 "modifiers": prop("string", "Modifier keys to hold during the drag."),
-                "foreground": foregroundProp, "keep_background": keepBackgroundProp, "then_state": thenStateProp,
+                "foreground": foregroundProp, "then_state": thenStateProp,
              ], required: ["app", "from_x", "from_y", "to_x", "to_y"])),
 
         Tool(name: "scroll",
@@ -87,7 +86,7 @@ enum LeapTools {
                 "direction": prop("string", "up, down, left, right", enumValues: ["up", "down", "left", "right"]),
                 "pages": prop("number", "Number of pages (default 1); a page is ~85% of the element/window extent."),
                 "pixels": prop("integer", "Exact distance in pixels; overrides pages."),
-                "foreground": foregroundProp, "keep_background": keepBackgroundProp, "then_state": thenStateProp,
+                "foreground": foregroundProp, "then_state": thenStateProp,
              ]) { a, _ in a }, required: ["app", "direction"])),
 
         Tool(name: "press_key",
@@ -95,7 +94,7 @@ enum LeapTools {
              inputSchema: schema([
                 "app": appProp,
                 "key": prop("string", "Key or +-separated chord."),
-                "foreground": foregroundProp, "keep_background": keepBackgroundProp, "then_state": thenStateProp,
+                "foreground": foregroundProp, "then_state": thenStateProp,
              ], required: ["app", "key"])),
 
         Tool(name: "type_text",
@@ -104,7 +103,7 @@ enum LeapTools {
                 "app": appProp,
                 "text": prop("string", "Text to type."),
                 "element_index": prop("integer", "Optional: focus this element before typing."),
-                "foreground": foregroundProp, "keep_background": keepBackgroundProp, "then_state": thenStateProp,
+                "foreground": foregroundProp, "then_state": thenStateProp,
              ], required: ["app", "text"])),
 
         Tool(name: "set_value",
@@ -131,7 +130,7 @@ enum LeapTools {
                 "app": appProp,
                 "text": prop("string", "Plain text."),
                 "html": prop("string", "Optional HTML representation."),
-                "foreground": foregroundProp, "keep_background": keepBackgroundProp, "then_state": thenStateProp,
+                "foreground": foregroundProp, "then_state": thenStateProp,
              ], required: ["app", "text"])),
 
         Tool(name: "activate",
@@ -213,24 +212,34 @@ enum LeapTools {
         case "batch":
             let app = try a.app()
             guard let actions = a.raw["actions"]?.arrayValue else { throw LeapError.unsupported("actions must be an array") }
+            // Hold focus for the whole batch: the app is activated at most once (lazily, only
+            // if some action needs synthesized events) and the user's app is restored once.
+            try await engine.beginInputSession(app: app, mode: Engine.InputMode(
+                foreground: a.bool("foreground") ?? false))
             var log: [String] = []
-            for (i, item) in actions.enumerated() {
-                guard var obj = item.objectValue, let tool = obj["tool"]?.stringValue else {
-                    throw LeapError.unsupported("actions[\(i)] needs a \"tool\" string")
+            do {
+                for (i, item) in actions.enumerated() {
+                    guard var obj = item.objectValue, let tool = obj["tool"]?.stringValue else {
+                        throw LeapError.unsupported("actions[\(i)] needs a \"tool\" string")
+                    }
+                    obj["app"] = .string(app)
+                    obj["then_state"] = .bool(false)
+                    let sub = Args(obj)
+                    if tool == "wait" {
+                        let secs = sub.double("seconds") ?? 1
+                        try await Task.sleep(nanoseconds: UInt64(max(0, min(secs, 30)) * 1_000_000_000))
+                        log.append("[\(i + 1)] waited \(secs)s")
+                        continue
+                    }
+                    guard Self.actionTools.contains(tool) else { throw LeapError.unsupported("actions[\(i)]: \"\(tool)\" is not a batchable action") }
+                    let r = try await performAction(tool, sub, engine)
+                    log.append("[\(i + 1)] \(tool): \(r)")
                 }
-                obj["app"] = .string(app)
-                obj["then_state"] = .bool(false)
-                let sub = Args(obj)
-                if tool == "wait" {
-                    let secs = sub.double("seconds") ?? 1
-                    try await Task.sleep(nanoseconds: UInt64(max(0, min(secs, 30)) * 1_000_000_000))
-                    log.append("[\(i + 1)] waited \(secs)s")
-                    continue
-                }
-                guard Self.actionTools.contains(tool) else { throw LeapError.unsupported("actions[\(i)]: \"\(tool)\" is not a batchable action") }
-                let r = try await performAction(tool, sub, engine)
-                log.append("[\(i + 1)] \(tool): \(r)")
+            } catch {
+                await engine.endInputSession()
+                throw error
             }
+            await engine.endInputSession()
             var text = "## Batch\n" + log.joined(separator: "\n")
             var shot: Screenshot?
             if a.bool("then_state") ?? true {
@@ -258,7 +267,7 @@ enum LeapTools {
     /// Executes one input action and returns a one-line description of what happened.
     static func performAction(_ name: String, _ a: Args, _ engine: Engine) async throws -> String {
         let app = try a.app()
-        let mode = Engine.InputMode(foreground: a.bool("foreground") ?? false, keepBackground: a.bool("keep_background") ?? false)
+        let mode = Engine.InputMode(foreground: a.bool("foreground") ?? false)
         switch name {
         case "click":
             let button = MouseButton(alias: a.string("button") ?? "left") ?? .left

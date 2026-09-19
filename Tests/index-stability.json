@@ -1,0 +1,19 @@
+[
+  {"name": "get_app_state", "arguments": {"app": "Gameday", "include_screenshot": false, "disable_diff": true}},
+  {"name": "@capture", "arguments": {"pattern": "\\[(\\d+)\\] TextField[^\\n]*Search plays", "var": "field"}},
+
+  {"name": "set_value", "arguments": {"app": "Gameday", "element_index": "$field", "value": "", "then_state": false}},
+
+  {"name": "set_value", "arguments": {"app": "Gameday", "element_index": "$field", "value": "OSCAR"}},
+  {"name": "@capture", "arguments": {"pattern": "\\[(\\d+)\\] TextField[^\\n]*value=\"OSCAR\"", "var": "afterSet"}},
+  {"name": "@expect", "arguments": {"var": "afterSet", "value": "$field"}},
+
+  {"name": "get_app_state", "arguments": {"app": "Gameday", "include_screenshot": false, "disable_diff": true}},
+  {"name": "@capture", "arguments": {"pattern": "\\[(\\d+)\\] TextField[^\\n]*Search plays", "var": "afterRead"}},
+  {"name": "@expect", "arguments": {"var": "afterRead", "value": "$field"}},
+
+  {"name": "set_value", "arguments": {"app": "Gameday", "element_index": "$field", "value": "", "then_state": false}},
+  {"name": "get_app_state", "arguments": {"app": "Gameday", "include_screenshot": false, "disable_diff": true}},
+  {"name": "@capture", "arguments": {"pattern": "\\[(\\d+)\\] TextField[^\\n]*Search plays", "var": "afterClear"}},
+  {"name": "@expect", "arguments": {"var": "afterClear", "value": "$field"}}
+]

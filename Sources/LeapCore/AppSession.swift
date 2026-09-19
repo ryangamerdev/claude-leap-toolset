@@ -49,11 +49,15 @@ public final class AppSession {
     /// Returns the full text and, when a previous render exists for the same window,
     /// a diff-only text.
     public func render(_ snap: AXWindowSnapshot, walker: AXWalker) -> (full: String, diff: String?) {
-        // A different window resets the index space so stale indices can't alias.
-        if lastWindow == nil || lastWindowTitle != snap.title || !CFEqual(lastWindow, snap.window) {
-            if lastWindow == nil || !CFEqual(lastWindow, snap.window) {
-                indexByKey.removeAll(); nextIndex = 1; lastLines.removeAll(); lastOrder.removeAll()
-            }
+        // Never renumber: `indexByKey` is keyed by a content-addressed AX path, so an index
+        // keeps pointing at the same element for the life of the session. AX hands back fresh
+        // AXUIElement objects (e.g. after the window moves), so element identity must not be
+        // allowed to reset the index space — that is what made indices shift under the caller.
+        // Only the diff baseline is dropped when we are looking at a different window.
+        let sameWindow = lastWindow != nil && CFEqual(lastWindow, snap.window) && lastWindowTitle == snap.title
+        if !sameWindow {
+            lastLines.removeAll()
+            lastOrder.removeAll()
         }
         lastWindow = snap.window
         lastWindowTitle = snap.title

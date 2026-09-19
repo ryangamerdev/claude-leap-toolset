@@ -9,12 +9,35 @@ on public APIs only:
 
 | Capability | How |
 |---|---|
-| Indexed accessibility tree with **stable element indices** and **diffs** between states | `AXUIElement` walk, per-window index registry, line diff |
-| Actions **without stealing focus** — the app you're working in stays frontmost | `CGEvent.postToPid`, AX `Press`/`SetValue` when available |
+| Indexed accessibility tree with **stable element indices** and **diffs** between states | `AXUIElement` walk, per-session index registry, line diff |
+| Actions that **never steal focus** and **never move your cursor** | AX `Press` / `SetSelectedText` / `SetValue` first, `CGEvent.postToPid` otherwise |
 | **Window-scoped screenshots** whose pixel coords equal window points | ScreenCaptureKit `SCScreenshotManager` |
 | **Batching** of predictable sequences into one call | `batch` tool; every action can also return the fresh state |
 | Background launch of the target app | `NSWorkspace.openApplication(activates: false)` |
 | xdotool-style key chords (`super+s`, `ctrl+shift+Tab`, `KP_0`) | `Keys.swift` |
+| **Visible activity indicator** — a virtual pointer + sonar ripple where the agent acts | `Overlay.swift`, a click-through `screenSaver`-level window |
+
+## Two properties that matter
+
+**You keep your computer.** No tool activates an app, takes keyboard focus, or moves the
+real cursor. Text goes in through the accessibility text system (which SwiftUI and AppKit
+bindings observe), buttons go through AX `Press`, and anything left over is posted straight
+to the target process. You can keep typing in your own window while the agent works in
+another app. `foreground: true` is an explicit opt-in for apps that ignore posted events;
+it interrupts you, so the agent is instructed to ask first.
+
+**You can see what it is doing.** Because the agent never borrows your cursor, it draws its
+own: a pointer glyph with a drop shadow that pulses slowly, plus a coloured ripple that
+expands and fades at each interaction (coral = click, teal = edit, blue = scroll, violet =
+drag). It is a click-through overlay at screen-saver window level, so it floats over
+everything, is never clickable, and never takes focus. `LEAP_OVERLAY=0` disables it.
+
+Verify it is really there without needing Screen Recording:
+
+```bash
+swiftc -O -o /tmp/check-overlay scripts/check-overlay.swift && /tmp/check-overlay
+# owner="claude-leap" layer=1000 alpha=1.0 bounds=0,0 1728x1117
+```
 
 ## Requirements
 
@@ -37,7 +60,13 @@ python3 scripts/build.py test                # unit tests
 python3 scripts/mcp-call.py tools            # talk to the server exactly like an agent
 python3 scripts/mcp-call.py call get_app_state '{"app":"Calculator"}'
 python3 scripts/mcp-call.py call batch '{"app":"Calculator","actions":[{"tool":"click","element_index":20},{"tool":"click","element_index":13},{"tool":"click","element_index":16},{"tool":"click","element_index":6}]}'
+python3 scripts/mcp-call.py script tests/index-stability.json   # multi-call test in ONE session
 ```
+
+`script` mode runs every call against a single server process, which is how Claude Code
+uses it — and the only way element indices are meaningful, since the registry lives in the
+server. `@capture` pulls a value out of the previous result (`$var` substitutes it into
+later calls) and `@expect` asserts on it, so tests do not hardcode indices.
 
 All scripts print full command output and exit codes; nothing is truncated.
 

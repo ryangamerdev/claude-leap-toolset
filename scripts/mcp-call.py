@@ -13,6 +13,7 @@ import base64
 import json
 import os
 import queue
+import re
 import subprocess
 import sys
 import threading
@@ -144,9 +145,52 @@ def main():
     elif mode == "script":
         with open(sys.argv[2]) as f:
             calls = json.load(f)
+        # All calls share ONE server session, which is how Claude Code runs it — element
+        # indices are only meaningful (and only stable) within a single session.
+        captured, last_text = {}, ""
+
+        def substitute(value):
+            if isinstance(value, str):
+                for k, v in captured.items():
+                    if value == "$" + k:
+                        return int(v) if v.lstrip("-").isdigit() else v
+                    value = value.replace("$" + k, v)
+                return value
+            if isinstance(value, dict):
+                return {k: substitute(v) for k, v in value.items()}
+            if isinstance(value, list):
+                return [substitute(v) for v in value]
+            return value
+
         for i, c in enumerate(calls, 1):
-            print(f"\n===== [{i}] {c['name']} {json.dumps(c.get('arguments', {}))}")
-            if not show_result(f"{i} {c['name']}", client.request("tools/call", {"name": c["name"], "arguments": c.get("arguments", {})})):
+            args = substitute(c.get("arguments", {}))
+            assert isinstance(args, dict), f"arguments for {c['name']} must be an object"
+            # {"name": "@capture", "arguments": {"pattern": "...", "var": "field"}} pulls a
+            # value out of the previous result so later calls can reference it as "$field".
+            if c["name"] == "@capture":
+                pattern, var = str(args["pattern"]), str(args["var"])
+                m = re.search(pattern, last_text)
+                if not m:
+                    print(f"@capture FAILED: /{pattern}/ not found in previous result")
+                    ok = False
+                    break
+                captured[var] = m.group(1)
+                print(f"@capture {var} = {m.group(1)!r}")
+                continue
+            if c["name"] == "@expect":
+                # Compare as text: substitution may have coerced "$var" to an int.
+                var, want = str(args["var"]), str(args["value"])
+                got = captured.get(var)
+                if got != want:
+                    print(f"@expect FAILED: {var} is {got!r}, expected {want!r}")
+                    ok = False
+                    break
+                print(f"@expect ok: {var} == {want!r}")
+                continue
+            print(f"\n===== [{i}] {c['name']} {json.dumps(args)}")
+            reply = client.request("tools/call", {"name": c["name"], "arguments": args})
+            last_text = "\n".join(p.get("text", "") for p in reply.get("result", {}).get("content", []))
+            if not show_result(f"{i} {c['name']}", reply):
                 ok = False
                 break
     else:

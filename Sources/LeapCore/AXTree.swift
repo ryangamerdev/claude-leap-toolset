@@ -148,6 +148,11 @@ public struct AXWalker {
 
     static let hiddenActions: Set<String> = ["AXPress", "AXScrollToVisible", "AXRaise"]
 
+    /// Roles where a synthesized click (which places the caret) beats the AX Press action.
+    static let textRoles: Set<String> = [
+        "AXTextField", "AXTextArea", "AXSearchField", "AXComboBox", "AXSecureTextField",
+    ]
+
     static let editableRoles: Set<String> = [
         "AXTextField", "AXTextArea", "AXSearchField", "AXComboBox", "AXCheckBox", "AXRadioButton",
         "AXSlider", "AXIncrementor", "AXPopUpButton", "AXColorWell", "AXDateField", "AXTimeField",

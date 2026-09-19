@@ -131,36 +131,75 @@ public actor Engine {
     }
 
     /// How synthesized input reaches the app.
+    ///
+    /// Background (`postToPid`) is the default and the app is *never* activated implicitly —
+    /// the user keeps their mouse, keyboard and frontmost window while the agent works.
+    /// Accessibility actions (press, set value, insert text, menu commands) are preferred over
+    /// synthesized events precisely because they always work from the background.
     public struct InputMode {
-        /// Activate the app and leave it frontmost afterwards.
+        /// Opt in to activating the app and using real HID events. Only needed for apps that
+        /// ignore posted events (some games, custom GL/Metal canvases).
         public var foreground = false
-        /// Deliver with `postToPid` without ever activating. Works for Chromium/Electron-style
-        /// apps; AppKit/SwiftUI drop events for apps without a key window.
-        public var keepBackground = false
-        public init(foreground: Bool = false, keepBackground: Bool = false) {
-            self.foreground = foreground; self.keepBackground = keepBackground
-        }
+        public init(foreground: Bool = false) { self.foreground = foreground }
     }
 
     /// Runs `body` with the app able to receive real input events. Unless the app is already
     /// frontmost (or `keepBackground` is set), it is activated for the duration of the call and
     /// the previously frontmost app is restored afterwards, so the user's focus survives.
+    /// An activation held across a sequence of actions (a `batch`), so the app is brought
+    /// forward at most once and the user's app is restored at most once.
+    final class FocusHold {
+        let session: AppSession
+        let mode: InputMode
+        /// nil until an action actually needs synthesized input; AX-only batches never activate.
+        var delivery: Delivery?
+        var restoreTo: NSRunningApplication?
+        init(session: AppSession, mode: InputMode) { self.session = session; self.mode = mode }
+    }
+
+    var hold: FocusHold?
+
+    /// Begin a held-focus sequence. Activation is lazy: a batch that only performs
+    /// accessibility actions still runs entirely in the background.
+    public func beginInputSession(app query: String, mode: InputMode = .init()) async throws {
+        let s = try await session(for: query)
+        hold = FocusHold(session: s, mode: mode)
+    }
+
+    /// End the sequence. Nothing to restore unless the caller asked for foreground input.
+    public func endInputSession() async {
+        hold = nil
+    }
+
+    /// Flash the on-screen indicator (virtual pointer + sonar ripple) at a screen point.
+    /// Purely cosmetic; never moves the user's real cursor.
+    func signal(_ point: CGPoint?, _ ping: Overlay.Ping) async {
+        guard let point else { return }
+        await MainActor.run { Overlay.shared.signal(at: point, ping: ping) }
+    }
+
+    /// Screen-point centre of an element index, for the indicator.
+    func indicatorPoint(_ s: AppSession, _ index: Int?) -> CGPoint? {
+        if let index, let rec = try? s.element(index), let f = rec.node.frame {
+            return CGPoint(x: f.midX, y: f.midY)
+        }
+        let w = s.lastWindowFrame
+        return w.isEmpty ? nil : CGPoint(x: w.midX, y: w.midY)
+    }
+
     func withInput<T>(_ s: AppSession, _ mode: InputMode, _ body: (Delivery) throws -> T) async throws -> T {
-        if mode.keepBackground { return try body(.app(s.pid)) }
-        if mode.foreground {
-            try await activate(s)
-            return try body(.system)
+        let wantsForeground = mode.foreground || (hold?.session.pid == s.pid && hold?.mode.foreground == true)
+        guard wantsForeground else {
+            // Background: events go straight to the process. The user's frontmost app,
+            // keyboard focus and real cursor are all untouched.
+            return try body(.app(s.pid))
         }
-        if s.app.isActive { return try body(.system) }
-        let previous = NSWorkspace.shared.frontmostApplication
+        if let hold, hold.session.pid == s.pid, hold.delivery != nil {
+            return try body(.system) // already activated for this batch
+        }
         try await activate(s)
-        let result = try body(.system)
-        // Let the HID queue drain into the target before handing focus back.
-        try await Task.sleep(nanoseconds: 120_000_000)
-        if let previous, previous.processIdentifier != s.pid, !previous.isTerminated {
-            Self.bringToFront(previous)
-        }
-        return result
+        hold?.delivery = .system
+        return try body(.system)
     }
 
     /// Activate the app and *verify* it became frontmost. Never returns normally while another
@@ -208,12 +247,19 @@ public actor Engine {
         let flags = try modifierFlags(modifiers)
         defer { s.lastActionAt = Date() }
         // Prefer the AX action: no synthesized events, no focus change, works for background apps.
+        // Text elements are excluded: AXPress does not place the caret, so a later ⌘A / type
+        // would act on the wrong first responder.
         if let rec, button == .left, count == 1, flags.isEmpty, target.x == nil, !mode.foreground,
+           !AXWalker.textRoles.contains(rec.node.role),
            rec.node.actions.contains(kAXPressAction) {
             let err = AXUIElementPerformAction(rec.node.element, kAXPressAction as CFString)
-            if err == .success { return "pressed [\(rec.index)] via accessibility" }
+            if err == .success {
+                await signal(p, .click)
+                return "pressed [\(rec.index)] via accessibility"
+            }
         }
         try await withInput(s, mode) { d in Input.click(at: p, button: button, count: count, flags: flags, d) }
+        await signal(p, .click)
         return "clicked \(button.rawValue)×\(count) at window (\(Int(p.x - s.lastWindowFrame.minX)),\(Int(p.y - s.lastWindowFrame.minY)))" + (rec.map { " on [\($0.index)]" } ?? "")
     }
 
@@ -227,6 +273,7 @@ public actor Engine {
         let flags = try modifierFlags(modifiers)
         defer { s.lastActionAt = Date() }
         try await withInput(s, mode) { d in Input.drag(from: a, to: b, flags: flags, steps: steps, d) }
+        await MainActor.run { Overlay.shared.signalDrag(from: a, to: b) }
         return "dragged"
     }
 
@@ -249,6 +296,7 @@ public actor Engine {
         default: throw LeapError.unsupported("direction must be up/down/left/right")
         }
         try await withInput(s, mode) { d in Input.scroll(at: p, dx: dx, dy: dy, d) }
+        await signal(p, .scroll)
         return "scrolled \(direction)"
     }
 
@@ -259,6 +307,7 @@ public actor Engine {
         let chord = try Keys.parse(key)
         defer { s.lastActionAt = Date() }
         try await withInput(s, mode) { d in Input.press(chord, d) }
+        await signal(indicatorPoint(s, nil), .edit)
         return "pressed \(key)"
     }
 
@@ -271,12 +320,14 @@ public actor Engine {
             let rec = try s.element(i)
             // Background-safe path: insert through the text system so bindings/notifications fire.
             if !mode.foreground, AX.insertText(rec.node.element, text, replaceAll: false) {
+                await signal(indicatorPoint(s, i), .edit)
                 return "inserted \(text.count) characters into [\(i)] via accessibility"
             }
             AXUIElementSetAttributeValue(rec.node.element, kAXFocusedAttribute as CFString, kCFBooleanTrue)
             usleep(80_000)
         }
         try await withInput(s, mode) { d in Input.type(text, d) }
+        await signal(indicatorPoint(s, elementIndex), .edit)
         return "typed \(text.count) characters"
     }
 
@@ -289,11 +340,15 @@ public actor Engine {
         // 1. Text elements: replace the selection through the text system (fires change notifications,
         //    so SwiftUI/AppKit bindings update — a raw kAXValue write often does not).
         if AX.insertText(rec.node.element, value, replaceAll: true) {
+            await signal(indicatorPoint(s, elementIndex), .edit)
             return "replaced text of [\(elementIndex)] via accessibility selection"
         }
         // 2. Generic settable value (sliders, checkboxes, steppers, non-text fields).
         let err = AXUIElementSetAttributeValue(rec.node.element, kAXValueAttribute as CFString, value as CFTypeRef)
-        if err == .success { return "set value of [\(elementIndex)]" }
+        if err == .success {
+            await signal(indicatorPoint(s, elementIndex), .edit)
+            return "set value of [\(elementIndex)]"
+        }
         // 3. Last resort: focus, select all, type real keystrokes.
         AXUIElementSetAttributeValue(rec.node.element, kAXFocusedAttribute as CFString, kCFBooleanTrue)
         usleep(80_000)
@@ -319,6 +374,7 @@ public actor Engine {
         defer { s.lastActionAt = Date() }
         let err = AXUIElementPerformAction(rec.node.element, name as CFString)
         guard err == .success else { throw LeapError.axFailure(name, err) }
+        await signal(indicatorPoint(s, elementIndex), .click)
         return "performed \(name) on [\(elementIndex)]"
     }
 
@@ -328,6 +384,7 @@ public actor Engine {
         try await ensureIndexed(s)
         defer { s.lastActionAt = Date() }
         try await withInput(s, mode) { d in Input.paste(text, html: html, d) }
+        await signal(indicatorPoint(s, nil), .edit)
         return "pasted \(text.count) characters"
     }
 
