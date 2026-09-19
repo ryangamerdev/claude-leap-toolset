@@ -19,8 +19,9 @@ The user keeps their computer
 Reading state
 - Lines look like: [42] Button "Save" @812,540 40x22 [settable] actions=ShowMenu. Coordinates are window-relative points; the screenshot is rendered 1 px per point unless scale is set.
 - Indices are stable for the life of the window. By default you get a diff (+ added, ~ changed, - removed); pass disable_diff=true for the full tree.
-- Prefer element_index over coordinates. Accessibility actions work from the background; synthesized clicks and keystrokes may not reach every app.
-- For text, prefer set_value (replaces the field's contents through the text system, which SwiftUI/AppKit bindings observe) over click+select-all+type.
+- Prefer element_index over coordinates. Everything works from the background: accessibility actions always, and keystrokes once the target element is focused — type_text with element_index focuses it for you; for press_key, focus the field first (set_value or type_text on it) unless the key is an app-level shortcut.
+- For replacing text, prefer set_value (goes through the text system, which SwiftUI/AppKit bindings observe). For appending or special keys, type_text/press_key.
+- If an action reports "The UI changed since the last state", the user (or the app) moved things: call get_app_state and use the fresh indices.
 - Fall back to coordinates and the screenshot when an app exposes poor accessibility (custom canvases such as Blender's viewport, games, web canvases).
 
 Safety
@@ -61,6 +62,10 @@ final class LeapAppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 }
+
+// Must run before anything touches TCC-protected APIs: re-execs this process as its own
+// responsible process so permissions are attributed to "claude-leap", not the parent.
+disclaimResponsibilityIfNeeded()
 
 let application = NSApplication.shared
 let leapDelegate = LeapAppDelegate()

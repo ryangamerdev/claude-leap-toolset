@@ -26,6 +26,13 @@ os.makedirs(SHOTS, exist_ok=True)
 
 
 def binary_path():
+    # LEAP_BIN overrides the build product, e.g. to exercise dist/claude-leap.app.
+    if os.environ.get("LEAP_BIN"):
+        path = os.path.expanduser(os.environ["LEAP_BIN"])
+        if not os.path.exists(path):
+            print(f"LEAP_BIN not found: {path}")
+            sys.exit(1)
+        return path
     env = dict(os.environ, TOOLCHAINS=TOOLCHAIN_ID)
     p = subprocess.run(["swift", "build", "--show-bin-path"], cwd=ROOT, env=env, capture_output=True, text=True)
     if p.returncode != 0:

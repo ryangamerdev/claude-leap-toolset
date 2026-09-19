@@ -70,22 +70,45 @@ later calls) and `@expect` asserts on it, so tests do not hardcode indices.
 
 All scripts print full command output and exit codes; nothing is truncated.
 
+## Build the app bundle (own permissions identity)
+
+```bash
+python3 scripts/bundle.py        # release build → dist/claude-leap.app, signed with your Developer ID
+```
+
+macOS attributes privacy permissions to the *responsible process*, which for a plain
+binary launched by Claude Code is Claude Code itself — so prompts say "claude" and the
+grant belongs to it. The bundle fixes that two ways: it has its own bundle id
+(`com.bridgetone.claude-leap`) and Developer ID signature, and on launch the binary
+re-execs itself with `responsibility_spawnattrs_setdisclaim` ([Disclaim.swift](Sources/claude-leap/Disclaim.swift))
+so TCC treats it as its own responsible process. `tccd` then logs
+`Sub:{com.bridgetone.claude-leap} Resp:{identifier=com.bridgetone.claude-leap}` and
+System Settings shows **claude-leap** under Accessibility and Screen Recording. Grant
+both once; the Developer ID signature keeps the grant valid across rebuilds.
+
+The bare `swift build` binary deliberately does *not* disclaim (it would end up under an
+unsigned identity with no grants), so dev runs keep using the grant given to Claude Code.
+
 ## Register with Claude Code
 
-Add to `~/.claude.json` (user scope) or `.mcp.json` in a project:
+```bash
+claude mcp add --scope user leap -- /Users/ryan/src/claude-leap/dist/claude-leap.app/Contents/MacOS/claude-leap
+```
+
+or in `~/.claude.json` / a project `.mcp.json`:
 
 ```json
 {
   "mcpServers": {
     "leap": {
-      "command": "/Users/ryan/src/claude-leap/.build/out/Products/Debug/claude-leap"
+      "command": "/Users/ryan/src/claude-leap/dist/claude-leap.app/Contents/MacOS/claude-leap"
     }
   }
 }
 ```
 
-`swift build --show-bin-path` (with `TOOLCHAINS=org.swift.640202609131a`) prints the
-directory if it moves.
+For development against the debug build, `LEAP_BIN=…/.build/out/Products/Debug/claude-leap`
+makes `scripts/mcp-call.py` use that binary instead.
 
 ## Tools
 
