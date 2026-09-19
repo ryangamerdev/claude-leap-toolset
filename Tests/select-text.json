@@ -1,0 +1,21 @@
+[
+  {"name": "get_app_state", "arguments": {"app": "Gameday", "include_screenshot": false, "disable_diff": true}},
+  {"name": "@capture", "arguments": {"pattern": "\\[(\\d+)\\] TextField[^\\n]*Search plays", "var": "field"}},
+  {"name": "set_value", "arguments": {"app": "Gameday", "element_index": "$field", "value": "SPEED SLIDE 13"}},
+
+  {"name": "select_text", "arguments": {"app": "Gameday", "element_index": "$field", "text": "SLIDE", "then_state": false}},
+  {"name": "@capture", "arguments": {"pattern": "(selected \"SLIDE\" in \\[\\d+\\] \\(characters 6–11\\))", "var": "sel"}},
+  {"name": "type_text", "arguments": {"app": "Gameday", "element_index": "$field", "text": "NIKE"}},
+  {"name": "@capture", "arguments": {"pattern": "\\[(\\d+)\\] TextField value=\"SPEED NIKE 13\"", "var": "after"}},
+  {"name": "@expect", "arguments": {"var": "after", "value": "$field"}},
+
+  {"name": "select_text", "arguments": {"app": "Gameday", "element_index": "$field", "text": "E", "then_state": false},
+   "expect_error": "occurs 3 times[^\\n]*add prefix/suffix"},
+  {"name": "select_text", "arguments": {"app": "Gameday", "element_index": "$field", "text": "13", "prefix": "NIKE ", "selection_type": "cursor_after", "then_state": false}},
+  {"name": "@capture", "arguments": {"pattern": "(placed the caret after \"13\")", "var": "caret"}},
+  {"name": "type_text", "arguments": {"app": "Gameday", "element_index": "$field", "text": " FALL"}},
+  {"name": "@capture", "arguments": {"pattern": "\\[(\\d+)\\] TextField value=\"SPEED NIKE 13 FALL\"", "var": "after2"}},
+  {"name": "@expect", "arguments": {"var": "after2", "value": "$field"}},
+
+  {"name": "set_value", "arguments": {"app": "Gameday", "element_index": "$field", "value": "", "then_state": false}}
+]

@@ -103,17 +103,39 @@ public actor Engine {
         return st
     }
 
+    /// Extra time allowed after an action while the tree is still changing (loading indicators,
+    /// list refreshes). Sky's runtime waits ~1 s plus up to 5 s more "if the app has a loading
+    /// indicator or other signs of state changes" (its plugin skill says so); we poll for stability.
+    public var maxSettleAfterAction: TimeInterval = 5.0
+
     public func state(session s: AppSession, _ opts: StateOptions = .init()) async throws -> State {
         try requireAX()
         try await settle(s)
         let window = try await waitForWindow(s)
-        guard let snap = walker.snapshot(window: window, app: s.axApp) else {
+        guard var snap = walker.snapshot(window: window, app: s.axApp) else {
             throw LeapError.axFailure("window frame", .cannotComplete)
+        }
+        // Settle until stable: two consecutive reads that agree, or the deadline.
+        let sinceAction = Date().timeIntervalSince(s.lastActionAt)
+        if sinceAction < maxSettleAfterAction {
+            let deadline = s.lastActionAt.addingTimeInterval(settleDelay + maxSettleAfterAction)
+            var previous = Self.fingerprint(snap)
+            while Date() < deadline {
+                try await Task.sleep(nanoseconds: 300_000_000)
+                guard let again = walker.snapshot(window: window, app: s.axApp) else { break }
+                let now = Self.fingerprint(again)
+                let busy = again.nodes.contains { $0.role == "AXProgressIndicator" || $0.role == "AXBusyIndicator" }
+                snap = again
+                if now == previous && !busy { break }
+                previous = now
+            }
         }
         let (full, diff) = s.render(snap, walker: walker, includeFrames: opts.includeFrames)
         s.relaunchedFrom = nil
         var text = (opts.disableDiff ? full : (diff ?? full))
-        let others = windows(s).filter { !CFEqual($0.0, snap.window) }.map { $0.1 }
+        // Tooltip-sized AXDialog popups (Simulator shows a 52x20 "Window") are not targets.
+        let others = windows(s).filter { !CFEqual($0.0, snap.window) }
+            .filter { (AX.frame($0.0).map { $0.width * $0.height } ?? 0) >= 4000 }.map { $0.1 }
         if !others.isEmpty {
             text += "\nOther windows of \(s.displayName): " + others.map { "\"\($0)\"" }.joined(separator: ", ") + " — target one with get_app_state(window: \"<title part>\")."
         }
@@ -135,6 +157,17 @@ public actor Engine {
             }
         }
         return State(text: text, screenshot: shot, warning: warning)
+    }
+
+    /// Cheap identity of a snapshot's visible content, for the stability poll.
+    static func fingerprint(_ snap: AXWindowSnapshot) -> Int {
+        var h = Hasher()
+        h.combine(snap.title ?? "")
+        for n in snap.nodes {
+            h.combine(n.key); h.combine(n.value ?? ""); h.combine(n.title ?? ""); h.combine(n.description ?? "")
+            h.combine(n.enabled); h.combine(n.selected); h.combine(n.focused)
+        }
+        return h.finalize()
     }
 
     func settle(_ s: AppSession) async throws {
@@ -499,6 +532,14 @@ public actor Engine {
                 await signal(indicatorPoint(s, i), .edit)
                 return "inserted \(text.count) characters into [\(i)] via accessibility"
             }
+            // iOS Simulator fields (and some others) expose no selection API, and a background
+            // Simulator ignores posted keystrokes — the recorded Codex session shows Sky's
+            // typeText silently typing nothing there while setValue worked every time. So
+            // append through the value attribute instead, and read it back before claiming success.
+            if !mode.foreground, rec.node.settable, let appended = AX.appendValue(rec.node.element, text, placeholder: rec.node.placeholder) {
+                await signal(indicatorPoint(s, i), .edit)
+                return "appended \(text.count) characters to [\(i)] via accessibility value (now \"\(appended.prefix(60))\")"
+            }
             AXUIElementSetAttributeValue(rec.node.element, kAXFocusedAttribute as CFString, kCFBooleanTrue)
             usleep(80_000)
         }
@@ -507,7 +548,7 @@ public actor Engine {
         return "typed \(text.count) characters"
     }
 
-    public func setValue(app query: String, elementIndex: Int, value: String) async throws -> String {
+    public func setValue(app query: String, elementIndex: Int, value: String, mode: InputMode = .init()) async throws -> String {
         try requireAX()
         let s = try await actionSession(query, needsElements: true)
         let rec = try s.element(elementIndex)
@@ -521,13 +562,22 @@ public actor Engine {
         // 2. Generic settable value (sliders, checkboxes, steppers, non-text fields).
         let err = AXUIElementSetAttributeValue(rec.node.element, kAXValueAttribute as CFString, value as CFTypeRef)
         if err == .success {
-            await signal(indicatorPoint(s, elementIndex), .edit)
-            return "set value of [\(elementIndex)]"
+            // Read back before claiming success: iOS Simulator fields answer success and keep
+            // the old text for some writes (an empty string, for one).
+            usleep(80_000)
+            let after: String = AX.attr(rec.node.element, kAXValueAttribute) ?? ""
+            if after == value || (value.isEmpty && after == rec.node.placeholder) {
+                await signal(indicatorPoint(s, elementIndex), .edit)
+                return "set value of [\(elementIndex)]"
+            }
+            if !mode.foreground && !s.app.isActive {
+                throw LeapError.unsupported("[\(elementIndex)] accepted the value write but still reads \"\(after.prefix(60))\" (wanted \"\(value.prefix(60))\"). Nothing else was tried because the app is in the background; try set_value with different text, or foreground=true.")
+            }
         }
         // 3. Last resort: focus, select all, type real keystrokes.
         AXUIElementSetAttributeValue(rec.node.element, kAXFocusedAttribute as CFString, kCFBooleanTrue)
         usleep(80_000)
-        try await withInput(s, .init()) { d in
+        try await withInput(s, mode) { d in
             Input.press(KeyChord(keyCode: 0, flags: .maskCommand), d) // ⌘A
             Input.type(value, d)
         }
@@ -559,6 +609,60 @@ public actor Engine {
         try await withInput(s, mode) { d in Input.paste(text, html: html, d) }
         await signal(indicatorPoint(s, nil), .edit)
         return "pasted \(text.count) characters"
+    }
+
+    public enum SelectionType: String { case text, cursorBefore = "cursor_before", cursorAfter = "cursor_after" }
+
+    /// Select `text` inside an editable element (or place the caret before/after it), through
+    /// the accessibility selected-text range — Sky's `select_text(prefix, suffix, selection_type)`.
+    public func selectText(app query: String, elementIndex: Int, text: String, prefix: String? = nil,
+                           suffix: String? = nil, selection: SelectionType = .text) async throws -> String {
+        try requireAX()
+        let s = try await actionSession(query, needsElements: true)
+        let rec = try s.element(elementIndex)
+        let el = rec.node.element
+        guard AX.isSettable(el, kAXSelectedTextRangeAttribute) else {
+            throw LeapError.unsupported("[\(elementIndex)] \(rec.node.role.dropFirst(2)) has no selectable text range; select_text needs a text field/area.")
+        }
+        let value: String = AX.attr(el, kAXValueAttribute) ?? ""
+        let needle = (prefix ?? "") + text + (suffix ?? "")
+        let hits = value.ranges(of: needle)
+        guard let hit = hits.first else {
+            throw LeapError.unsupported("\"\(needle)\" does not occur in [\(elementIndex)] (value is \"\(value.prefix(120))\").")
+        }
+        if hits.count > 1 {
+            throw LeapError.unsupported("\"\(needle)\" occurs \(hits.count) times in [\(elementIndex)]; add prefix/suffix to disambiguate.")
+        }
+        let utf16 = value.utf16
+        let start = utf16.distance(from: utf16.startIndex, to: hit.lowerBound.samePosition(in: utf16)!) + (prefix ?? "").utf16.count
+        let length = text.utf16.count
+        var range: CFRange
+        switch selection {
+        case .text: range = CFRange(location: start, length: length)
+        case .cursorBefore: range = CFRange(location: start, length: 0)
+        case .cursorAfter: range = CFRange(location: start + length, length: 0)
+        }
+        defer { s.lastActionAt = Date() }
+        AXUIElementSetAttributeValue(el, kAXFocusedAttribute as CFString, kCFBooleanTrue)
+        usleep(60_000)
+        guard let axRange = AXValueCreate(.cfRange, &range),
+              AXUIElementSetAttributeValue(el, kAXSelectedTextRangeAttribute as CFString, axRange) == .success else {
+            throw LeapError.axFailure("set selected text range", .cannotComplete)
+        }
+        // Verify.
+        var got = CFRange(location: -1, length: -1)
+        if let v: CFTypeRef = AX.attr(el, kAXSelectedTextRangeAttribute), CFGetTypeID(v) == AXValueGetTypeID() {
+            AXValueGetValue(v as! AXValue, .cfRange, &got)
+        }
+        guard got.location == range.location, got.length == range.length else {
+            throw LeapError.unsupported("[\(elementIndex)] accepted the selection but reports range \(got.location)+\(got.length) instead of \(range.location)+\(range.length).")
+        }
+        await signal(indicatorPoint(s, elementIndex), .edit)
+        switch selection {
+        case .text: return "selected \"\(text)\" in [\(elementIndex)] (characters \(start)–\(start + length))"
+        case .cursorBefore: return "placed the caret before \"\(text)\" in [\(elementIndex)]"
+        case .cursorAfter: return "placed the caret after \"\(text)\" in [\(elementIndex)]"
+        }
     }
 
     /// Resolve a human label (title / description / value / placeholder) to an element index

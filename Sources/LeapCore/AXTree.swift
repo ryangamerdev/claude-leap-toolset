@@ -122,8 +122,22 @@ enum AX {
         // the text is really there, so callers fall back to keystrokes otherwise.
         usleep(80_000)
         let after: String = attr(el, kAXValueAttribute) ?? ""
+        if replaceAll { return after == text } // an empty replacement must really clear the field
         let probeText = String(text.prefix(40))
-        return probeText.isEmpty || after.contains(probeText)
+        return after.contains(probeText)
+    }
+
+    /// Append `text` to a settable element's value (current + text) and verify by reading back.
+    /// A value equal to the placeholder counts as empty (iOS reports the placeholder as the value).
+    static func appendValue(_ el: AXUIElement, _ text: String, placeholder: String?) -> String? {
+        guard isSettable(el, kAXValueAttribute) else { return nil }
+        var current: String = attr(el, kAXValueAttribute) ?? ""
+        if let placeholder, current == placeholder { current = "" }
+        let wanted = current + text
+        guard AXUIElementSetAttributeValue(el, kAXValueAttribute as CFString, wanted as CFTypeRef) == .success else { return nil }
+        usleep(80_000)
+        let after: String = attr(el, kAXValueAttribute) ?? ""
+        return after == wanted ? after : nil
     }
 
     static func isSettable(_ el: AXUIElement, _ name: String) -> Bool {

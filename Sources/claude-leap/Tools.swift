@@ -123,6 +123,19 @@ enum LeapTools {
                 "then_state": thenStateProp,
              ], required: ["app", "value"])),
 
+        Tool(name: "select_text",
+             description: "Select matching text inside an editable element, or place the caret before/after it, via accessibility (no keystrokes). Use prefix/suffix to disambiguate repeated matches. Follow with type_text to replace the selection or insert at the caret.",
+             inputSchema: schema([
+                "app": appProp,
+                "element_index": prop("integer", "Editable element index."),
+                "label": labelProp,
+                "text": prop("string", "Text to select (exact, case-sensitive)."),
+                "prefix": prop("string", "Optional text that must immediately precede the match."),
+                "suffix": prop("string", "Optional text that must immediately follow the match."),
+                "selection_type": prop("string", "text (default): select the text; cursor_before / cursor_after: collapse the selection to a caret.", enumValues: ["text", "cursor_before", "cursor_after"]),
+                "then_state": thenStateProp,
+             ], required: ["app", "text"])),
+
         Tool(name: "perform_action",
              description: "Invoke a secondary accessibility action listed in the element's actions= field, e.g. ShowMenu, Increment, Decrement, Confirm, Cancel, Expand, Collapse, Raise.",
              inputSchema: schema([
@@ -283,7 +296,7 @@ enum LeapTools {
         }
     }
 
-    static let actionTools: Set<String> = ["click", "drag", "scroll", "press_key", "type_text", "set_value", "perform_action", "paste"]
+    static let actionTools: Set<String> = ["click", "drag", "scroll", "press_key", "type_text", "set_value", "select_text", "perform_action", "paste"]
 
     /// Executes one input action and returns a one-line description of what happened.
     static func performAction(_ name: String, _ argsIn: Args, _ engine: Engine) async throws -> String {
@@ -324,6 +337,11 @@ enum LeapTools {
         case "set_value":
             guard let i = a.int("element_index"), let v = a.string("value") else { throw LeapError.unsupported("set_value needs element_index (or label) and value") }
             return try await engine.setValue(app: app, elementIndex: i, value: v)
+        case "select_text":
+            guard let i = a.int("element_index"), let text = a.string("text") else { throw LeapError.unsupported("select_text needs element_index (or label) and text") }
+            let sel = Engine.SelectionType(rawValue: a.string("selection_type") ?? "text") ?? .text
+            return try await engine.selectText(app: app, elementIndex: i, text: text, prefix: a.string("prefix"),
+                                               suffix: a.string("suffix"), selection: sel)
         case "perform_action":
             guard let i = a.int("element_index"), let act = a.string("action") else { throw LeapError.unsupported("perform_action needs element_index (or label) and action") }
             return try await engine.performAction(app: app, elementIndex: i, action: act)

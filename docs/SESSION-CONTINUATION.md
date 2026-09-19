@@ -107,3 +107,9 @@ Chromium tree support, include_frames/ranges/footer, idle timeout.
 - ShareIndicator (SCStream on the controlled window) added so macOS's own screen-recording
   indicator shows during a session, like Sky. Test: `tests/share-indicator.json`. Bundle rebuilt;
   **restart the session again** to load it.
+- Read the Codex computer-use plugin skill (paths in SKY-BEHAVIOR.md §10). From it: adaptive settle,
+  `select_text` tool, confirmation policy in instructions, iOS `type_text`/`set_value` read-back
+  fixes (verified on the iPhone Simulator: tests/ios-type-text.json, tests/select-text.json).
+  Bundle rebuilt; **restart the session** to load `select_text` and the new instructions.
+- Remaining: tvOS focus keys with screenshot diff; long iOS lists vs node cap; `paste` md format;
+  singleton service; live thumbnail panel.

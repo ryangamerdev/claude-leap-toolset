@@ -1,0 +1,18 @@
+[
+  {"name": "get_app_state", "arguments": {"app": "Simulator", "window": "iPhone 16", "include_screenshot": false, "disable_diff": true}},
+  {"name": "@capture", "arguments": {"pattern": "\\[(\\d+)\\] TextField[^\\n]*Search plays", "var": "field"}},
+  {"name": "set_value", "arguments": {"app": "Simulator", "element_index": "$field", "value": "", "then_state": false}},
+
+  {"name": "type_text", "arguments": {"app": "Simulator", "element_index": "$field", "text": "SLIDE"}},
+  {"name": "@capture", "arguments": {"pattern": "(appended 5 characters to \\[\\d+\\] via accessibility value)", "var": "how"}},
+  {"name": "@capture", "arguments": {"pattern": "\\[(\\d+)\\] TextField value=\"SLIDE\"", "var": "after"}},
+  {"name": "@expect", "arguments": {"var": "after", "value": "$field"}},
+  {"name": "@capture", "arguments": {"pattern": "desc=\"(\\d+) matching plays\"", "var": "count"}},
+  {"name": "@expect", "arguments": {"var": "count", "value": "4"}},
+
+  {"name": "type_text", "arguments": {"app": "Simulator", "element_index": "$field", "text": " 13 FALL"}},
+  {"name": "@capture", "arguments": {"pattern": "\\[(\\d+)\\] TextField value=\"SLIDE 13 FALL\"", "var": "after2"}},
+  {"name": "@expect", "arguments": {"var": "after2", "value": "$field"}},
+
+  {"name": "set_value", "arguments": {"app": "Simulator", "element_index": "$field", "value": "", "then_state": false}}
+]
