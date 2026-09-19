@@ -43,11 +43,14 @@ public enum Capture {
         config.pixelFormat = kCVPixelFormatType_32BGRA
         config.ignoreShadowsSingleWindow = true
         if let region {
-            // Region is in window points; SCK sourceRect is in points of the content rect.
+            // Region is in window points; SCK sourceRect is in points of the content rect. Same
+            // transform as the full window: 1 px per point at scale 1, so crop pixels map back
+            // to window points with the same pointsPerPixel.
             config.sourceRect = region
-            config.width = max(1, Int((region.width * effective * pixelScale).rounded()))
-            config.height = max(1, Int((region.height * effective * pixelScale).rounded()))
+            config.width = max(1, Int((region.width * effective).rounded()))
+            config.height = max(1, Int((region.height * effective).rounded()))
         }
+        _ = pixelScale
         let image: CGImage
         do {
             image = try await SCScreenshotManager.captureImage(contentFilter: filter, configuration: config)

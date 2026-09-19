@@ -5,7 +5,11 @@ written in Swift that lets an agent read and operate any Mac app the way a scree
 does — through the accessibility tree — with screenshots as the fallback, not the default.
 
 It reproduces the architecture that makes ChatGPT Desktop's "Computer Use" effective,
-on public APIs only:
+on public frameworks (Accessibility, CoreGraphics events, ScreenCaptureKit) plus one
+private libsystem call, `responsibility_spawnattrs_setdisclaim`, looked up with `dlsym` at
+launch so the signed bundle owns its own TCC identity ("claude-leap" in System Settings).
+If the symbol is missing the server logs that and runs under the launching app's identity
+instead; nothing else depends on it.
 
 | Capability | How |
 |---|---|

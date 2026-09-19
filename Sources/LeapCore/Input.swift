@@ -159,9 +159,13 @@ public enum Input {
         item.setString(text, forType: .string)
         if let html { item.setString(html, forType: .html) }
         pb.writeObjects([item])
+        let ours = pb.changeCount
         usleep(50_000)
         press(KeyChord(keyCode: 9, flags: .maskCommand), delivery) // ⌘V
         usleep(350_000)
+        // Restore only if the pasteboard still holds *our* item: if the user copied something
+        // in the meantime, their copy wins and is left alone.
+        guard pb.changeCount == ours else { return }
         pb.clearContents()
         if !saved.isEmpty { pb.writeObjects(saved) }
     }

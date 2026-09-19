@@ -78,8 +78,20 @@ public struct AppInfo: Codable {
 public enum AppResolver {
     /// Resolve by display name, bundle identifier, process name, or .app path.
     /// Launches (without activating) when not running and `launch` is set.
+    /// Optional enforcement: `LEAP_ALLOWED_APPS="Gameday,com.apple.iphonesimulator,/path/X.app"`
+    /// restricts control to those apps (display name, bundle id or path, case-insensitive).
+    /// Tool descriptions guide the model; this is the actual control.
+    static func enforceAllowList(_ app: NSRunningApplication, query: String) throws {
+        guard let raw = ProcessInfo.processInfo.environment["LEAP_ALLOWED_APPS"], !raw.isEmpty else { return }
+        let allowed = Set(raw.split(separator: ",").map { normalized(String($0)) })
+        let idents = [app.localizedName, app.bundleIdentifier, app.bundleURL?.path].compactMap { $0 }.map(normalized)
+        guard idents.contains(where: { allowed.contains($0) }) else {
+            throw LeapError.permission("\"\(query)\" is not in LEAP_ALLOWED_APPS (\(raw)); refusing to control it.")
+        }
+    }
+
     public static func resolve(_ query: String, launch: Bool = true) async throws -> NSRunningApplication {
-        if let running = try findRunning(query) { return running }
+        if let running = try findRunning(query) { try enforceAllowList(running, query: query); return running }
         guard launch else { throw LeapError.appNotFound(query) }
         if !query.contains("/") {
             let copies = NSWorkspace.shared.urlsForApplications(withBundleIdentifier: query)
@@ -95,6 +107,7 @@ public enum AppResolver {
         } catch {
             throw LeapError.launchFailed(query, error.localizedDescription)
         }
+        try enforceAllowList(app, query: query)
         // Give the process a moment to register its AX server; callers poll for windows.
         try? await Task.sleep(nanoseconds: 400_000_000)
         return app

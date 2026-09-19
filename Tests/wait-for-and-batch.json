@@ -1,0 +1,27 @@
+[
+  {"name": "get_app_state", "arguments": {"app": "Gameday", "include_screenshot": false, "disable_diff": true}},
+  {"name": "@capture", "arguments": {"pattern": "(state #1)", "var": "gen"}},
+  {"name": "@capture", "arguments": {"pattern": "(Capabilities of Gameday)", "var": "caps"}},
+  {"name": "@capture", "arguments": {"pattern": "\\[(\\d+)\\] TextField[^\\n]*Search plays", "var": "field"}},
+  {"name": "set_value", "arguments": {"app": "Gameday", "element_index": "$field", "value": "", "then_state": false}},
+
+  {"name": "batch", "arguments": {"app": "Gameday", "then_state": false, "actions": [
+      {"tool": "set_value", "element_index": "$field", "value": "OSCAR"},
+      {"tool": "wait_for", "label": "4 matching plays", "timeout": 5},
+      {"tool": "click", "element_index": 999999}
+  ]}, "expect_error": "Batch stopped at step 3 of 3[\\s\\S]*Completed steps[\\s\\S]*\\[1\\] set_value[\\s\\S]*\\[2\\] wait_for: condition met"},
+
+  {"name": "wait_for", "arguments": {"app": "Gameday", "label": "no such label anywhere", "timeout": 1, "then_state": false},
+   "expect_error": "wait_for timed out after 1 s"},
+
+  {"name": "wait_for", "arguments": {"app": "Gameday", "label": "Search plays", "condition": "value_contains", "value": "OSC", "timeout": 3}},
+  {"name": "@capture", "arguments": {"pattern": "(condition met after \\d+ ms)", "var": "met"}},
+  {"name": "@capture", "arguments": {"pattern": "(since state #\\d+|Diff vs state #\\d+)", "var": "base"}},
+
+  {"name": "click", "arguments": {"app": "Gameday", "element_index": 999999}, "expect_error": "No element with index 999999"},
+  {"name": "drag", "arguments": {"app": "Gameday", "from_x": 10, "from_y": 10, "to_x": 12, "to_y": 12, "steps": 0, "then_state": false}},
+  {"name": "scroll", "arguments": {"app": "Gameday", "direction": "down", "pages": 1e300, "then_state": false}},
+  {"name": "click", "arguments": {"app": "Gameday", "x": 1e308, "y": -1e308, "click_count": 99, "then_state": false}},
+
+  {"name": "set_value", "arguments": {"app": "Gameday", "element_index": "$field", "value": "", "then_state": false}}
+]

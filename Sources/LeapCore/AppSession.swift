@@ -30,6 +30,13 @@ public final class AppSession {
     /// stale element_index from the old process can never land on a different element. Sky
     /// does the same ("The user changed '<app>'. Re-query the latest state...").
     public var relaunchedFrom: pid_t?
+    /// Snapshot counter: every rendered state gets an id and a diff names its baseline, so a
+    /// caller that lost or skipped an observation knows its diff is against something it never
+    /// saw and asks for the full tree (disable_diff=true).
+    public private(set) var generation = 0
+    /// Whether the last post-action settle ended because the tree stopped changing (true) or
+    /// because the deadline was hit (false); nil when no settle was needed.
+    public var lastSettleStable: Bool?
 
     public init(app: NSRunningApplication) {
         self.app = app
@@ -51,30 +58,55 @@ public final class AppSession {
 
     public var displayName: String { app.localizedName ?? app.bundleIdentifier ?? "pid \(pid)" }
 
+    /// The element behind an index, re-validated against the live UI.
+    ///
+    /// The UI may have changed under us (the user clicked something, a sheet opened, the app
+    /// navigated). SwiftUI and iOS reuse accessibility element objects for new content, and a
+    /// content-keyed index can be inherited by a look-alike sibling after a row disappears, so
+    /// identity alone is not enough: the live role, title/description and (for non-text roles)
+    /// value must still match what the model was shown. The returned record carries the
+    /// element's *current* frame, so coordinate delivery follows a moved window.
     public func element(_ index: Int) throws -> ElementRecord {
         guard let rec = elements[index] else { throw LeapError.noSuchElement(index) }
-        // The UI may have changed under us (the user clicked something, a sheet opened, the
-        // app navigated). Refuse to act on an element that is gone or has become something
-        // else, and tell the model to re-read state — acting on a stale index is how agents
-        // click the wrong thing.
-        let live = AX.attrs(rec.node.element, [kAXRoleAttribute, kAXPositionAttribute, kAXSizeAttribute])
+        let live = AX.attrs(rec.node.element, [kAXRoleAttribute, kAXPositionAttribute, kAXSizeAttribute,
+                                               kAXTitleAttribute, kAXDescriptionAttribute, kAXValueAttribute])
         guard let role = live[kAXRoleAttribute] as? String else {
             throw LeapError.staleElement(index, "it no longer exists")
         }
         if role != rec.node.role {
             throw LeapError.staleElement(index, "it is now a \(role.dropFirst(2)), was \(rec.node.role.dropFirst(2))")
         }
-        if let old = rec.node.frame, let p = AX.point(live[kAXPositionAttribute]), let s = AX.size(live[kAXSizeAttribute]) {
+        let title = AX.string(live[kAXTitleAttribute]), desc = AX.string(live[kAXDescriptionAttribute])
+        if title != rec.node.title || desc != rec.node.description {
+            let was = rec.node.title ?? rec.node.description ?? "", now = title ?? desc ?? ""
+            throw LeapError.staleElement(index, "it now reads \"\(now.prefix(60))\", was \"\(was.prefix(60))\"")
+        }
+        if !AXWalker.textRoles.contains(role), !AXWalker.editableRoles.contains(role),
+           let v = AX.string(live[kAXValueAttribute]), v != rec.node.value, rec.node.value != nil {
+            throw LeapError.staleElement(index, "its value is now \"\(v.prefix(60))\", was \"\(rec.node.value ?? "")\"")
+        }
+        var frame = rec.node.frame
+        if let p = AX.point(live[kAXPositionAttribute]), let s = AX.size(live[kAXSizeAttribute]) {
             let new = CGRect(origin: p, size: s)
             if new.width <= 0 || new.height <= 0 {
                 throw LeapError.staleElement(index, "it is no longer visible")
             }
-            // Position drift is normal (window moved); a size change means a relayout.
-            if abs(new.width - old.width) > 2 || abs(new.height - old.height) > 2 {
+            if let old = rec.node.frame, abs(new.width - old.width) > 2 || abs(new.height - old.height) > 2 {
                 throw LeapError.staleElement(index, "its size changed (\(Int(old.width))x\(Int(old.height)) → \(Int(new.width))x\(Int(new.height)))")
             }
+            frame = new
         }
-        return rec
+        if frame == rec.node.frame { return rec }
+        let n = rec.node
+        return ElementRecord(index: index, node: AXNode(element: n.element, role: n.role, subrole: n.subrole, title: n.title,
+            value: n.value, description: n.description, identifier: n.identifier, placeholder: n.placeholder, frame: frame,
+            enabled: n.enabled, focused: n.focused, selected: n.selected, actions: n.actions, settable: n.settable,
+            offscreen: n.offscreen, depth: n.depth, key: n.key))
+    }
+
+    /// Re-read the window's frame (it may have been moved since the last state).
+    public func refreshWindowFrame() {
+        if let w = lastWindow, let f = AX.frame(w) { lastWindowFrame = f }
     }
 
     func index(for key: String) -> Int {
@@ -103,6 +135,8 @@ public final class AppSession {
         lastWindowTitle = snap.title
         lastWindowFrame = snap.frame
 
+        let baseline = generation
+        generation += 1
         var lines: [Int: String] = [:]
         var order: [Int] = []
         var table: [Int: ElementRecord] = [:]
@@ -136,9 +170,9 @@ public final class AppSession {
             let unchanged = order.count - added.count - changed.count
             let churn = added.count + changed.count + removed.count
             if churn == 0 {
-                diff = header + "\n(no accessibility changes since the previous state; \(order.count) elements unchanged)\n" + footer
+                diff = header + "\n(no accessibility changes since state #\(baseline); \(order.count) elements unchanged)\n" + footer
             } else if churn * 10 < max(order.count, 1) * 7 { // < 70% churn → diff is worth it
-                var d = header + "\n## Diff vs previous state (\(unchanged) unchanged elements omitted; indices are stable)\n"
+                var d = header + "\n## Diff vs state #\(baseline) (\(unchanged) unchanged elements omitted; indices are stable; pass disable_diff=true if you did not see #\(baseline))\n"
                 for idx in order {
                     if added.contains(idx) { d += "+ [\(idx)] \(lines[idx]!)\n" }
                     else if changed.contains(idx) { d += "~ [\(idx)] \(lines[idx]!)\n" }
@@ -190,6 +224,10 @@ public final class AppSession {
         let f = snap.frame
         var h = "## \(session.displayName) — window \"\(snap.title ?? "")\" \(Int(f.width))x\(Int(f.height)) at screen (\(Int(f.minX)),\(Int(f.minY)))"
         h += session.app.isActive ? " [frontmost]" : " [background]"
+        h += " — state #\(session.generation)"
+        if let stable = session.lastSettleStable {
+            h += stable ? " (settled)" : " (settle deadline reached: the UI was still changing — verify before acting)"
+        }
         if session.relaunchedFrom != nil { h += " [new process since the previous state; indices restart]" }
         h += "\nIndices are stable; act with element_index or label. Screenshot pixels are window points at scale=1; pass include_frames=true for per-element coordinates."
         return h

@@ -100,31 +100,55 @@ enum AX {
         return arr
     }
 
+    enum InsertOutcome {
+        case verified          // the field now holds exactly the expected result
+        case unchanged         // nothing happened; a fallback may try
+        case uncertain(String) // the field changed, but not into the expected result: do NOT retry
+        case notText           // element has no text API
+    }
+
     /// Insert `text` at the element's selection (or replace all of its text) through the
-    /// accessibility text API. Returns false when the element is not a text element.
-    static func insertText(_ el: AXUIElement, _ text: String, replaceAll: Bool) -> Bool {
-        // Only text elements expose a selection; skip everything else quickly.
+    /// accessibility text API, and verify the *edit* — not merely that the text occurs.
+    ///
+    /// The expected result is computed from the value and selection read beforehand: for a
+    /// replace-all it is `text`; for an insert it is the old value with the selected range
+    /// replaced by `text`. If the write reports success but the field still holds the old
+    /// value the outcome is `.unchanged`; if it holds something else the outcome is
+    /// `.uncertain`, and callers must not fall through to another method (that is how text
+    /// gets duplicated). Chromium/Electron editors answer success and ignore the write, which
+    /// is why the return code alone is never trusted.
+    static func insertText(_ el: AXUIElement, _ text: String, replaceAll: Bool) -> InsertOutcome {
         let probe: CFTypeRef? = attr(el, kAXSelectedTextRangeAttribute)
-        guard probe != nil || isSettable(el, kAXSelectedTextAttribute) else { return false }
+        guard probe != nil || isSettable(el, kAXSelectedTextAttribute) else { return .notText }
         // Many fields (SwiftUI especially) only accept selection edits while focused.
         AXUIElementSetAttributeValue(el, kAXFocusedAttribute as CFString, kCFBooleanTrue)
         usleep(60_000)
+        let before: String = attr(el, kAXValueAttribute) ?? ""
+        var selection = CFRange(location: before.utf16.count, length: 0)
+        if let v: CFTypeRef = attr(el, kAXSelectedTextRangeAttribute), CFGetTypeID(v) == AXValueGetTypeID() {
+            AXValueGetValue(v as! AXValue, .cfRange, &selection)
+        }
         if replaceAll {
-            let count: Int = attr(el, kAXNumberOfCharactersAttribute) ?? (attr(el, kAXValueAttribute) as String?)?.count ?? 0
-            var range = CFRange(location: 0, length: count)
+            var range = CFRange(location: 0, length: before.utf16.count)
             if let axRange = AXValueCreate(.cfRange, &range) {
                 AXUIElementSetAttributeValue(el, kAXSelectedTextRangeAttribute as CFString, axRange)
             }
         }
-        guard AXUIElementSetAttributeValue(el, kAXSelectedTextAttribute as CFString, text as CFTypeRef) == .success else { return false }
-        // Don't trust the return code: Chromium/Electron editors (ChatGPT's composer) answer
-        // success and then ignore the write. Read the value back and only claim success when
-        // the text is really there, so callers fall back to keystrokes otherwise.
+        let expected: String
+        if replaceAll {
+            expected = text
+        } else {
+            let u = Array(before.utf16)
+            let lo = max(0, min(selection.location, u.count))
+            let hi = max(lo, min(selection.location + selection.length, u.count))
+            expected = String(utf16CodeUnits: Array(u[..<lo]), count: lo) + text + String(utf16CodeUnits: Array(u[hi...]), count: u.count - hi)
+        }
+        let status = AXUIElementSetAttributeValue(el, kAXSelectedTextAttribute as CFString, text as CFTypeRef)
         usleep(80_000)
         let after: String = attr(el, kAXValueAttribute) ?? ""
-        if replaceAll { return after == text } // an empty replacement must really clear the field
-        let probeText = String(text.prefix(40))
-        return after.contains(probeText)
+        if after == expected && (status == .success || after != before) { return .verified }
+        if after == before { return .unchanged }
+        return .uncertain("the field now reads \"\(after.prefix(80))\" (expected \"\(expected.prefix(80))\")")
     }
 
     /// Append `text` to a settable element's value (current + text) and verify by reading back.
@@ -271,7 +295,8 @@ public struct AXWalker {
         let role = (a[kAXRoleAttribute] as? String) ?? "AXUnknown"
         let subrole = a[kAXSubroleAttribute] as? String
         let title = AX.string(a[kAXTitleAttribute])
-        let value = AX.string(a[kAXValueAttribute])
+        // Never surface what is typed into a password field.
+        let value = role == "AXSecureTextField" ? (AX.string(a[kAXValueAttribute]) == nil ? nil : "••••••") : AX.string(a[kAXValueAttribute])
         let description = AX.string(a[kAXDescriptionAttribute])
         let identifier = AX.usefulIdentifier(AX.string(a[kAXIdentifierAttribute], limit: 200))
         let placeholder = AX.string(a[kAXPlaceholderValueAttribute])

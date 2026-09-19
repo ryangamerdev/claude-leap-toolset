@@ -117,3 +117,8 @@ Chromium tree support, include_frames/ranges/footer, idle timeout.
   (registers `leap`, symlinks the skill to ~/.claude/skills). Server instructions shortened to
   ~1.6 KB because Claude Code truncates them. Installed on this machine; **restart the session**
   to see the `claude-leap` skill in the skills list and the new instructions.
+- Two Astra peer reviews received and answered: see `docs/REVIEW-2026-09-18-astra.md` (each
+  finding verified, fixed or marked open). New: `wait_for` tool, snapshot ids, capability line,
+  serialized tool calls, honest partial-success reporting, verified/dispatched wording, numeric
+  clamps, clipboard change-count guard, allow-list, secure-field redaction. Tests:
+  `tests/wait-for-and-batch.json`. Open items listed at the end of the review doc.

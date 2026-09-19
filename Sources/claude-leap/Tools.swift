@@ -136,6 +136,17 @@ enum LeapTools {
                 "then_state": thenStateProp,
              ], required: ["app", "text"])),
 
+        Tool(name: "wait_for",
+             description: "Wait (bounded) until a labelled element appears, disappears, becomes enabled/disabled, or its value contains text. Use after actions that finish asynchronously (network results, saves that close a dialog) instead of assuming the settled tree is the final one. Fails on timeout so a batch stops.",
+             inputSchema: schema([
+                "app": appProp,
+                "label": prop("string", "Visible title/description/value of the element (exact match preferred, substring fallback)."),
+                "condition": prop("string", "appears (default), disappears, enabled, disabled, value_contains", enumValues: ["appears", "disappears", "enabled", "disabled", "value_contains"]),
+                "value": prop("string", "For value_contains: the text the element's value must contain."),
+                "timeout": prop("number", "Seconds to wait, default 10, max 60."),
+                "then_state": thenStateProp,
+             ], required: ["app", "label"])),
+
         Tool(name: "perform_action",
              description: "Invoke a secondary accessibility action listed in the element's actions= field, e.g. ShowMenu, Increment, Decrement, Confirm, Cancel, Expand, Collapse, Raise.",
              inputSchema: schema([
@@ -160,7 +171,7 @@ enum LeapTools {
              inputSchema: schema(["app": appProp], required: ["app"])),
 
         Tool(name: "batch",
-             description: "Run several actions on one app in a single call, then return the updated state. Each action is {\"tool\": \"click\"|\"drag\"|\"scroll\"|\"press_key\"|\"type_text\"|\"set_value\"|\"perform_action\"|\"paste\"|\"wait\", ...args}. Stops at the first error. Use this whenever you can predict a sequence (click field → type → Return).",
+             description: "Run several actions on one app in a single call, then return the updated state. Each action is {\"tool\": \"click\"|\"drag\"|\"scroll\"|\"press_key\"|\"type_text\"|\"set_value\"|\"select_text\"|\"perform_action\"|\"paste\"|\"wait_for\"|\"wait\", ...args}. Stops at the first error and reports which steps were already applied. Use this whenever you can predict a sequence (click field → type → Return → wait_for the result).",
              inputSchema: schema([
                 "app": appProp,
                 "actions": .object([
@@ -184,7 +195,10 @@ enum LeapTools {
         Inactivity.touch()
         let args = Args(params.arguments ?? [:])
         do {
-            return try await dispatch(params.name, args, engine)
+            // One tool call — action plus its follow-up state, or a whole batch — runs to
+            // completion before the next starts, even if the client issues calls in parallel.
+            let name = params.name
+            return try await engine.serialized { try await dispatch(name, args, engine) }
         } catch {
             return .init(content: [.text(text: "Error: \(error)", annotations: nil, _meta: nil)], isError: true)
         }
@@ -230,9 +244,11 @@ enum LeapTools {
             if let x = a.double("x"), let y = a.double("y"), let w = a.double("width"), let h = a.double("height") {
                 region = CGRect(x: x, y: y, width: w, height: h)
             }
-            let shot = try await engine.screenshot(app: try a.app(), region: region, scale: a.double("scale") ?? 1.0)
+            let savePath = a.string("save_path").flatMap { $0.isEmpty ? nil : $0 }
+            let wantsPNG = savePath?.lowercased().hasSuffix(".png") ?? false
+            let shot = try await engine.screenshot(app: try a.app(), region: region, scale: a.double("scale") ?? 1.0, png: wantsPNG)
             var saved = ""
-            if let path = a.string("save_path"), !path.isEmpty {
+            if let path = savePath {
                 let url = URL(fileURLWithPath: (path as NSString).expandingTildeInPath)
                 try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
                 try shot.data.write(to: url)
@@ -246,6 +262,7 @@ enum LeapTools {
         case "batch":
             let app = try a.app()
             guard let actions = a.raw["actions"]?.arrayValue else { throw LeapError.unsupported("actions must be an array") }
+            guard actions.count <= 50 else { throw LeapError.unsupported("batch is limited to 50 actions (got \(actions.count))") }
             // Hold focus for the whole batch: the app is activated at most once (lazily, only
             // if some action needs synthesized events) and the user's app is restored once.
             try await engine.beginInputSession(app: app, mode: Engine.InputMode(
@@ -271,17 +288,23 @@ enum LeapTools {
                 }
             } catch {
                 await engine.endInputSession()
-                throw error
+                // The steps that ran did run. Report them so the caller never re-sends them.
+                let done = log.isEmpty ? "(none)" : log.joined(separator: "\n")
+                throw LeapError.unsupported("Batch stopped at step \(log.count + 1) of \(actions.count): \(error)\nCompleted steps (already applied — do not repeat them):\n\(done)")
             }
             await engine.endInputSession()
-            var text = "## Batch\n" + log.joined(separator: "\n")
+            var text = "## Batch (all \(log.count) steps applied)\n" + log.joined(separator: "\n")
             var shot: Screenshot?
             if a.bool("then_state") ?? true {
                 var opts = Engine.StateOptions()
                 opts.includeScreenshot = a.bool("include_screenshot") ?? false
-                let st = try await engine.state(app: app, opts)
-                text += "\n\n" + st.text
-                shot = st.screenshot
+                do {
+                    let st = try await engine.state(app: app, opts)
+                    text += "\n\n" + st.text
+                    shot = st.screenshot
+                } catch {
+                    text += "\n\n(state unavailable after the batch: \(error) — the actions above were applied; call get_app_state)"
+                }
             }
             return result(text: text, shot: shot)
 
@@ -291,19 +314,25 @@ enum LeapTools {
             guard a.bool("then_state") ?? true else { return message.result }
             var opts = Engine.StateOptions()
             opts.includeScreenshot = false
-            let st = try await engine.state(app: try a.app(), opts)
-            return result(text: message + "\n\n" + st.text, shot: nil)
+            // The action is done; a failed *observation* (Save closed the window, the app quit)
+            // must not be reported as a failed action, or the caller will retry it.
+            do {
+                let st = try await engine.state(app: try a.app(), opts)
+                return result(text: message + "\n\n" + st.text, shot: nil)
+            } catch {
+                return result(text: message + "\n\n(action applied; state unavailable afterwards: \(error) — call get_app_state)", shot: nil)
+            }
         }
     }
 
-    static let actionTools: Set<String> = ["click", "drag", "scroll", "press_key", "type_text", "set_value", "select_text", "perform_action", "paste"]
+    static let actionTools: Set<String> = ["click", "drag", "scroll", "press_key", "type_text", "set_value", "select_text", "perform_action", "paste", "wait_for"]
 
     /// Executes one input action and returns a one-line description of what happened.
     static func performAction(_ name: String, _ argsIn: Args, _ engine: Engine) async throws -> String {
         let app = try argsIn.app()
         // `label` is sugar for element_index: resolve it once here so every action supports it.
         var a = argsIn
-        if a.int("element_index") == nil, let label = a.string("label"), !label.isEmpty {
+        if name != "wait_for", a.int("element_index") == nil, let label = a.string("label"), !label.isEmpty {
             var raw = a.raw
             raw["element_index"] = .int(try await engine.findElement(app: app, label: label))
             a = Args(raw)
@@ -313,7 +342,7 @@ enum LeapTools {
         case "click":
             let button = MouseButton(alias: a.string("button") ?? "left") ?? .left
             return try await engine.click(app: app, target: a.target(), button: button,
-                                          count: a.int("click_count") ?? 1, modifiers: a.string("modifiers"), mode: mode)
+                                          count: max(1, min(a.int("click_count") ?? 1, 3)), modifiers: a.string("modifiers"), mode: mode)
         case "drag":
             guard let fx = a.double("from_x"), let fy = a.double("from_y"), let tx = a.double("to_x"), let ty = a.double("to_y") else {
                 throw LeapError.unsupported("drag needs from_x, from_y, to_x, to_y")
@@ -337,6 +366,13 @@ enum LeapTools {
         case "set_value":
             guard let i = a.int("element_index"), let v = a.string("value") else { throw LeapError.unsupported("set_value needs element_index (or label) and value") }
             return try await engine.setValue(app: app, elementIndex: i, value: v)
+        case "wait_for":
+            guard let label = a.string("label") else { throw LeapError.unsupported("wait_for needs label") }
+            guard let cond = Engine.WaitCondition(rawValue: a.string("condition") ?? "appears") else {
+                throw LeapError.unsupported("condition must be appears, disappears, enabled, disabled or value_contains")
+            }
+            return try await engine.waitFor(app: app, label: label, condition: cond, value: a.string("value"),
+                                            timeout: a.double("timeout") ?? 10)
         case "select_text":
             guard let i = a.int("element_index"), let text = a.string("text") else { throw LeapError.unsupported("select_text needs element_index (or label) and text") }
             let sel = Engine.SelectionType(rawValue: a.string("selection_type") ?? "text") ?? .text
@@ -378,14 +414,16 @@ struct Args {
 
     func string(_ k: String) -> String? { raw[k]?.stringValue }
     func bool(_ k: String) -> Bool? { raw[k]?.boolValue }
+    /// Numbers are bounded and finite before conversion: `Int(Double.nan)` and oversized
+    /// values trap, which would take the whole server down on one malformed argument.
     func int(_ k: String) -> Int? {
-        if let i = raw[k]?.intValue { return i }
-        if let d = raw[k]?.doubleValue { return Int(d) }
+        if let i = raw[k]?.intValue { return max(-1_000_000, min(1_000_000, i)) }
+        if let d = raw[k]?.doubleValue, d.isFinite { return Int(max(-1_000_000, min(1_000_000, d.rounded()))) }
         return nil
     }
     func double(_ k: String) -> Double? {
-        if let d = raw[k]?.doubleValue { return d }
-        if let i = raw[k]?.intValue { return Double(i) }
+        if let d = raw[k]?.doubleValue, d.isFinite { return max(-1_000_000, min(1_000_000, d)) }
+        if let i = raw[k]?.intValue { return Double(max(-1_000_000, min(1_000_000, i))) }
         return nil
     }
     func app() throws -> String {

@@ -11,6 +11,24 @@ public actor Engine {
 
     public init() {}
 
+    // MARK: - Exclusive operations
+
+    /// Tail of the operation chain. Swift actors interleave work at `await`s, so one tool
+    /// call (action + follow-up state, or a whole batch) is not exclusive by itself; a client
+    /// issuing parallel tool calls could interleave clicks or clobber a batch's focus hold.
+    /// `serialized` runs bodies strictly one after another.
+    private var chain: Task<Void, Never> = Task {}
+
+    public func serialized<T: Sendable>(_ body: @Sendable @escaping () async throws -> T) async throws -> T {
+        let previous = chain
+        let task = Task<T, Error> {
+            _ = await previous.value
+            return try await body()
+        }
+        chain = Task { _ = try? await task.value }
+        return try await task.value
+    }
+
     // MARK: - Sessions
 
     /// bundle path → pid of the session we last handed out for that app, so a relaunch
@@ -63,7 +81,12 @@ public actor Engine {
         while true {
             if let pin = s.pinnedWindow {
                 let all = windows(s)
-                if let hit = all.first(where: { $0.1.localizedCaseInsensitiveContains(pin) }) { return hit.0 }
+                let hits = all.filter { $0.1.localizedCaseInsensitiveContains(pin) }
+                if hits.count == 1 { return hits[0].0 }
+                if hits.count > 1 {
+                    if let exact = hits.first(where: { $0.1.caseInsensitiveCompare(pin) == .orderedSame }) { return exact.0 }
+                    throw LeapError.unsupported("window \"\(pin)\" is ambiguous in \(s.displayName): " + hits.map { "\"\($0.1)\"" }.joined(separator: ", ") + ". Pass a longer title substring.")
+                }
                 if Date() > deadline {
                     throw LeapError.unsupported("\(s.displayName) has no window matching \"\(pin)\". Windows: " + all.map { "\"\($0.1)\"" }.joined(separator: ", "))
                 }
@@ -115,24 +138,30 @@ public actor Engine {
         guard var snap = walker.snapshot(window: window, app: s.axApp) else {
             throw LeapError.axFailure("window frame", .cannotComplete)
         }
-        // Settle until stable: two consecutive reads that agree, or the deadline.
+        // Settle until stable: two consecutive reads that agree, or the deadline. "Stopped
+        // changing" is not "finished" (a network result can land later), so the outcome is
+        // reported in the header and wait_for exists for explicit conditions.
         let sinceAction = Date().timeIntervalSince(s.lastActionAt)
+        s.lastSettleStable = nil
         if sinceAction < maxSettleAfterAction {
             let deadline = s.lastActionAt.addingTimeInterval(settleDelay + maxSettleAfterAction)
             var previous = Self.fingerprint(snap)
+            var stable = false
             while Date() < deadline {
                 try await Task.sleep(nanoseconds: 300_000_000)
                 guard let again = walker.snapshot(window: window, app: s.axApp) else { break }
                 let now = Self.fingerprint(again)
                 let busy = again.nodes.contains { $0.role == "AXProgressIndicator" || $0.role == "AXBusyIndicator" }
                 snap = again
-                if now == previous && !busy { break }
+                if now == previous && !busy { stable = true; break }
                 previous = now
             }
+            s.lastSettleStable = stable
         }
         let (full, diff) = s.render(snap, walker: walker, includeFrames: opts.includeFrames)
         s.relaunchedFrom = nil
         var text = (opts.disableDiff ? full : (diff ?? full))
+        if s.generation == 1 { text += "\n" + Self.capabilities(s) }
         // Tooltip-sized AXDialog popups (Simulator shows a 52x20 "Window") are not targets.
         let others = windows(s).filter { !CFEqual($0.0, snap.window) }
             .filter { (AX.frame($0.0).map { $0.width * $0.height } ?? 0) >= 4000 }.map { $0.1 }
@@ -142,8 +171,10 @@ public actor Engine {
         var shot: Screenshot?
         var warning: String?
         let info = WindowInfo.match(pid: s.pid, frame: snap.frame, title: snap.title)
-        if let info { await ShareIndicator.shared.hold(info.id) }
         if opts.includeScreenshot {
+            // Visual observation: this is when the window is being captured, so this is when
+            // macOS's capture indicator should say so. Accessibility-only reads start no capture.
+            if let info { await ShareIndicator.shared.hold(info.id) }
             if let info {
                 do {
                     shot = try await Capture.window(info, scale: opts.scale, jpegQuality: opts.jpegQuality)
@@ -168,6 +199,22 @@ public actor Engine {
             h.combine(n.enabled); h.combine(n.selected); h.combine(n.focused)
         }
         return h.finalize()
+    }
+
+    /// What works for this target, stated once per session (first state) — the model should
+    /// not have to discover by failing that a background Simulator ignores keystrokes.
+    static func capabilities(_ s: AppSession) -> String {
+        let bundle = s.app.bundleIdentifier ?? ""
+        var caps = ["Capabilities of \(s.displayName): accessibility actions and value/selection edits: yes (verified by read-back);",
+                    "coordinate clicks/drags/scrolls: posted to the process, not verified;"]
+        if bundle == "com.apple.iphonesimulator" {
+            caps.append("background keystrokes: NOT delivered to a Simulator window (use set_value / type_text with element_index, which go through accessibility); tvOS device windows expose no app tree (screenshots + press_key with foreground=true).")
+        } else if bundle.contains("electron") || bundle.hasPrefix("com.openai.chat") || bundle.hasPrefix("com.microsoft.VSCode") || bundle.hasPrefix("com.google.Chrome") || bundle.hasPrefix("com.microsoft.edgemac") {
+            caps.append("background keystrokes: Chromium/Electron apps often ignore them; prefer accessibility edits or a browser tool.")
+        } else {
+            caps.append("background keystrokes: delivered to the key window once an element is focused; ⌘-chords go through menu items.")
+        }
+        return caps.joined(separator: " ")
     }
 
     func settle(_ s: AppSession) async throws {
@@ -210,6 +257,7 @@ public actor Engine {
             return (p, rec)
         }
         guard let x = t.x, let y = t.y else { throw LeapError.unsupported("provide element_index or both x and y") }
+        s.refreshWindowFrame() // the window may have moved since the state the caller read
         let wf = s.lastWindowFrame
         return (CGPoint(x: wf.minX + x, y: wf.minY + y), nil)
     }
@@ -250,7 +298,9 @@ public actor Engine {
         hold = FocusHold(session: s, mode: mode)
     }
 
-    /// End the sequence. Nothing to restore unless the caller asked for foreground input.
+    /// End the sequence. Foreground mode does not re-activate the user's previous app: macOS 14
+    /// ignores activation requests from a non-frontmost process, so a "restore" would be a
+    /// no-op that lies. The user gets their app back by clicking it; the tool description says so.
     public func endInputSession() async {
         hold = nil
     }
@@ -269,6 +319,24 @@ public actor Engine {
         }
         let w = s.lastWindowFrame
         return w.isEmpty ? nil : CGPoint(x: w.midX, y: w.midY)
+    }
+
+    /// Keyboard events posted to a process land in its key window. When the caller pinned a
+    /// window that is not the key one (two Simulator devices, two documents), make it key via
+    /// accessibility — this does not activate the app — and verify; otherwise refuse rather
+    /// than type into the wrong window.
+    func ensureKeyWindow(_ s: AppSession) throws {
+        guard s.pinnedWindow != nil, let target = s.lastWindow else { return }
+        let focused: AXUIElement? = AX.attr(s.axApp, kAXFocusedWindowAttribute)
+        if let focused, CFEqual(focused, target) { return }
+        AXUIElementSetAttributeValue(target, kAXMainAttribute as CFString, kCFBooleanTrue)
+        AXUIElementPerformAction(target, kAXRaiseAction as CFString)
+        usleep(80_000)
+        let now: AXUIElement? = AX.attr(s.axApp, kAXFocusedWindowAttribute)
+        guard let now, CFEqual(now, target) else {
+            let title: String = AX.attr(target, kAXTitleAttribute) ?? ""
+            throw LeapError.unsupported("Keyboard input would go to \(s.displayName)'s key window, not to the selected window \"\(title)\", and the app refused to make it key from the background. Nothing was typed. Use set_value/type_text with element_index (accessibility, window-independent) or foreground=true.")
+        }
     }
 
     func withInput<T>(_ s: AppSession, _ mode: InputMode, _ body: (Delivery) throws -> T) async throws -> T {
@@ -335,7 +403,14 @@ public actor Engine {
         if let rec, button == .left, count == 1, flags.isEmpty, target.x == nil, !mode.foreground,
            !AXWalker.textRoles.contains(rec.node.role),
            rec.node.actions.contains(kAXPressAction) {
-            let err = AXUIElementPerformAction(rec.node.element, kAXPressAction as CFString)
+            var err = AXUIElementPerformAction(rec.node.element, kAXPressAction as CFString)
+            if err == .success, rec.node.role == "AXMenuBarItem" {
+                // Opening a menu of a background app occasionally does not take on the first
+                // press; verify (the title reports selected) and retry once.
+                usleep(150_000)
+                let open: Bool = AX.attr(rec.node.element, kAXSelectedAttribute) ?? false
+                if !open { err = AXUIElementPerformAction(rec.node.element, kAXPressAction as CFString) }
+            }
             if err == .success {
                 await signal(p, .click)
                 return "pressed [\(rec.index)] via accessibility"
@@ -353,6 +428,7 @@ public actor Engine {
         let (a, _) = try screenPoint(s, from)
         let (b, _) = try screenPoint(s, to)
         let flags = try modifierFlags(modifiers)
+        let steps = max(1, min(steps, 200))
         defer { s.lastActionAt = Date() }
         try await withInput(s, mode) { d in Input.drag(from: a, to: b, flags: flags, steps: steps, d) }
         await MainActor.run { Overlay.shared.signalDrag(from: a, to: b) }
@@ -367,8 +443,10 @@ public actor Engine {
         let extent = rec?.node.frame ?? s.lastWindowFrame
         defer { s.lastActionAt = Date() }
         var dx: Int32 = 0, dy: Int32 = 0
-        let vertical = Int32(pixels.map { Double($0) } ?? (Double(extent.height) * 0.85 * pages))
-        let horizontal = Int32(pixels.map { Double($0) } ?? (Double(extent.width) * 0.85 * pages))
+        func bounded(_ v: Double) -> Int32 { Int32(max(-100_000, min(100_000, v.isFinite ? v : 0))) }
+        let pages = max(0, min(pages, 50))
+        let vertical = bounded(pixels.map { Double($0) } ?? (Double(extent.height) * 0.85 * pages))
+        let horizontal = bounded(pixels.map { Double($0) } ?? (Double(extent.width) * 0.85 * pages))
         switch direction.lowercased() {
         case "down", "d": dy = -vertical
         case "up", "u": dy = vertical
@@ -393,6 +471,7 @@ public actor Engine {
             await signal(indicatorPoint(s, nil), .edit)
             return done
         }
+        try ensureKeyWindow(s)
         try await withInput(s, mode) { d in Input.press(chord, d) }
         await signal(indicatorPoint(s, nil), .edit)
         return "pressed \(key) (synthesized keystroke)"
@@ -528,9 +607,16 @@ public actor Engine {
         if let i = elementIndex {
             let rec = try s.element(i)
             // Background-safe path: insert through the text system so bindings/notifications fire.
-            if !mode.foreground, AX.insertText(rec.node.element, text, replaceAll: false) {
-                await signal(indicatorPoint(s, i), .edit)
-                return "inserted \(text.count) characters into [\(i)] via accessibility"
+            if !mode.foreground {
+                switch AX.insertText(rec.node.element, text, replaceAll: false) {
+                case .verified:
+                    await signal(indicatorPoint(s, i), .edit)
+                    return "inserted \(text.count) characters into [\(i)] via accessibility (verified)"
+                case .uncertain(let why):
+                    throw LeapError.unsupported("Outcome uncertain: the insert into [\(i)] changed the field but \(why). Not retried, to avoid duplicating text; read the state and decide.")
+                case .unchanged, .notText:
+                    break
+                }
             }
             // iOS Simulator fields (and some others) expose no selection API, and a background
             // Simulator ignores posted keystrokes — the recorded Codex session shows Sky's
@@ -543,9 +629,10 @@ public actor Engine {
             AXUIElementSetAttributeValue(rec.node.element, kAXFocusedAttribute as CFString, kCFBooleanTrue)
             usleep(80_000)
         }
+        try ensureKeyWindow(s)
         try await withInput(s, mode) { d in Input.type(text, d) }
         await signal(indicatorPoint(s, elementIndex), .edit)
-        return "typed \(text.count) characters"
+        return "typed \(text.count) characters (keystrokes dispatched; not verified)"
     }
 
     public func setValue(app query: String, elementIndex: Int, value: String, mode: InputMode = .init()) async throws -> String {
@@ -555,18 +642,40 @@ public actor Engine {
         defer { s.lastActionAt = Date() }
         // 1. Text elements: replace the selection through the text system (fires change notifications,
         //    so SwiftUI/AppKit bindings update — a raw kAXValue write often does not).
-        if AX.insertText(rec.node.element, value, replaceAll: true) {
+        switch AX.insertText(rec.node.element, value, replaceAll: true) {
+        case .verified:
             await signal(indicatorPoint(s, elementIndex), .edit)
-            return "replaced text of [\(elementIndex)] via accessibility selection"
+            return "replaced text of [\(elementIndex)] via accessibility selection (verified)"
+        case .uncertain(let why):
+            throw LeapError.unsupported("Outcome uncertain: [\(elementIndex)] changed but \(why). Not retried; read the state and decide.")
+        case .unchanged, .notText:
+            break
         }
-        // 2. Generic settable value (sliders, checkboxes, steppers, non-text fields).
-        let err = AXUIElementSetAttributeValue(rec.node.element, kAXValueAttribute as CFString, value as CFTypeRef)
+        // 2. Generic settable value (sliders, checkboxes, steppers, non-text fields). Numeric
+        //    controls want a number, not a string.
+        let current: CFTypeRef? = AX.attr(rec.node.element, kAXValueAttribute)
+        var payload: CFTypeRef = value as CFTypeRef
+        if let n = current as? NSNumber, CFGetTypeID(n) == CFNumberGetTypeID() || CFGetTypeID(n) == CFBooleanGetTypeID() {
+            if CFGetTypeID(n) == CFBooleanGetTypeID() {
+                switch value.lowercased() {
+                case "1", "true", "on", "yes": payload = kCFBooleanTrue
+                case "0", "false", "off", "no": payload = kCFBooleanFalse
+                default: throw LeapError.unsupported("[\(elementIndex)] holds a boolean; pass true/false (or on/off).")
+                }
+            } else if let d = Double(value) {
+                payload = NSNumber(value: d)
+            } else {
+                throw LeapError.unsupported("[\(elementIndex)] holds a number (\(n)); \"\(value)\" is not numeric.")
+            }
+        }
+        let err = AXUIElementSetAttributeValue(rec.node.element, kAXValueAttribute as CFString, payload)
         if err == .success {
             // Read back before claiming success: iOS Simulator fields answer success and keep
             // the old text for some writes (an empty string, for one).
             usleep(80_000)
-            let after: String = AX.attr(rec.node.element, kAXValueAttribute) ?? ""
-            if after == value || (value.isEmpty && after == rec.node.placeholder) {
+            let after = AX.string(AX.attr(rec.node.element, kAXValueAttribute) as CFTypeRef?) ?? ""
+            let numericMatch = (payload as? NSNumber).map { n in (Double(after) ?? .nan) == n.doubleValue || after == n.stringValue } ?? false
+            if after == value || numericMatch || (value.isEmpty && after == rec.node.placeholder) {
                 await signal(indicatorPoint(s, elementIndex), .edit)
                 return "set value of [\(elementIndex)]"
             }
@@ -606,9 +715,10 @@ public actor Engine {
         try requireAX()
         let s = try await actionSession(query, needsElements: false)
         defer { s.lastActionAt = Date() }
+        try ensureKeyWindow(s)
         try await withInput(s, mode) { d in Input.paste(text, html: html, d) }
         await signal(indicatorPoint(s, nil), .edit)
-        return "pasted \(text.count) characters"
+        return "paste of \(text.count) characters dispatched (⌘V posted; check the state to verify insertion)"
     }
 
     public enum SelectionType: String { case text, cursorBefore = "cursor_before", cursorAfter = "cursor_after" }
@@ -668,6 +778,56 @@ public actor Engine {
     /// Resolve a human label (title / description / value / placeholder) to an element index
     /// in the latest state. Exact (case-insensitive) matches win; otherwise a unique substring
     /// match; otherwise an error listing the candidates so the model can pick.
+    public enum WaitCondition: String { case appears, disappears, enabled, disabled, valueContains = "value_contains" }
+
+    /// Block until a labelled element satisfies `condition`, re-reading the tree every 300 ms,
+    /// up to `timeout` seconds. Returns a description; throws on deadline so a batch stops.
+    /// "The tree stopped changing" is not "the operation finished" — this is the explicit form.
+    public func waitFor(app query: String, label: String, condition: WaitCondition, value: String? = nil,
+                        timeout: TimeInterval) async throws -> String {
+        try requireAX()
+        let s = try await actionSession(query, needsElements: false)
+        let timeout = max(0.1, min(timeout, 60))
+        let deadline = Date().addingTimeInterval(timeout)
+        let started = Date()
+        var lastSeen = "not present"
+        while true {
+            let window = try await waitForWindow(s)
+            if let snap = walker.snapshot(window: window, app: s.axApp) { _ = s.render(snap, walker: walker) }
+            let hits = Self.matching(s, label: label)
+            let met: Bool
+            switch condition {
+            case .appears: met = !hits.isEmpty
+            case .disappears: met = hits.isEmpty
+            case .enabled: met = hits.contains { $0.node.enabled }
+            case .disabled: met = !hits.isEmpty && hits.allSatisfy { !$0.node.enabled }
+            case .valueContains:
+                let want = (value ?? "").lowercased()
+                met = hits.contains { ($0.node.value ?? "").lowercased().contains(want) }
+            }
+            if let h = hits.first {
+                lastSeen = "[\(h.index)] \(h.node.role.dropFirst(2))" + (h.node.enabled ? "" : " [disabled]") + (h.node.value.map { " value=\"\($0.prefix(60))\"" } ?? "")
+            } else { lastSeen = "not present" }
+            if met {
+                let ms = Int(Date().timeIntervalSince(started) * 1000)
+                return "condition met after \(ms) ms: \"\(label)\" \(condition.rawValue)\(value.map { " \"\($0)\"" } ?? "") (\(lastSeen))"
+            }
+            if Date() >= deadline {
+                throw LeapError.unsupported("wait_for timed out after \(Int(timeout)) s: \"\(label)\" did not become \(condition.rawValue)\(value.map { " \"\($0)\"" } ?? ""); last seen: \(lastSeen). Nothing was done.")
+            }
+            try await Task.sleep(nanoseconds: 300_000_000)
+        }
+    }
+
+    /// Elements whose title/description/value/placeholder equals (or, failing that, contains) `label`.
+    static func matching(_ s: AppSession, label: String) -> [ElementRecord] {
+        let needle = label.trimmingCharacters(in: .whitespaces).lowercased()
+        func texts(_ n: AXNode) -> [String] { [n.title, n.description, n.value, n.placeholder].compactMap { $0?.lowercased() } }
+        let all = s.elements.values.sorted { $0.index < $1.index }
+        let exact = all.filter { texts($0.node).contains(needle) }
+        return exact.isEmpty ? all.filter { texts($0.node).contains { $0.contains(needle) } } : exact
+    }
+
     public func findElement(app query: String, label: String) async throws -> Int {
         try requireAX()
         let s = try await actionSession(query, needsElements: true)
@@ -705,7 +865,7 @@ public actor Engine {
         return "activated \(s.displayName)"
     }
 
-    public func screenshot(app query: String, region: CGRect? = nil, scale: CGFloat = 1.0) async throws -> Screenshot {
+    public func screenshot(app query: String, region: CGRect? = nil, scale: CGFloat = 1.0, png: Bool = false) async throws -> Screenshot {
         try requireAX()
         let s = try await session(for: query)
         let window = try await waitForWindow(s)
@@ -714,7 +874,8 @@ public actor Engine {
         guard let info = WindowInfo.match(pid: s.pid, frame: frame, title: title) else {
             throw LeapError.capture("window is not on screen")
         }
-        return try await Capture.window(info, scale: scale, jpegQuality: 0.85, region: region)
+        await ShareIndicator.shared.hold(info.id)
+        return try await Capture.window(info, scale: scale, jpegQuality: png ? nil : 0.85, region: region)
     }
 
     func modifierFlags(_ text: String?) throws -> CGEventFlags {
