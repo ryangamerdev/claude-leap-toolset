@@ -113,3 +113,7 @@ Chromium tree support, include_frames/ranges/footer, idle timeout.
   Bundle rebuilt; **restart the session** to load `select_text` and the new instructions.
 - Remaining: tvOS focus keys with screenshot diff; long iOS lists vs node cap; `paste` md format;
   singleton service; live thumbnail panel.
+- Skill + installer added: `skills/claude-leap/SKILL.md` (full playbook), `scripts/install.py`
+  (registers `leap`, symlinks the skill to ~/.claude/skills). Server instructions shortened to
+  ~1.6 KB because Claude Code truncates them. Installed on this machine; **restart the session**
+  to see the `claude-leap` skill in the skills list and the new instructions.

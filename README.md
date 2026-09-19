@@ -100,7 +100,26 @@ both once; the Developer ID signature keeps the grant valid across rebuilds.
 The bare `swift build` binary deliberately does *not* disclaim (it would end up under an
 unsigned identity with no grants), so dev runs keep using the grant given to Claude Code.
 
-## Register with Claude Code
+## Install for Claude Code (server + skill)
+
+```bash
+python3 scripts/install.py
+```
+
+This builds and signs the bundle if needed, registers the `leap` MCP server at user scope, and
+symlinks `skills/claude-leap` into `~/.claude/skills/claude-leap`. Restart the Claude Code session
+afterwards. `--uninstall` reverses it.
+
+**Why a skill as well as server instructions.** Claude Code truncates long MCP server
+instructions (the model sees roughly the first 2 KB), so the server's `instructions` string is
+kept to a short summary and the full playbook — tree grammar, menu-bar navigation, what text
+entry works where (including the iOS Simulator), the error strings and what to do about them,
+Simulator specifics, verification habits, and the confirmation policy — lives in
+[skills/claude-leap/SKILL.md](skills/claude-leap/SKILL.md), which the model loads on demand.
+This mirrors how ChatGPT's computer use ships: a bundled plugin whose `SKILL.md` explains the
+tools, with the service itself saying very little.
+
+Manual registration, if you prefer:
 
 ```bash
 claude mcp add --scope user leap -- /Users/ryan/src/claude-leap/dist/claude-leap.app/Contents/MacOS/claude-leap
