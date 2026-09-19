@@ -328,9 +328,122 @@ public actor Engine {
         try await ensureIndexed(s)
         let chord = try Keys.parse(key)
         defer { s.lastActionAt = Date() }
+        // Accessibility first, the way the Sky service does it (its binary imports no
+        // CGEventPost at all): command chords press the matching menu item, Return confirms,
+        // Escape cancels. Synthesized keystrokes are the fallback, not the mechanism.
+        if !mode.foreground, let done = axKeyPress(s, chord, key) {
+            await signal(indicatorPoint(s, nil), .edit)
+            return done
+        }
         try await withInput(s, mode) { d in Input.press(chord, d) }
         await signal(indicatorPoint(s, nil), .edit)
-        return "pressed \(key)"
+        return "pressed \(key) (synthesized keystroke)"
+    }
+
+    /// Try to satisfy a key press through accessibility. Returns a description on success,
+    /// nil when nothing in the AX tree handles it (caller falls back to keystrokes).
+    func axKeyPress(_ s: AppSession, _ chord: KeyChord, _ key: String) -> String? {
+        let focused: AXUIElement? = AX.attr(s.axApp, kAXFocusedUIElementAttribute)
+        if chord.flags.contains(.maskCommand), let code = chord.keyCode {
+            // Text editing chords: AppKit disables Edit-menu items for a background app (no key
+            // window to validate against), so these go through the AX text API instead — the
+            // Sky service does the same (it carries `selectAll:`, not menu presses, for this).
+            let plainCommand = chord.flags.subtracting([.maskCommand, .maskNonCoalesced, .maskNumericPad]).isEmpty
+            if plainCommand, let target = focused, let done = axTextCommand(target, code) { return done }
+            if let item = menuItem(s, matching: chord) {
+                let enabled: Bool = AX.attr(item.element, kAXEnabledAttribute) ?? true
+                if enabled, AXUIElementPerformAction(item.element, kAXPressAction as CFString) == .success {
+                    return "pressed menu item \"\(item.path)\" for \(key) via accessibility"
+                }
+                if !enabled {
+                    return "menu item \"\(item.path)\" for \(key) is disabled while the app is in the background; nothing was done"
+                }
+            }
+            return nil
+        }
+        guard chord.flags.isEmpty, let code = chord.keyCode else { return nil }
+        guard let target = focused else { return nil }
+        let actions = AX.actions(target)
+        switch code {
+        case 36, 76: // Return / Enter
+            if actions.contains("AXConfirm"), AXUIElementPerformAction(target, "AXConfirm" as CFString) == .success {
+                return "confirmed focused element via accessibility (Return)"
+            }
+        case 53: // Escape
+            if actions.contains("AXCancel"), AXUIElementPerformAction(target, "AXCancel" as CFString) == .success {
+                return "cancelled focused element via accessibility (Escape)"
+            }
+        default: break
+        }
+        return nil
+    }
+
+    /// ⌘A / ⌘C / ⌘V / ⌘X on the focused text element through the accessibility text API.
+    func axTextCommand(_ target: AXUIElement, _ code: CGKeyCode) -> String? {
+        let selectedRange: CFTypeRef? = AX.attr(target, kAXSelectedTextRangeAttribute)
+        guard selectedRange != nil else { return nil } // not a text element
+        let length: Int = AX.attr(target, kAXNumberOfCharactersAttribute) ?? ((AX.attr(target, kAXValueAttribute) as String?)?.count ?? 0)
+        func selectAll() -> Bool {
+            var range = CFRange(location: 0, length: length)
+            guard let v = AXValueCreate(.cfRange, &range) else { return false }
+            return AXUIElementSetAttributeValue(target, kAXSelectedTextRangeAttribute as CFString, v) == .success
+        }
+        switch code {
+        case 0: // A
+            return selectAll() ? "selected all text (\(length) characters) via accessibility" : nil
+        case 8: // C
+            let text: String = AX.attr(target, kAXSelectedTextAttribute) ?? ""
+            guard !text.isEmpty else { return "nothing selected to copy" }
+            NSPasteboard.general.clearContents(); NSPasteboard.general.setString(text, forType: .string)
+            return "copied \(text.count) characters to the clipboard via accessibility"
+        case 9: // V
+            guard let text = NSPasteboard.general.string(forType: .string) else { return "clipboard has no text" }
+            return AXUIElementSetAttributeValue(target, kAXSelectedTextAttribute as CFString, text as CFTypeRef) == .success
+                ? "pasted \(text.count) characters via accessibility" : nil
+        case 7: // X
+            let text: String = AX.attr(target, kAXSelectedTextAttribute) ?? ""
+            guard !text.isEmpty else { return "nothing selected to cut" }
+            NSPasteboard.general.clearContents(); NSPasteboard.general.setString(text, forType: .string)
+            return AXUIElementSetAttributeValue(target, kAXSelectedTextAttribute as CFString, "" as CFTypeRef) == .success
+                ? "cut \(text.count) characters via accessibility" : nil
+        default:
+            return nil
+        }
+    }
+
+    struct MenuHit { let element: AXUIElement; let path: String }
+
+    /// Find the menu item whose key equivalent matches the chord (Edit › Select All for ⌘A).
+    /// AXMenuItemCmdModifiers bits: 1 shift, 2 option, 4 control, 8 = no command key.
+    func menuItem(_ s: AppSession, matching chord: KeyChord) -> MenuHit? {
+        guard let code = chord.keyCode else { return nil }
+        var want = 0
+        if chord.flags.contains(.maskShift) { want |= 1 }
+        if chord.flags.contains(.maskAlternate) { want |= 2 }
+        if chord.flags.contains(.maskControl) { want |= 4 }
+        let wantChar = Keys.character(for: code).map { String($0).uppercased() }
+        guard let bar: AXUIElement = AX.attr(s.axApp, kAXMenuBarAttribute) else { return nil }
+        func search(_ el: AXUIElement, _ path: [String], _ depth: Int) -> MenuHit? {
+            guard depth < 6, let kids: [AXUIElement] = AX.attr(el, kAXChildrenAttribute) else { return nil }
+            for kid in kids {
+                let a = AX.attrs(kid, [kAXRoleAttribute, kAXTitleAttribute, "AXMenuItemCmdChar", "AXMenuItemCmdModifiers", "AXMenuItemCmdVirtualKey"])
+                let role = a[kAXRoleAttribute] as? String ?? ""
+                let title = a[kAXTitleAttribute] as? String ?? ""
+                if role == "AXMenuItem" {
+                    let mods = (a["AXMenuItemCmdModifiers"] as? NSNumber)?.intValue ?? 8
+                    let cmdChar = (a["AXMenuItemCmdChar"] as? String ?? "").uppercased()
+                    let vkey = (a["AXMenuItemCmdVirtualKey"] as? NSNumber)?.intValue
+                    let charHit = wantChar != nil && !cmdChar.isEmpty && cmdChar == wantChar
+                    let keyHit = vkey != nil && vkey == Int(code)
+                    if (charHit || keyHit) && (mods & 7) == want && (mods & 8) == 0 {
+                        return MenuHit(element: kid, path: (path + [title]).joined(separator: " › "))
+                    }
+                }
+                if let hit = search(kid, role == "AXMenu" ? path : path + [title].filter { !$0.isEmpty }, depth + 1) { return hit }
+            }
+            return nil
+        }
+        return search(bar, [], 0)
     }
 
     public func typeText(app query: String, text: String, elementIndex: Int? = nil, mode: InputMode = .init()) async throws -> String {

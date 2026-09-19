@@ -86,6 +86,11 @@ public enum Keys {
         ">": ".", "?": "/", "~": "`",
     ]
 
+    /// Printable character for a keycode (US layout), for matching menu key equivalents.
+    public static func character(for code: CGKeyCode) -> Character? {
+        characters.first { $0.value == code && !" \n\t".contains($0.key) }?.key
+    }
+
     /// Parse `a`, `Return`, `super+c`, `Control_L+Shift_L+period`, `KP_0`, ...
     public static func parse(_ chord: String) throws -> KeyChord {
         let parts = chord.split(separator: "+", omittingEmptySubsequences: false)
