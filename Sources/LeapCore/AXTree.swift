@@ -47,11 +47,20 @@ enum AX {
     static func attrs(_ el: AXUIElement, _ names: [String]) -> [String: CFTypeRef] {
         var out: CFArray?
         let status = AXUIElementCopyMultipleAttributeValues(el, names as CFArray, [], &out)
-        guard status == .success, let values = out as? [CFTypeRef?] else { return [:] }
         var dict: [String: CFTypeRef] = [:]
-        for (name, value) in zip(names, values) {
-            guard let value, CFGetTypeID(value) != AXValueGetTypeID() || AXValueGetType(value as! AXValue) != .axError else { continue }
-            dict[name] = value
+        if status == .success, let values = out as? [CFTypeRef?] {
+            for (name, value) in zip(names, values) {
+                guard let value, CFGetTypeID(value) != AXValueGetTypeID() || AXValueGetType(value as! AXValue) != .axError else { continue }
+                dict[name] = value
+            }
+            return dict
+        }
+        // Chromium/Electron (ChatGPT, VS Code, browsers) reject the batched call for many
+        // elements while answering single-attribute reads fine; without this fallback their
+        // web content walks as an empty group.
+        for name in names {
+            var v: CFTypeRef?
+            if AXUIElementCopyAttributeValue(el, name as CFString, &v) == .success, let v { dict[name] = v }
         }
         return dict
     }
@@ -107,7 +116,14 @@ enum AX {
                 AXUIElementSetAttributeValue(el, kAXSelectedTextRangeAttribute as CFString, axRange)
             }
         }
-        return AXUIElementSetAttributeValue(el, kAXSelectedTextAttribute as CFString, text as CFTypeRef) == .success
+        guard AXUIElementSetAttributeValue(el, kAXSelectedTextAttribute as CFString, text as CFTypeRef) == .success else { return false }
+        // Don't trust the return code: Chromium/Electron editors (ChatGPT's composer) answer
+        // success and then ignore the write. Read the value back and only claim success when
+        // the text is really there, so callers fall back to keystrokes otherwise.
+        usleep(80_000)
+        let after: String = attr(el, kAXValueAttribute) ?? ""
+        let probeText = String(text.prefix(40))
+        return probeText.isEmpty || after.contains(probeText)
     }
 
     static func isSettable(_ el: AXUIElement, _ name: String) -> Bool {
@@ -150,7 +166,9 @@ public struct AXWalker {
         "AXTabGroup", "AXSplitter", "AXMatte", "AXGrowArea", "AXRuler", "AXBusyIndicator",
     ]
 
-    static let hiddenActions: Set<String> = ["AXPress", "AXScrollToVisible", "AXRaise"]
+    // AXShowMenu is omitted because Chromium/Electron stamps it on every element; it stays
+    // invocable through perform_action, which matches against the live action list.
+    static let hiddenActions: Set<String> = ["AXPress", "AXScrollToVisible", "AXRaise", "AXShowMenu"]
 
     /// Roles where a synthesized click (which places the caret) beats the AX Press action.
     static let textRoles: Set<String> = [

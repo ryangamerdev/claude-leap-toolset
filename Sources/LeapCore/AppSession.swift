@@ -30,6 +30,12 @@ public final class AppSession {
         self.app = app
         self.pid = app.processIdentifier
         self.axApp = AXUIElementCreateApplication(app.processIdentifier)
+        // Chromium/Electron apps (ChatGPT, VS Code, Slack, browsers) build their accessibility
+        // tree lazily and expose only the window chrome until an assistive client asks. These
+        // two app-level attributes are the switch; the Sky computer-use service carries both.
+        // Apps that don't know them return attributeUnsupported, which is harmless.
+        AXUIElementSetAttributeValue(axApp, "AXManualAccessibility" as CFString, kCFBooleanTrue)
+        AXUIElementSetAttributeValue(axApp, "AXEnhancedUserInterface" as CFString, kCFBooleanTrue)
     }
 
     public var displayName: String { app.localizedName ?? app.bundleIdentifier ?? "pid \(pid)" }
