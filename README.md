@@ -45,11 +45,15 @@ swiftc -O -o /tmp/check-overlay scripts/check-overlay.swift && /tmp/check-overla
 - Swift 6.1+ toolchain (the MCP Swift SDK needs it). Xcode 16.0 ships 6.0, so this repo
   uses the swift.org **6.4.0** toolchain installed user-scope by
   `scripts/install-swift-pkg.py` — no Xcode or OS upgrade required.
-- Permissions for the process that launches the server (for Claude Code that is the
-  Claude Code helper, shown as **claude** in System Settings):
-  - Privacy & Security › **Accessibility** — required for everything.
-  - Privacy & Security › **Screen Recording** — required for screenshots only.
-  The `permissions` tool reports both and can raise the system prompts.
+- Permissions, granted once to **claude-leap** (the signed bundle — see below):
+  - Privacy & Security › **Accessibility** — required for everything. macOS shows a
+    dialog on first use; accept it.
+  - Privacy & Security › **Screen Recording** — required for screenshots only. macOS
+    does *not* show a second dialog: it adds **claude-leap** to the list unchecked. Open
+    the pane and switch it on. (`open "x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture"`
+    — System Settings may flash its previous pane first; that is a known deep-link quirk.)
+  The `permissions` tool reports both and can raise the prompts.
+  Dev builds run under Claude Code's own grant (its helper is listed as **claude**).
 
 ## Build and test
 

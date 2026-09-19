@@ -1,0 +1,7 @@
+[
+  {"name": "get_app_state", "arguments": {"app": "Gameday", "include_screenshot": false, "disable_diff": true}},
+  {"name": "@capture", "arguments": {"pattern": "\\[(\\d+)\\] Button desc=\"Reset filters\"", "var": "reset"}},
+  {"name": "click", "arguments": {"app": "Gameday", "element_index": "$reset"}},
+  {"name": "@capture", "arguments": {"pattern": "\\[(\\d+)\\] TextField[^\\n]*Search plays", "var": "field"}},
+  {"name": "set_value", "arguments": {"app": "Gameday", "element_index": "$field", "value": ""}}
+]
