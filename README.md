@@ -31,10 +31,13 @@ another app. `foreground: true` is an explicit opt-in for apps that ignore poste
 it interrupts you, so the agent is instructed to ask first.
 
 **You can see what it is doing.** Because the agent never borrows your cursor, it draws its
-own: a pointer glyph with a drop shadow that pulses slowly, plus a coloured ripple that
-expands and fades at each interaction (coral = click, teal = edit, blue = scroll, violet =
-drag). It is a click-through overlay at screen-saver window level, so it floats over
-everything, is never clickable, and never takes focus. `LEAP_OVERLAY=0` disables it.
+own: a filled arrowhead *wedge* — just the tip of a cursor, no tail — whose point sits on the
+action and whose body trails down-and-right so it never covers the target. It is coloured by
+the action (coral = click, teal = edit, blue = scroll, violet = drag, grey = read) and pulses
+slowly like a heartbeat, so it reads as a pointer while staying obviously distinct from your
+own black-and-white cursor. Each interaction also fires one expanding sonar ring at the point.
+It is a click-through overlay at screen-saver window level, so it floats over everything, is
+never clickable, and never takes focus. `LEAP_OVERLAY=0` disables it.
 
 **macOS shows it too.** While a session is working in a window, leap holds a tiny
 ScreenCaptureKit stream on that window, so macOS lights its own screen-recording indicator in

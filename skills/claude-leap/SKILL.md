@@ -6,7 +6,7 @@ description: Drive native macOS apps and the iOS/tvOS Simulator with the leap MC
 # claude-leap: native macOS computer use
 
 Accessibility-first, background-first. The user keeps their mouse, keyboard and frontmost
-window the whole time; a face-emoji pointer and a sonar ripple show where you act, and macOS
+window the whole time; a coloured arrowhead-wedge pointer and a sonar ripple show where you act, and macOS
 lights its screen-recording indicator for the window you are working in.
 
 ## Loop
