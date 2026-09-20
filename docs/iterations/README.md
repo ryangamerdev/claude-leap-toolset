@@ -67,3 +67,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-20 — Reference review](2026-09-20-reference-revisit.md): exact preparation/focus/synthesis evidence and priority correction after user challenge.
 
 - [2026-09-20 — Live control centers](2026-09-20-click-center.md): reference-derived center containment/live reveal geometry and Simulator multiline direct-value refusal.
+
+- [2026-09-20 — Keyboard event sequence](2026-09-20-keyboard-sequence.md): modifier events/timestamps/session posting matched to reference; multiline refusal passed native; keyboard candidate awaits restart.

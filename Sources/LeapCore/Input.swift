@@ -34,7 +34,7 @@ public enum Delivery {
     /// `CGEvent.postToPid` — the target app receives the event even when it is not
     /// frontmost, and the user's cursor/focus are left alone. Default.
     case app(pid_t, window: WindowInfo? = nil)
-    /// System HID tap — moves the real cursor and requires the app to be frontmost.
+    /// System delivery — session tap for keys, HID tap for pointers; requires foreground.
     /// Escape hatch for apps that ignore posted events.
     case system
 }
@@ -130,9 +130,10 @@ public enum Input {
 
     static func post(_ event: CGEvent, _ delivery: Delivery) throws {
         let routed = try routedEvent(event, delivery)
+        routed.timestamp = DispatchTime.now().uptimeNanoseconds
         switch delivery {
         case .app(let pid, _): routed.postToPid(pid)
-        case .system: routed.post(tap: .cghidEventTap)
+        case .system: routed.post(tap: keyboardEvent(routed) ? .cgSessionEventTap : .cghidEventTap)
         }
     }
 
@@ -170,9 +171,10 @@ public enum Input {
     /// must not leave a mouse button held or silently substitute a generic event.
     static func sendPrepared(_ events:[(CGEvent,UInt32)], _ delivery:Delivery) {
         for (event,pause) in events {
+            event.timestamp = DispatchTime.now().uptimeNanoseconds
             switch delivery {
             case .app(let pid,_): event.postToPid(pid)
-            case .system: event.post(tap:.cghidEventTap)
+            case .system: event.post(tap:keyboardEvent(event) ? .cgSessionEventTap : .cghidEventTap)
             }
             if pause > 0 {usleep(pause)}
         }
@@ -244,13 +246,42 @@ public enum Input {
 
     public static func press(_ chord: KeyChord, _ delivery: Delivery) throws {
         if let code = chord.keyCode {
-            guard let down = CGEvent(keyboardEventSource: source, virtualKey: code, keyDown: true),
-                  let up = CGEvent(keyboardEventSource: source, virtualKey: code, keyDown: false) else { throw LeapError.unsupported("Could not construct input event; inspect state before retrying") }
-            down.flags = chord.flags; up.flags = chord.flags
-            try post(down, delivery); usleep(keyGap); try post(up, delivery); usleep(keyGap)
+            let events = try keyboardSequence(code: code, flags: chord.flags)
+                .map { (try routedEvent($0, delivery), keyGap) }
+            sendPrepared(events, delivery)
         } else if let text = chord.unicodeFallback {
             try type(text, flags: chord.flags, delivery)
         }
+    }
+
+    private static func keyboardEvent(_ event: CGEvent) -> Bool {
+        event.type == .keyDown || event.type == .keyUp || event.type == .flagsChanged
+    }
+
+    /// Sky's key factory (0x10071b150) brackets key events with flagsChanged.
+    /// Allocate the complete sequence before dispatch so construction failure
+    /// cannot leave a modifier/key held. Preserve the observed session flags.
+    static func keyboardSequence(code: CGKeyCode, flags: CGEventFlags,
+                                 unicode: [UniChar]? = nil,
+                                 restoring restore: CGEventFlags? = nil) throws -> [CGEvent] {
+        let restoredFlags = restore ?? CGEventSource.flagsState(.combinedSessionState)
+        guard let keyboardSource = CGEventSource(stateID: .hidSystemState),
+              let begin = CGEvent(source: keyboardSource),
+              let down = CGEvent(keyboardEventSource: keyboardSource, virtualKey: code, keyDown: true),
+              let up = CGEvent(keyboardEventSource: keyboardSource, virtualKey: code, keyDown: false),
+              let end = CGEvent(source: keyboardSource) else {
+            throw LeapError.unsupported("Could not construct complete keyboard sequence; no keyboard events sent")
+        }
+        begin.type = .flagsChanged; begin.flags = flags
+        down.flags = flags; up.flags = flags
+        end.type = .flagsChanged; end.flags = restoredFlags
+        if let unicode {
+            unicode.withUnsafeBufferPointer { buffer in
+                down.keyboardSetUnicodeString(stringLength: buffer.count, unicodeString: buffer.baseAddress)
+                up.keyboardSetUnicodeString(stringLength: buffer.count, unicodeString: buffer.baseAddress)
+            }
+        }
+        return [begin, down, up, end]
     }
 
     /// Types literal text. Newlines are sent as Return, tabs as Tab.
@@ -258,14 +289,9 @@ public enum Input {
         var buffer: [UniChar] = []
         func flush() throws {
             guard !buffer.isEmpty else { return }
-            guard let down = CGEvent(keyboardEventSource: source, virtualKey: 0, keyDown: true),
-                  let up = CGEvent(keyboardEventSource: source, virtualKey: 0, keyDown: false) else { throw LeapError.unsupported("Could not construct input event; inspect state before retrying") }
-            down.flags = flags; up.flags = flags
-            buffer.withUnsafeBufferPointer { ptr in
-                down.keyboardSetUnicodeString(stringLength: ptr.count, unicodeString: ptr.baseAddress)
-                up.keyboardSetUnicodeString(stringLength: ptr.count, unicodeString: ptr.baseAddress)
-            }
-            try post(down, delivery); usleep(keyGap); try post(up, delivery); usleep(keyGap)
+            let events = try keyboardSequence(code: 0, flags: flags, unicode: buffer)
+                .map { (try routedEvent($0, delivery), keyGap) }
+            sendPrepared(events, delivery)
             buffer.removeAll()
         }
         for scalar in text.utf16 {
@@ -274,7 +300,7 @@ public enum Input {
             case 0x09: try flush(); try press(KeyChord(keyCode: 48, flags: flags), delivery)
             default:
                 buffer.append(scalar)
-                if buffer.count >= 20 { try flush() }
+                if buffer.count >= 20 && !(0xD800...0xDBFF).contains(scalar) { try flush() }
             }
         }
         try flush()

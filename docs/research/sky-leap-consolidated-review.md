@@ -1,0 +1,30 @@
+# Sky versus Leap: consolidated interaction review — 2026-09-20
+
+The useful lesson is to prepare and validate an interaction as a transaction: resolve the live target, establish the required focus/window, construct the complete input sequence, dispatch once, then observe the effect. Leap had implemented many pieces but some legacy fallback paths bypassed those guarantees. This review covers shared native input and the intent/evidence boundary; it is not an exhaustive review of the 134,750-function reference dump.
+
+Reference evidence is local-only under `/Users/ryan/src/sky`. Exact function addresses and native trials are retained in [sky-native-input-audit.md](sky-native-input-audit.md). The manifest locates material; its broad AX-only claims are contradicted by the event factories. Decompiled async continuations and unknown runtime flags limit what can be inferred.
+
+| Area | Sky evidence / lesson | Leap disposition |
+|---|---|---|
+| Target preparation | click entry 0x100071618 calls prepareToInteract; force-synthesis flag exists, value unknown | Intent API resolves selectors against observations and rejects stale coordinate provenance. Backend paths still differ; do not assume AXPress and pointer click are equivalent. |
+| Click geometry | 0x1007833c4/0x100783668 uses midpoint, containment and reveal/re-read | Live full-control midpoint and reveal guard installed previously; native acceptance pending. Avoid clipped-fragment centers and malformed Simulator AX frames. |
+| Window/process targeting | 0x1006f10dc distinguishes actual PID and hosted/out-of-process window, point lookup and flipped coordinates | **Research gap:** Leap resolves app PID + window but lacks full hosted-target routing. Do not blanket-flip Simulator coordinates or guess another PID. Need evidence from active target branch. |
+| Background pointer input | 0x100729ca4 constructs AppKit/CG events with window/local metadata; activation 0x10071a8fc | Process-directed pointer transport and window metadata already implemented. Same pointer route foreground/background. No evidence a virtual HID device is necessary. |
+| Focus | 0x100796058 writes focus then performs uncached check; fallback click if needed | **Implemented this candidate:** verify field focus after activation and key-window selection. Recheck foreground for held batches. Refuse keys when focus unproven. Sky's safe-click recovery/full focus-enforcer state machine remains broader. |
+| Keyboard | 0x10071b150 brackets down/up with flagsChanged; senders refresh timestamps, foreground session tap | **Implemented this candidate:** complete modifier/down/up/restoration sequence, HID-state source, session tap for foreground keys, fresh timestamps. Unicode chunks no longer split a surrogate pair. Native validation pending. |
+| Text mutation | Native Sky ordinary typing persisted notes; raw Leap AXValue changed display but not saved binding | **Implemented this candidate:** apply Simulator multiline safeguard to append as well as replacement; changed/unreadable direct-write outcome blocks fallback. Ordinary typed focus is verified. Readback still cannot prove persistence. |
+| Semantic shortcuts | Sky has semantic and synthesized machinery; exact runtime route varies | **Implemented this candidate:** remove automatic menu re-press; ambiguous semantic action error blocks synthesized replay; Select All verifies range using UTF16 units; cut/paste use checked selection insertion. Unknown key names fail instead of becoming literal text. These no-replay choices follow Leap's contract, not an unproven claim Sky does exactly this. |
+| Post-action verification | Sky returns state; observed Sky failures show a successful API return alone is insufficient | Leap retains before/after snapshots and deltas, explicit assertions and bounded observation waits. No-input-replay is the intended rule, now strengthened in legacy paths. Tree stability is not task success. |
+| Scroll/canvas effects | AX can omit pixel-only displacement | Leap has visual scroll evidence; failed/unknown stays distinct. Field manipulation still needs paired native evidence. More tree data cannot replace pixels for every canvas. |
+| Evidence and context | Reference includes screen summaries; equivalent database history is not established | Leap already retains sessions, interactions, snapshots and queryable evidence. Keep this advantage. Large workflow envelopes can externalize too much action detail; compact per-step summaries remain a usability gap, lower priority than correct input. |
+| Application persistence | Neither API acknowledgement nor immediate field read proves model save | Reopen exact title/routes/notes. Unexpected Save → Team libraries happened in both tools; latest Leap case used AXPress, not bad pointer coordinates. Root cause unresolved. |
+
+## Consolidated implementation and priorities
+
+The current increment fixes the verified shared preparation, keyboard, mutation and replay defects together. These affect multiple apps and actions, rather than patching only the most recent screenshot. It intentionally does not copy unresolved private routing behavior from decompiler guesses.
+
+Next restart: verify editable-field focus, chord selection and normal multiline input in the existing iPad editor, then save/reopen. Inspect the retained backend route if Save navigates incorrectly; compare Sky on the same case. Resolve hosted routing/focus only from the observed failure path. Complete clean iPad play creation and paired Blender UI modeling. Desktop creation previously passed, but changed shared transport needs a scoped desktop smoke check. Full parity is not certified.
+
+## Validation boundary
+
+Seven focused keyboard/parser tests pass. Compilation covers shared Engine/AX changes; these tests do not prove app focus, event delivery, save behavior or Simulator parity. Runtime artifacts and logs remain local-only; tracked iteration/install metadata records delivery. See [iteration](../iterations/2026-09-20-keyboard-sequence.md).

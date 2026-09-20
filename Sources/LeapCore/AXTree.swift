@@ -249,15 +249,20 @@ enum AX {
 
     /// Append `text` to a settable element's value (current + text) and verify by reading back.
     /// A value equal to the placeholder counts as empty (iOS reports the placeholder as the value).
-    static func appendValue(_ el: AXUIElement, _ text: String, placeholder: String?) -> String? {
+    static func appendValue(_ el: AXUIElement, _ text: String, placeholder: String?) throws -> String? {
         guard isSettable(el, kAXValueAttribute) else { return nil }
-        var current: String = attr(el, kAXValueAttribute) ?? ""
+        guard var current: String = attr(el, kAXValueAttribute) else { return nil }
+        let original = current
         if let placeholder, current == placeholder { current = "" }
         let wanted = current + text
-        guard AXUIElementSetAttributeValue(el, kAXValueAttribute as CFString, wanted as CFTypeRef) == .success else { return nil }
+        _ = AXUIElementSetAttributeValue(el, kAXValueAttribute as CFString, wanted as CFTypeRef)
         usleep(80_000)
         let after: String = attr(el, kAXValueAttribute) ?? ""
-        return after == wanted ? after : nil
+        if after == wanted { return after }
+        guard let observed: String = attr(el, kAXValueAttribute), observed == original else {
+            throw LeapError.unsupported("Append value write left changed or unreadable text. Outcome uncertain; no keyboard fallback sent.")
+        }
+        return nil
     }
 
     static func isSettable(_ el: AXUIElement, _ name: String) -> Bool {

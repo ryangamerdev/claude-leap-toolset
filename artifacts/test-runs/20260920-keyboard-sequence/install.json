@@ -1,0 +1,12 @@
+{
+  "installed_at": "2026-09-20T16:48:36.025036+00:00",
+  "sha256": "609129f3a0774ead7f85774e6851a647ee378e8967c5c9f90d2ad63bbdc9b2c4",
+  "rollback": "/Users/ryan/src/claude-leap/artifacts/backups/20260920-keyboard-sequence/previous.app",
+  "rollback_local_only": true,
+  "skills_synced": true,
+  "native_acceptance": "pending restart",
+  "registration": "leap unchanged",
+  "build": "passed",
+  "focused_tests": "7 passed",
+  "scope": "consolidated keyboard, focus, mutation and replay safeguards"
+}

@@ -36,5 +36,7 @@ final class KeysTests: XCTestCase {
     func testErrors() {
         XCTAssertThrowsError(try Keys.parse(""))
         XCTAssertThrowsError(try Keys.parse("shift"))
+        XCTAssertThrowsError(try Keys.parse("super+Retun"))
+        XCTAssertThrowsError(try Keys.parse("hello world"))
     }
 }

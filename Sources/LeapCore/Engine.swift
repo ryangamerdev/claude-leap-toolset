@@ -379,6 +379,19 @@ public actor Engine {
         }
     }
 
+    /// Verify live focus after activation/window selection, never infer it from a successful write.
+    func requireTextFocus(_ element: AXUIElement, session s: AppSession) throws {
+        AXUIElementSetAttributeValue(element, kAXFocusedAttribute as CFString, kCFBooleanTrue)
+        for _ in 0..<5 {
+            let focused: Bool = AX.attr(element, kAXFocusedAttribute) ?? false
+            let active: AXUIElement? = AX.attr(s.axApp, kAXFocusedUIElementAttribute)
+            if focused || active.map({ CFEqual($0, element) }) == true { return }
+            usleep(40_000)
+        }
+        Diagnostics.shared.record(level:"error",kind:"text_focus_unverified",detail:"Live field focus could not be verified after window preparation. No keyboard input sent.")
+        throw LeapError.unsupported("Editable control focus could not be verified. No keyboard input sent. Click the control using fresh geometry and inspect its focus before typing.")
+    }
+
     func withInput<T>(_ s: AppSession, _ mode: InputMode, _ body: (Delivery) throws -> T) async throws -> T {
         let wantsForeground = mode.foreground || (hold?.session.pid == s.pid && hold?.mode.foreground == true)
         guard wantsForeground else {
@@ -387,13 +400,18 @@ public actor Engine {
             s.refreshWindowFrame()
             let title: String? = s.lastWindow.flatMap { AX.attr($0, kAXTitleAttribute) }
             let window = WindowInfo.match(pid: s.pid, frame: s.lastWindowFrame, title: title)
+            try ensureKeyWindow(s)
             return try body(.app(s.pid, window: window))
         }
         if let hold, hold.session.pid == s.pid, hold.delivery != nil {
-            return try body(.system) // already activated for this batch
+            // The user may have changed focus since the preceding batch action.
+            try await activate(s)
+            try ensureKeyWindow(s)
+            return try body(.system)
         }
         try await activate(s)
         hold?.delivery = .system
+        try ensureKeyWindow(s)
         return try body(.system)
     }
 
@@ -472,14 +490,7 @@ public actor Engine {
             // AXPress needs no screen coordinate. Validate only its cosmetic marker,
             // before the action can remove the target or change the window.
             let marker = indicatorPoint(s, rec.index)
-            var err = AXUIElementPerformAction(rec.node.element, kAXPressAction as CFString)
-            if err == .success, rec.node.role == "AXMenuBarItem" {
-                // Opening a menu of a background app occasionally does not take on the first
-                // press; verify (the title reports selected) and retry once.
-                usleep(150_000)
-                let open: Bool = AX.attr(rec.node.element, kAXSelectedAttribute) ?? false
-                if !open { err = AXUIElementPerformAction(rec.node.element, kAXPressAction as CFString) }
-            }
+            let err = AXUIElementPerformAction(rec.node.element, kAXPressAction as CFString)
             if err == .success {
                 if marker == nil {
                     Diagnostics.shared.record(level:"warning",kind:"indicator_suppressed",detail:"AXPress acknowledged; invalid/offscreen marker geometry. element=\(rec.index) frame=\(String(describing:rec.node.frame)) window=\(s.lastWindowFrame) offscreen=\(rec.node.offscreen). No pointer event sent.",fields:["session":recordings[s.pid]?.id ?? "","app":s.displayName])
@@ -644,11 +655,10 @@ public actor Engine {
         defer { s.lastActionAt = Date() }
         // Prefer semantic keyboard equivalents: command chords press the matching menu item, Return confirms,
         // Escape cancels. Synthesized keystrokes are the fallback, not the mechanism.
-        if !mode.foreground, let done = axKeyPress(s, chord, key) {
+        if !mode.foreground, let done = try axKeyPress(s, chord, key) {
             await signal(indicatorPoint(s, nil), .edit)
             return done
         }
-        try ensureKeyWindow(s)
         Diagnostics.shared.record(level:"warning",kind:"keyboard_route",detail:"Using synthesized key input; semantic route unavailable or foreground mode requested. foreground=\(mode.foreground)")
         try await withInput(s, mode) { d in try Input.press(chord, d) }
         await signal(indicatorPoint(s, nil), .edit)
@@ -657,17 +667,23 @@ public actor Engine {
 
     /// Try to satisfy a key press through accessibility. Returns a description on success,
     /// nil when nothing in the AX tree handles it (caller falls back to keystrokes).
-    func axKeyPress(_ s: AppSession, _ chord: KeyChord, _ key: String) -> String? {
+    func axKeyPress(_ s: AppSession, _ chord: KeyChord, _ key: String) throws -> String? {
+        func dispatch(_ element: AXUIElement, _ action: String) throws -> Bool {
+            let status = AXUIElementPerformAction(element, action as CFString)
+            if status == .success { return true }
+            if status == .actionUnsupported { return false }
+            throw LeapError.unsupported("Semantic keyboard action returned \(status.name). Outcome uncertain; no synthesized key fallback sent.")
+        }
         let focused: AXUIElement? = AX.attr(s.axApp, kAXFocusedUIElementAttribute)
         if chord.flags.contains(.maskCommand), let code = chord.keyCode {
             // Text editing chords: AppKit disables Edit-menu items for a background app (no key
             // window to validate against), so these go through the AX text API instead — the
             // Sky service does the same (it carries `selectAll:`, not menu presses, for this).
             let plainCommand = chord.flags.subtracting([.maskCommand, .maskNonCoalesced, .maskNumericPad]).isEmpty
-            if plainCommand, let target = focused, let done = axTextCommand(target, code) { return done }
+            if plainCommand, let target = focused, let done = try axTextCommand(target, code) { return done }
             if let item = menuItem(s, matching: chord) {
                 let enabled: Bool = AX.attr(item.element, kAXEnabledAttribute) ?? true
-                if enabled, AXUIElementPerformAction(item.element, kAXPressAction as CFString) == .success {
+                if enabled, try dispatch(item.element, kAXPressAction) {
                     return "pressed menu item \"\(item.path)\" for \(key) via accessibility"
                 }
                 if !enabled {
@@ -678,7 +694,7 @@ public actor Engine {
         }
         guard chord.flags.isEmpty, let code = chord.keyCode else { return nil }
         if code == 53, let menu = openMenu(s) { // Escape closes an open menu-bar menu
-            if AXUIElementPerformAction(menu, kAXCancelAction as CFString) == .success {
+            if try dispatch(menu, kAXCancelAction) {
                 return "closed the open menu via accessibility (Escape)"
             }
         }
@@ -686,11 +702,11 @@ public actor Engine {
         let actions = AX.actions(target)
         switch code {
         case 36, 76: // Return / Enter
-            if actions.contains("AXConfirm"), AXUIElementPerformAction(target, "AXConfirm" as CFString) == .success {
+            if actions.contains("AXConfirm"), try dispatch(target, "AXConfirm") {
                 return "confirmed focused element via accessibility (Return)"
             }
         case 53: // Escape
-            if actions.contains("AXCancel"), AXUIElementPerformAction(target, "AXCancel" as CFString) == .success {
+            if actions.contains("AXCancel"), try dispatch(target, "AXCancel") {
                 return "cancelled focused element via accessibility (Escape)"
             }
         default: break
@@ -699,18 +715,31 @@ public actor Engine {
     }
 
     /// ⌘A / ⌘C / ⌘V / ⌘X on the focused text element through the accessibility text API.
-    func axTextCommand(_ target: AXUIElement, _ code: CGKeyCode) -> String? {
+    func axTextCommand(_ target: AXUIElement, _ code: CGKeyCode) throws -> String? {
         let selectedRange: CFTypeRef? = AX.attr(target, kAXSelectedTextRangeAttribute)
         guard selectedRange != nil else { return nil } // not a text element
-        let length: Int = AX.attr(target, kAXNumberOfCharactersAttribute) ?? ((AX.attr(target, kAXValueAttribute) as String?)?.count ?? 0)
-        func selectAll() -> Bool {
+        let length: Int = AX.attr(target, kAXNumberOfCharactersAttribute) ?? ((AX.attr(target, kAXValueAttribute) as String?)?.utf16.count ?? 0)
+        func selectAll() throws -> Bool {
             var range = CFRange(location: 0, length: length)
             guard let v = AXValueCreate(.cfRange, &range) else { return false }
-            return AXUIElementSetAttributeValue(target, kAXSelectedTextRangeAttribute as CFString, v) == .success
+            let status = AXUIElementSetAttributeValue(target, kAXSelectedTextRangeAttribute as CFString, v)
+            var observed = CFRange(location: -1, length: -1)
+            if let actual: CFTypeRef = AX.attr(target, kAXSelectedTextRangeAttribute), CFGetTypeID(actual) == AXValueGetTypeID() {
+                AXValueGetValue(actual as! AXValue, .cfRange, &observed)
+                if observed.location == 0 && observed.length == length { return true }
+            }
+            throw LeapError.unsupported("Select All did not establish the requested selection (\(status.name)). No keyboard fallback sent; inspect selection before typing.")
+        }
+        func replaceSelection(_ text: String, description: String) throws -> String? {
+            switch AX.insertText(target, text, replaceAll: false) {
+            case .verified: return "\(description) via accessibility (readback verified)"
+            case .unchanged, .notText: return nil
+            case .uncertain(let why): throw LeapError.unsupported("Text shortcut outcome uncertain: \(why). No keyboard fallback sent.")
+            }
         }
         switch code {
         case 0: // A
-            return selectAll() ? "selected all text (\(length) characters) via accessibility" : nil
+            return try selectAll() ? "selected all text (\(length) characters) via accessibility" : nil
         case 8: // C
             let text: String = AX.attr(target, kAXSelectedTextAttribute) ?? ""
             guard !text.isEmpty else { return "nothing selected to copy" }
@@ -718,14 +747,12 @@ public actor Engine {
             return "copied \(text.count) characters to the clipboard via accessibility"
         case 9: // V
             guard let text = NSPasteboard.general.string(forType: .string) else { return "clipboard has no text" }
-            return AXUIElementSetAttributeValue(target, kAXSelectedTextAttribute as CFString, text as CFTypeRef) == .success
-                ? "pasted \(text.count) characters via accessibility" : nil
+            return try replaceSelection(text, description: "pasted")
         case 7: // X
             let text: String = AX.attr(target, kAXSelectedTextAttribute) ?? ""
             guard !text.isEmpty else { return "nothing selected to cut" }
             NSPasteboard.general.clearContents(); NSPasteboard.general.setString(text, forType: .string)
-            return AXUIElementSetAttributeValue(target, kAXSelectedTextAttribute as CFString, "" as CFTypeRef) == .success
-                ? "cut \(text.count) characters via accessibility" : nil
+            return try replaceSelection("", description: "cut selected text")
         default:
             return nil
         }
@@ -797,20 +824,19 @@ public actor Engine {
                     break
                 }
             }
-            // iOS Simulator fields (and some others) expose no selection API, and a background
-            // Simulator ignores posted keystrokes — the recorded Codex session shows Sky's
-            // typeText silently typing nothing there while setValue worked every time. So
-            // append through the value attribute instead, and read it back before claiming success.
-            if !mode.foreground, rec.node.settable, let appended = AX.appendValue(rec.node.element, text, placeholder: rec.node.placeholder) {
+            // Simulator multiline AXValue readback can match without updating the binding.
+            let unsafeValue = s.app.bundleIdentifier == "com.apple.iphonesimulator" && rec.node.role == "AXTextArea"
+            if !mode.foreground, !unsafeValue, rec.node.settable,
+               let _ = try AX.appendValue(rec.node.element, text, placeholder: rec.node.placeholder) {
                 await signal(indicatorPoint(s, i), .edit)
-                return "appended \(text.count) characters to [\(i)] via accessibility value (now \"\(appended.prefix(60))\")"
+                return "appended \(text.count) characters to [\(i)] via accessibility value (readback matched; persistence unverified)"
             }
-            AXUIElementSetAttributeValue(rec.node.element, kAXFocusedAttribute as CFString, kCFBooleanTrue)
-            usleep(80_000)
         }
-        try ensureKeyWindow(s)
         Diagnostics.shared.record(level:"warning",kind:"text_keyboard_route",detail:"Using synthesized text input; not verified. foreground=\(mode.foreground). Text omitted.")
-        try await withInput(s, mode) { d in try Input.type(text, d) }
+        try await withInput(s, mode) { d in
+            if let i = elementIndex { try self.requireTextFocus(try s.element(i).node.element, session: s) }
+            try Input.type(text, d)
+        }
         await signal(indicatorPoint(s, elementIndex), .edit)
         return "typed \(text.count) characters (keystrokes dispatched; not verified)"
     }
@@ -869,14 +895,18 @@ public actor Engine {
                 await signal(indicatorPoint(s, elementIndex), .edit)
                 return "set value of [\(elementIndex)]"
             }
-            if !mode.foreground && !s.app.isActive {
-                throw LeapError.unsupported("[\(elementIndex)] accepted the value write but still reads \"\(after.prefix(60))\" (wanted \"\(value.prefix(60))\"). Nothing else was tried because the app is in the background; try set_value with different text, or foreground=true.")
-            }
+            throw LeapError.unsupported("Value write returned success but readback did not match. Outcome uncertain; no keyboard replacement sent. Inspect the retained state before another edit.")
         }
-        // 3. Last resort: focus, select all, type real keystrokes.
-        AXUIElementSetAttributeValue(rec.node.element, kAXFocusedAttribute as CFString, kCFBooleanTrue)
-        usleep(80_000)
+        guard AXWalker.textRoles.contains(rec.node.role) else {
+            throw LeapError.axFailure("set value", err)
+        }
+        // Failed writes can still have side effects; do not overwrite changed/unknown state.
+        let afterFailure: CFTypeRef? = AX.attr(rec.node.element, kAXValueAttribute)
+        guard let current, let afterFailure, CFEqual(current, afterFailure) else {
+            throw LeapError.unsupported("Failed value write left changed or unreadable state. No keyboard fallback sent.")
+        }
         try await withInput(s, mode) { d in
+            try self.requireTextFocus(rec.node.element, session: s)
             try Input.press(KeyChord(keyCode: 0, flags: .maskCommand), d) // ⌘A
             try Input.type(value, d)
         }
@@ -905,7 +935,6 @@ public actor Engine {
         try requireAX()
         let s = try await actionSession(query, needsElements: false)
         defer { s.lastActionAt = Date() }
-        try ensureKeyWindow(s)
         try await withInput(s, mode) { d in try Input.paste(text, html: html, d) }
         await signal(indicatorPoint(s, nil), .edit)
         return "paste of \(text.count) characters dispatched (⌘V posted; check the state to verify insertion)"

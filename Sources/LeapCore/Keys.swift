@@ -20,11 +20,13 @@ public struct KeyChord: Equatable {
 }
 
 public enum KeyParseError: Error, CustomStringConvertible {
+    case unknown(String)
     case empty
     case noKey(String)
 
     public var description: String {
         switch self {
+        case .unknown(let key): return "Unknown key name \(key); use type_text for literal text."
         case .empty: return "empty key chord"
         case .noKey(let chord): return "chord \"\(chord)\" has modifiers but no key"
         }
@@ -113,10 +115,10 @@ public enum Keys {
             }
         }
         guard let key = keyToken else { throw KeyParseError.noKey(chord) }
-        return resolve(key: key, flags: flags)
+        return try resolve(key: key, flags: flags)
     }
 
-    static func resolve(key: String, flags: CGEventFlags) -> KeyChord {
+    static func resolve(key: String, flags: CGEventFlags) throws -> KeyChord {
         let lower = key.lowercased()
         if let code = named[lower] {
             var f = flags
@@ -136,7 +138,7 @@ public enum Keys {
             }
             return KeyChord(keyCode: nil, flags: flags, unicodeFallback: String(ch))
         }
-        // Unknown multi-character name: type it literally so the model still gets *something*.
-        return KeyChord(keyCode: nil, flags: flags, unicodeFallback: key)
+        // Reject misspelled key names before input, rather than typing the typo.
+        throw KeyParseError.unknown(key)
     }
 }

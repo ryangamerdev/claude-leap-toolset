@@ -23,3 +23,7 @@ Record every iteration in docs/iterations. Keep name leap, preserve history, and
 Reference investigation priority (2026-09-20): consult research/sky-native-input-audit.md latest addendum. Trace active Save route using pending input_result before another patch; compare target preparation, uncached focus verification and hosted-process routing. Sky force-synthesis flag is present but runtime value unknown. Do not assume AX-only behavior from manifest.
 
 Current next restart: live-center candidate (iterations/2026-09-20-click-center.md). Verify native center/reveal; resolve Simulator keyboard focus/chord and semantic Save transition. No additional generic diagnostics; input_result now works.
+
+Current next candidate: keyboard sequence (iterations/2026-09-20-keyboard-sequence.md). Restart and verify normal typed note replacement/persistence, then complete iPad and Blender. Multiline refusal passed; center native acceptance and Save navigation remain unresolved.
+
+2026-09-20 consolidated direction supersedes the keyboard-only candidate above: review research/sky-leap-consolidated-review.md, install shared preparation/keyboard/mutation/replay fixes together, restart once, then run existing iPad field focus/chord/type/save/reopen and desktop smoke. Investigate hosted routing only with actual target evidence. Complete iPad/Blender gates before optional response-summary refinements.

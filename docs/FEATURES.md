@@ -82,3 +82,11 @@ R08/R12: action, resolved target and backend input_result now retained in intent
 ## Live center candidate
 
 Native input_result **TESTED**: Save semantic AXPress confirmed, unexpected Team libraries persists. Pointer full-control midpoint/live frame **IMPLEMENTED**,3 focused tests passed, native restart pending. Simulator multiline raw-value refusal expanded after saved value failed despite settable. Foreground super+a produced accent popup: keyboard **FAILED** for that scoped case, no select-all pass. See [iteration](iterations/2026-09-20-click-center.md).
+
+## Keyboard sequence candidate
+
+Simulator multiline raw-value refusal **TESTED** with unchanged before/after value. Keyboard modifier/down/up/restoration sequence, dispatch timestamps and foreground session tap **IMPLEMENTED**,2 focused tests passed; native restart pending. Sky select-all did not visibly select all either. Center/reveal native case still pending. [Iteration](iterations/2026-09-20-keyboard-sequence.md).
+
+### Consolidated Sky review — 2026-09-20
+
+See [cross-cutting comparison](research/sky-leap-consolidated-review.md). **IMPLEMENTED / native pending:** post-activation key-window and field-focus verification; keyboard modifier/timestamp/tap sequence; multiline append guard; uncertain-write/semantic-action replay prevention; verified UTF16 selection; unknown-key rejection. **RESEARCH:** hosted-process target routing and full background focus state machine. **PENDING:** compact per-step summary when a large workflow response is externalized. **UNRESOLVED:** Save → Team libraries in both tools, iPad persistence acceptance and paired Blender. No parity certification from unit tests.
