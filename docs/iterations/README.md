@@ -49,3 +49,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-20 — Sky-derived pointer delivery](2026-09-20-sky-pointer.md): native-reference audit, window-specific activation, explicit construction errors and Mac coordinate scroll; built/installed for restart.
 
 - [2026-09-20 — Mac coordinate bounds](2026-09-20-mac-bounds.md): native double-click safely rejected before input; normalized live CGFloat bounds, built/installed for restart.
+
+- [2026-09-20 — Restarted iPad pointer acceptance](2026-09-20-ipad-pointer-native.md): zoom/reset/pan and sidebar drag pass visual native checks; wheel has no effect even foregrounded, window stable.

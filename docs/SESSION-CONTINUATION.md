@@ -1,15 +1,13 @@
-# Current handoff — intent rebuild
+# Current handoff — native acceptance
 
-Updated 2026-09-20. Read [SPECIFICATION.md](SPECIFICATION.md), [PLAN.md](PLAN.md), [FEATURES.md](FEATURES.md), then the source skill. Older handoff is [archived](research/archive/session-continuation-before-intent-rebuild.md).
+Updated 2026-09-20. Read SPECIFICATION.md, PLAN.md, FEATURES.md and the source skill. Preserve registration leap, .leap history and commit/push after build/install.
 
-User authorized aggressive replacement with a complete spec and implementation, not preserving existing architecture. Spec and new orchestration are implemented; full release acceptance remains open. No new subagents used. Preserve name leap and user history; commit/push after each install.
+## Latest native checkpoint
 
-## Latest installed correction — Mac bounds
+[Iteration](iterations/2026-09-20-ipad-pointer-native.md), [tracked results](../artifacts/test-runs/20260920-ipad-pointer-native/native-results.json). Installed build SHA256339a3ebcc4abdd2115d19575cabe7f292b210cf3dba2849d5f67afabe61e00dd, implementation commit879b575. Restarted and tested via native MCP. Mac bounds rejection resolved: iPad field zoom/reset/pan and foreground sidebar drag scrolling passed visual inspection, window stationary. Wheel scroll had no effect even foregrounded. Sky zoom/reset previously passed; latest Sky drag had no confirmed movement. No blanket parity claim.
 
-[Iteration](iterations/2026-09-20-mac-bounds.md), [install identity](../artifacts/test-runs/20260920-mac-bounds/install.json). The restarted Sky-pointer candidate opened/captured Simulator successfully. Native double-click interaction0BB5B5EC-F161-4419-ABB2-728B74E68A87 failed BEFORE input: live Mac bounds are CGFloat arrays, and the final range guard cast them to [Double]. Earlier equality check passed. Shared numeric normalization now fixes both paths;11 model tests passed. Needs restart/native acceptance. Session5CC6C6B5-1A67-4185-867E-7FE30F83C174 closed; history retained. No app changes from this trial.
+Session E79E97BB-3B80-4436-B937-402A07377555 closed; history retained. Field default, ANY OSCAR VICK ·3-4,5 of11. Sidebar returned to top range, not identical pixels; no filters intentionally changed. Simulator explicitly activated and may remain foreground. Gameday stays landscape-only. Two advisory AX read failures persist, no blocking failures in trial; host AX geometry still unsuitable for deriving coordinates. Use fresh screenshots and window_points.
 
-NEXT: open mac_ax Simulator window iPad Air11-inch(M2), capture fresh screenshot and snapshot, double-click field center using window_points scaled from capture, then capture and visually verify zoom. Do not use an AX-only verdict for canvas content. Reset, drag, compare canvas motion and stable window bounds. Background first, explicit foreground if needed. Previous Sky zoom/reset passed; sidebar scroll lacked confirmed movement. Gameday stays landscape, original5 of11 play.
+NEXT: paired Sky/Leap iPhone landscape navigation/scroll trial, then desktop Gameday coach/create/save/reopen and paired Blender basic-shape head UI modeling/save/reopen. Open a new native session; use fresh device/window identity and screenshots. Explicit foreground if needed, report actual observed focus separately from omitted foreground flag. Wheel route remains an unresolved limitation; touch-style drag works on iPad and is an explicit alternative. Do not silently fallback.
 
-Read [Sky native audit](research/sky-native-input-audit.md) and [pointer iteration](iterations/2026-09-20-sky-pointer.md) for current transport. It is process-directed synthesis plus AX, not AX-only. Hosted-process routing/full synthetic focus tracking remain gaps. No speculative WDA rotation or repeated failed WDA information taps. WDA is optional additional capability. No Blender gate pass yet.
-
-Historical architecture and native details are retained in docs/iterations and the archived handoff. Source skills describe the current API. Preserve .leap history, registration name leap and the commit/push-after-install workflow.
+No binary changes in this checkpoint; no restart needed. Skill reference updated and synchronized. Read research/sky-native-input-audit.md for reference limitations: hosted-process routing and full synthetic focus tracking remain gaps. WDA information touch still ineffective; orientation correction awaits scoped native acceptance. Do not repeat speculative rotation or failed taps.
