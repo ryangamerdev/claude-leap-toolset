@@ -287,13 +287,19 @@ public enum Input {
     /// Types literal text. Newlines are sent as Return, tabs as Tab.
     public static func type(_ text: String, flags: CGEventFlags = [], requirePhysical: Bool = false, _ delivery: Delivery) throws {
         let plan = try TextKeyPlan.plan(text, layout: TextKeyPlan.layoutMap(), requirePhysical: requirePhysical)
-        // Resolve all characters before the first event. Unsupported Simulator text
-        // must not leave a partially typed prefix. Payload and physical key agree.
-        for stroke in plan {
-            let events = try keyboardSequence(code: stroke.code, flags: stroke.flags.union(flags),
-                unicode: stroke.text.map { Array($0.utf16) })
-                .map { (try routedEvent($0, delivery), keyGap) }
-            sendPrepared(events, delivery)
+        let events = try textEvents(plan, flags: flags)
+            .map { (try routedEvent($0, delivery), keyGap) }
+        sendPrepared(events, delivery)
+    }
+
+    /// Freeze restoration flags and construct every event before posting any input.
+    /// Reading global flags between characters can observe our own in-flight modifiers.
+    static func textEvents(_ plan: [TextKeyPlan.Stroke], flags: CGEventFlags = [],
+                           restoring restore: CGEventFlags? = nil) throws -> [CGEvent] {
+        let original = restore ?? CGEventSource.flagsState(.combinedSessionState)
+        return try plan.flatMap { stroke in
+            try keyboardSequence(code: stroke.code, flags: stroke.flags.union(flags),
+                unicode: stroke.text.map { Array($0.utf16) }, restoring: original)
         }
     }
 

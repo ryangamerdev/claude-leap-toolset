@@ -1,0 +1,12 @@
+{
+  "installed_at": "2026-09-20T17:16:28.589568+00:00",
+  "sha256": "6dac1f070ce6f29193e6882ae591c7f84053007febff2f3922e8e468eb64963e",
+  "rollback": "/Users/ryan/src/claude-leap/artifacts/backups/20260920-whole-text/previous.app",
+  "rollback_local_only": true,
+  "skills_synced": true,
+  "native_acceptance": "pending restart",
+  "registration": "leap unchanged",
+  "build": "passed",
+  "focused_tests": "12 passed",
+  "scope": "whole-text event preparation; insights remain disabled"
+}

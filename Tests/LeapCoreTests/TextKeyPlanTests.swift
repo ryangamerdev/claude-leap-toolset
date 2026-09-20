@@ -16,6 +16,15 @@ final class TextKeyPlanTests: XCTestCase {
         XCTAssertEqual(plan.count, 1)
         XCTAssertEqual(plan[0].text, "😀")
     }
+    func testWholeTextSequenceUsesOneRestorationState() throws {
+        let plan: [TextKeyPlan.Stroke] = [.init(code: 0, flags: .maskShift, text: "A"), .init(code: 0, flags: [], text: "a")]
+        let events = try Input.textEvents(plan, restoring: .maskAlternate)
+        XCTAssertEqual(events.count, 8)
+        XCTAssertEqual(events[3].flags, .maskAlternate)
+        XCTAssertEqual(events[7].flags, .maskAlternate)
+        XCTAssertEqual(events[4].flags, [])
+        XCTAssertEqual(events[5].flags, [])
+    }
     func testCurrentLayoutCanBeReadWithoutSendingInput() throws {
         XCTAssertFalse(try TextKeyPlan.layoutMap().isEmpty)
     }
