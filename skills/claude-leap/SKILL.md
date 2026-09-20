@@ -65,6 +65,10 @@ those development documents for unrelated app tasks.
 
 ## Targeting and recovery
 
+A semantic accessibility press does not send a mouse click. Its location indicator is hidden
+when the element is marked offscreen or its frame is invalid/outside the selected window;
+the action result reports this. A visible marker is feedback, not proof of input delivery.
+
 Prefer background operation. Pointer delivery targets the app window; foreground=true is
 explicit activation when needed and should be announced. Keyboard fallback may use system
 input. Do not assume pointer behavior proves keyboard isolation.

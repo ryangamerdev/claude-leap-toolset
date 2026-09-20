@@ -10,6 +10,8 @@ Sky-or-better native app operation, demonstrated with Gameday, iPhone/iPad Simul
 
 ## Resume checkpoint
 
+Latest candidate: semantic-action marker geometry guard; identity in artifacts/test-runs/20260920-indicator/install.json. User observed ripple below Simulator; AXPress and view checks succeeded but AX frame was outside window. Guard now hides unreliable marker and reports suppression without changing dispatch. After restart combine cross-process group resume below with two reversible iPad toggles; verify suppression message and actual visible behavior, restore field. Valid-marker native coverage also pending. [Iteration](iterations/2026-09-20-indicator-geometry.md).
+
 - Installed build remains `444130a908e54dff63cb2a618a60bde37c75121fc33713da4334e98ecf8521db`. Native tools now loaded and tested. No binary changes this iteration.
 - Native retention/migration passed: all previous 589 records unchanged, schema2, integrity ok. Historical delta brackets563/572 and575/582 correct; fixed-through timeline pagination passed.
 - Both background iPad toggles returned one input, met postcheck and automatic deltas608/617 and620/627. Field restored. iPhone629 and Gameday664 clean. Two advisory iPad subrole warnings remain, zero blocking failures. No play edits.

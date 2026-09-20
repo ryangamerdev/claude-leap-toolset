@@ -1,0 +1,9 @@
+{
+  "sha256": "d5422d2833ff5ca806f5dd5bb9784388e2d5bcb6d5f7896a883ea13322c692fd",
+  "installed": "/Users/ryan/Applications/claude-leap.app",
+  "backup": "/Users/ryan/src/claude-leap/artifacts/backups/leap-indicator-20260920-052857/claude-leap.app",
+  "installedAt": "2026-09-20T05:28:57.738536-07:00",
+  "verification": "2 geometry tests passed; signed release verified; installed skill copies match source; native validation pending restart",
+  "registration": "leap unchanged",
+  "data": "No recording store changes in this iteration"
+}

@@ -342,17 +342,21 @@ public actor Engine {
     /// Flash the on-screen indicator (virtual pointer + sonar ripple) at a screen point.
     /// Purely cosmetic; never moves the user's real cursor.
     func signal(_ point: CGPoint?, _ ping: Overlay.Ping) async {
-        guard let point else { return }
-        await MainActor.run { Overlay.shared.signal(at: point, ping: ping) }
+        await MainActor.run {
+            if let point { Overlay.shared.signal(at: point, ping: ping) }
+            else { Overlay.shared.hide() }
+        }
     }
 
     /// Screen-point centre of an element index, for the indicator.
     func indicatorPoint(_ s: AppSession, _ index: Int?) -> CGPoint? {
-        if let index, let rec = try? s.element(index), let f = rec.node.frame {
-            return CGPoint(x: f.midX, y: f.midY)
+        s.refreshWindowFrame()
+        if let index {
+            guard let rec = try? s.element(index) else { return nil }
+            return IndicatorGeometry.point(frame: rec.node.frame, window: s.lastWindowFrame,
+                                           offscreen: rec.node.offscreen)
         }
-        let w = s.lastWindowFrame
-        return w.isEmpty ? nil : CGPoint(x: w.midX, y: w.midY)
+        return IndicatorGeometry.point(frame: s.lastWindowFrame, window: s.lastWindowFrame, offscreen: false)
     }
 
     /// Keyboard events posted to a process land in its key window. When the caller pinned a
@@ -461,6 +465,9 @@ public actor Engine {
         if let rec, button == .left, count == 1, flags.isEmpty, target.x == nil, !mode.foreground,
            !AXWalker.textRoles.contains(rec.node.role),
            rec.node.actions.contains(kAXPressAction) {
+            // AXPress needs no screen coordinate. Validate only its cosmetic marker,
+            // before the action can remove the target or change the window.
+            let marker = indicatorPoint(s, rec.index)
             var err = AXUIElementPerformAction(rec.node.element, kAXPressAction as CFString)
             if err == .success, rec.node.role == "AXMenuBarItem" {
                 // Opening a menu of a background app occasionally does not take on the first
@@ -470,8 +477,8 @@ public actor Engine {
                 if !open { err = AXUIElementPerformAction(rec.node.element, kAXPressAction as CFString) }
             }
             if err == .success {
-                await signal(p, .click)
-                return "pressed [\(rec.index)] via accessibility"
+                await signal(marker, .click)
+                return "pressed [\(rec.index)] via accessibility" + (marker == nil ? "; location indicator hidden: accessibility coordinates are unreliable" : "")
             }
             // A timeout/error is not proof that AXPress was rejected. A Save
             // can finish and destroy its button before the AX reply arrives.
