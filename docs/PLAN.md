@@ -66,3 +66,5 @@ Current next native case: iPad generic per-field AXSubrole failure recovery, usi
 Delivery requirement: maintain source skills with behavior changes and refresh Claude/Codex copies using `python3 scripts/install.py --skills-only` during development installs. Keep detailed usage conditional and native acceptance status separate.
 
 Current 2026-09-20 result: individual retries did not resolve the two iPad AXSubrole failures. Investigate affected roles/keys and attribute-specific completeness before further retry changes. User now authorizes/requires commit and push after every build/install iteration; no new restart is needed for the Git checkpoint alone.
+
+Latest paired iPad result: Sky and Leap both toggled information/field successfully; Sky independently verified Leap restored the field. Leap global read-failure gating and sparse final-deadline observations remain the gap, not demonstrated input failure. Next correction should use attribute/predicate-specific coverage and preserve usable timed observations. [Evidence and rationale](iterations/2026-09-20-sky-subrole.md).

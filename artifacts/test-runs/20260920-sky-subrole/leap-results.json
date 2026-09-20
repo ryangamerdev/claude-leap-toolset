@@ -1,0 +1,38 @@
+{
+  "forward": {
+    "content": [
+      {
+        "type": "text",
+        "text": "pressed [77] via accessibility [action=4F0330A6-40A9-40D6-B648-168A0C617433]\n\n## Simulator — window \"iPad Air 11-inch (M2) – iOS 18.0\" 1006x780 at screen (377,61) [background] — state #5 (settle deadline reached: the UI was still changing — verify before acting)\nIndices are stable; act with element_index or label. Screenshot pixels are window points at scale=1; pass include_frames=true for per-element coordinates.\n[1] Window/StandardWindow \"iPad Air 11-inch (M2) – iOS 18.0\" [focused]\n[2] Button \"Volume Up\"\n[3] Button \"Volume Down\"\n[4] Button \"Sleep/Wake\"\n[5] Button desc=\"Team library: Higley High School Knights · Freshman\" actions=Cancel\n[6] Button desc=\"Playbook: Freshman 2026\" actions=Cancel\n[7] Button desc=\"Playbook\" actions=Cancel\n[8] Button desc=\"Formations\" [offscreen: coords unreliable, use element_index/label] actions=Cancel\n[9] Button desc=\"Route library\" [offscreen: coords unreliable, use element_index/label] actions=Cancel\n[10] Button desc=\"Flashcards\" [offscreen: coords unreliable, use element_index/label] actions=Cancel\n[11] Button desc=\"Import\" [offscreen: coords unreliable, use element_index/label] actions=Cancel\n[12] StaticText desc=\"PLAYBOOK\" actions=Cancel\n[13] StaticText desc=\"ANY OSCAR VICK · 3-4\" actions=Cancel\n[14] StaticText desc=\"ANY  /  3-4 · Custom coverage · Base rush\" actions=Cancel\n[15] Button desc=\"Offense\" [selected] actions=Cancel\n[16] Button desc=\"Defense\" [offscreen: coords unreliable, use element_index/label] actions=Cancel\n[17] Button desc=\"Sideline\" [offscreen: coords unreliable, use element_index/label] actions=Cancel\n[18] StaticText desc=\"FILTER PLAYS\" actions=Cancel\n[19] Button desc=\"Reset filters\" id=arrow.counterclockwise actions=Cancel\n[20] TextField value=\"Search plays\" placeholder=\"Search plays\" desc=\"Search plays\" [settable] actions=Cancel\n[21] Button desc=\"Labels\" [offscreen: coords unreliable, use element_index/label] actions=Cancel\n[22] Button desc=\"Include Base Plays\" [selected] actions=Cancel\n[23] Button desc=\"Edit filters\" id=pencil actions=Cancel\n[24] Button desc=\"Select play\" id=eye actions=Cancel\n[127] StaticText desc=\"COACHING NOTES\" actions=Cancel\n[128] StaticText desc=\"2 more selected filters below\" actions=Cancel\n[26] Image desc=\"2 more selected filters below\" id=chevron.down actions=Cancel\n[27] Button desc=\"RUN\" actions=Cancel,ScrollDownByPage,ScrollUpByPage\n[28] Button desc=\"PASS\" actions=Cancel,ScrollDownByPage,ScrollUpByPage\n[29] Button desc=\"ZEBRA\" actions=Cancel,ScrollDownByPage,ScrollUpByPage\n[30] Button desc=\"OSCAR \" actions=Cancel,ScrollDownByPage,ScrollUpByPage\n… (tree truncated at 1500 elements; scroll or use a query)\nFocused element: [1]\n\nOther windows of Simulator: \"iPhone 16 – iOS 18.0\" — target one with get_app_state(window: \"<title part>\").\nObservation incomplete: readFailures=0, deadline=true, nodeLimit=true. Missing controls do not prove absence.\nRecording: session=8277E86D-9D6B-4D11-BF26-4CDA6AE4726D snapshot=535 coverage=partial interaction=CE0CA947-DBB9-4C71-AE3A-7C2DD3701161; inspect with ui_to_text(snapshot: 535) or recording_review(interaction_id: CE0CA947-DBB9-4C71-AE3A-7C2DD3701161)."
+      }
+    ],
+    "isError": false
+  },
+  "observedInformation": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"coordinateSpace\":\"screen points, top-left origin; visibility is frame-based, not occlusion\",\"hasMore\":false,\"historical\":true,\"items\":[{\"index\":134,\"label\":\"Show field\",\"ordinal\":80}],\"liveTargetWarning\":\"Historical indices\\/keys require fresh target validation before input\",\"matched\":1,\"next\":\"ui_to_text with same snapshot and filters, after=nextCursor; leap_asset for references\",\"nextCursor\":80,\"snapshot\":{\"batchReadRecoveries\":0,\"batchReadRetries\":2,\"captureEnded\":2309006.8347903336,\"captureLimit\":1500,\"captureStarted\":2309005.4474669583,\"deadlineExceeded\":false,\"generation\":6,\"interaction\":\"EBC0662E-43E5-4228-A14D-AFCDA93D09C4\",\"nodeCount\":121,\"readFailureDetails\":[{\"attribute\":\"AXSubrole\",\"elementHash\":\"1869632489\",\"error\":\"AXError(rawValue: -25200)\",\"errorCode\":\"-25200\"},{\"attribute\":\"AXSubrole\",\"elementHash\":\"1869632505\",\"error\":\"AXError(rawValue: -25200)\",\"errorCode\":\"-25200\"}],\"readFailureDetailsOmitted\":0,\"readFailures\":2,\"screenFrame\":[377,61,1006,780],\"session\":\"8277E86D-9D6B-4D11-BF26-4CDA6AE4726D\",\"snapshot\":538,\"source\":\"AX snapshot; attributes read over an interval, not atomic\",\"truncated\":false,\"window\":\"iPad Air 11-inch (M2) – iOS 18.0\"}}"
+      }
+    ],
+    "isError": false
+  },
+  "reverse": {
+    "content": [
+      {
+        "type": "text",
+        "text": "pressed [134] via accessibility [action=D1231ACF-AD88-4996-B9C0-0A265E1F5584]"
+      }
+    ],
+    "isError": false
+  },
+  "finalPartialRead": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"coordinateSpace\":\"screen points, top-left origin; visibility is frame-based, not occlusion\",\"hasMore\":false,\"historical\":true,\"items\":[],\"liveTargetWarning\":\"Historical indices\\/keys require fresh target validation before input\",\"matched\":0,\"next\":\"ui_to_text with same snapshot and filters, after=nextCursor; leap_asset for references\",\"nextCursor\":0,\"snapshot\":{\"batchReadRecoveries\":0,\"batchReadRetries\":0,\"captureEnded\":2309020.0247287084,\"captureLimit\":1500,\"captureStarted\":2309019.7327621668,\"deadlineExceeded\":true,\"generation\":7,\"interaction\":\"84D9D303-BE0E-4530-9B08-7A7E069C008F\",\"nodeCount\":41,\"readFailureDetails\":[],\"readFailureDetailsOmitted\":0,\"readFailures\":0,\"screenFrame\":[377,61,1006,780],\"session\":\"8277E86D-9D6B-4D11-BF26-4CDA6AE4726D\",\"snapshot\":544,\"source\":\"AX snapshot; attributes read over an interval, not atomic\",\"truncated\":true,\"window\":\"iPad Air 11-inch (M2) – iOS 18.0\"}}"
+      }
+    ],
+    "isError": false
+  }
+}

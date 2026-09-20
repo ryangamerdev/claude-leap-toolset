@@ -379,3 +379,5 @@ Diagnostic acceptance: [AX batch recovery iteration](iterations/2026-09-20-ax-ba
 Skill delivery: compact usage entrypoint and optional UI reference now synchronized to Claude/Codex via `scripts/install.py --skills-only`; byte equality verified in [skill iteration](iterations/2026-09-20-skill-sync.md). Guidance does not establish feature acceptance.
 
 Batch recovery native result: iPad still has two AXSubrole -25200 failures after two individual retries (zero recoveries); iPhone capture remains clean. Diagnostics passed, recovery hypothesis failed. See [delivery/native iteration](iterations/2026-09-20-delivery-native-check.md). Do not promote Simulator acquisition to complete.
+
+Latest paired iPad result: Sky and Leap both toggled information/field successfully; Sky independently verified Leap restored the field. Leap global read-failure gating and sparse final-deadline observations remain the gap, not demonstrated input failure. Next correction should use attribute/predicate-specific coverage and preserve usable timed observations. [Evidence and rationale](iterations/2026-09-20-sky-subrole.md).
