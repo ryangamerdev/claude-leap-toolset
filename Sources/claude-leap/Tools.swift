@@ -42,7 +42,7 @@ enum LeapTools {
              annotations: .init(readOnlyHint: true)),
 
         Tool(name: "get_app_state",
-             description: "Read the target app's key window: an indexed accessibility tree (roles, titles, values, extra actions; coordinates only with include_frames) plus a window screenshot. Indices are stable across calls; by default only the diff since the previous state is returned. Call this before acting on an app and after actions whose result you need to see.",
+             description: "Read the target app's key window as an indexed accessibility tree (roles, titles, values, extra actions; coordinates only with include_frames). Text by default — the tree is the observation, like a screen reader; no screenshot unless include_screenshot=true. Indices are stable across calls; by default only the diff since the previous state is returned. Call this before acting on an app and after actions whose result you need to see.",
              inputSchema: schema([
                 "app": appProp,
                 "include_screenshot": prop("boolean", "Default FALSE: the accessibility tree is the observation, like a screen reader. Set true only when the answer is visual and the tree cannot express it — a zoom level, a drag/pan offset, a canvas/diagram, a rendering glitch. A screenshot is ~110 KB; do not attach one by habit."),
