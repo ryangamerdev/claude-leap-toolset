@@ -1,0 +1,943 @@
+{
+  "session_id": "A1EF4E5B-F445-46EC-8D41-3CBAB5D66AD8",
+  "installed_sha256": "1667ba6a99632d29412b635f83d45f072011bd10c794f658fac899f8fa10af9a",
+  "results": [
+    {
+      "deadlineOverrun": false,
+      "duration_ms": 929,
+      "execution": "completed",
+      "inputReplay": "never",
+      "interaction_id": "982DA56E-07B7-4AB0-8692-7CC548D0DB25",
+      "schemaVersion": 2,
+      "session_id": "A1EF4E5B-F445-46EC-8D41-3CBAB5D66AD8",
+      "steps": [
+        {
+          "after_snapshot": 1065,
+          "artifact": {
+            "bytes": 264361,
+            "coordinateSpace": "window_screenshot_pixels",
+            "file": "/Users/ryan/src/claude-leap/.leap/sessions/A1EF4E5B-F445-46EC-8D41-3CBAB5D66AD8/3D510141-2889-4001-9D04-28CEB61C94B2.png",
+            "height": 780,
+            "pointsPerPixel": 1,
+            "session_id": "A1EF4E5B-F445-46EC-8D41-3CBAB5D66AD8",
+            "snapshot": 1065,
+            "type": "screenshot",
+            "width": 1006
+          },
+          "before_snapshot": 1065,
+          "delta": {
+            "changes": [],
+            "complete": true,
+            "meaning": "Observed differences, not causal attribution; IDs can churn",
+            "omitted": 0,
+            "totalChanges": 0
+          },
+          "dispatch": "not_sent",
+          "execution": "completed",
+          "finished_at": "2026-09-20T15:38:42Z",
+          "id": "0",
+          "index": 0,
+          "started_at": "2026-09-20T15:38:41Z",
+          "type": "capture",
+          "verification": "not_evaluated"
+        }
+      ],
+      "verification": "not_evaluated"
+    },
+    {
+      "deadlineOverrun": false,
+      "duration_ms": 6976,
+      "execution": "completed",
+      "inputReplay": "never",
+      "interaction_id": "A3E3944F-A53E-4145-99AA-F1FBC2586C55",
+      "schemaVersion": 2,
+      "session_id": "A1EF4E5B-F445-46EC-8D41-3CBAB5D66AD8",
+      "steps": [
+        {
+          "acknowledgement": "returned",
+          "after_snapshot": 1078,
+          "before_snapshot": 1070,
+          "delta": {
+            "changes": [],
+            "complete": true,
+            "meaning": "Observed differences, not causal attribution; IDs can churn",
+            "omitted": 0,
+            "totalChanges": 0
+          },
+          "dispatch": "attempted",
+          "execution": "completed",
+          "finished_at": "2026-09-20T15:39:00Z",
+          "id": "0",
+          "index": 0,
+          "scroll_effect": {
+            "additionalObservations": 1,
+            "after_artifact": {
+              "bytes": 264414,
+              "coordinateSpace": "window_screenshot_pixels",
+              "file": "/Users/ryan/src/claude-leap/.leap/sessions/A1EF4E5B-F445-46EC-8D41-3CBAB5D66AD8/9221CCB8-A8F8-44C0-B1F1-A024FDBFD93A.png",
+              "height": 780,
+              "pointsPerPixel": 1,
+              "session_id": "A1EF4E5B-F445-46EC-8D41-3CBAB5D66AD8",
+              "snapshot": 1078,
+              "type": "screenshot",
+              "width": 1006
+            },
+            "after_snapshot": 1078,
+            "basis": "scoped AX displacement in requested direction",
+            "before_artifact": {
+              "bytes": 264376,
+              "coordinateSpace": "window_screenshot_pixels",
+              "file": "/Users/ryan/src/claude-leap/.leap/sessions/A1EF4E5B-F445-46EC-8D41-3CBAB5D66AD8/916B270E-2D33-4475-873C-6A109F184595.png",
+              "height": 780,
+              "pointsPerPixel": 1,
+              "session_id": "A1EF4E5B-F445-46EC-8D41-3CBAB5D66AD8",
+              "snapshot": 1070,
+              "type": "screenshot",
+              "width": 1006
+            },
+            "before_snapshot": 1070,
+            "boundary": "unknown",
+            "causality": "Observed after input; concurrent user/app changes are possible",
+            "count": 0,
+            "samples": [],
+            "status": "unverified",
+            "visual": {
+              "changedFraction": 0,
+              "meaning": "Visual difference is not proof of scroll displacement or boundary; cursor/animation may contribute",
+              "sampling": "128x128 grayscale; difference >12, more than32 pixels",
+              "scope": "region",
+              "status": "no_visual_change_observed"
+            }
+          },
+          "started_at": "2026-09-20T15:38:53Z",
+          "type": "action",
+          "verification": "not_evaluated"
+        }
+      ],
+      "verification": "not_evaluated"
+    },
+    {
+      "deadlineOverrun": false,
+      "duration_ms": 2188,
+      "execution": "completed",
+      "inputReplay": "never",
+      "interaction_id": "30F4E47C-115E-4E29-97A1-C90A41017FB8",
+      "schemaVersion": 2,
+      "session_id": "A1EF4E5B-F445-46EC-8D41-3CBAB5D66AD8",
+      "steps": [
+        {
+          "acknowledgement": "returned",
+          "after_snapshot": 1087,
+          "before_snapshot": 1083,
+          "delta": {
+            "changes": [],
+            "complete": true,
+            "meaning": "Observed differences, not causal attribution; IDs can churn",
+            "omitted": 0,
+            "totalChanges": 0
+          },
+          "dispatch": "attempted",
+          "execution": "completed",
+          "finished_at": "2026-09-20T15:39:06Z",
+          "id": "0",
+          "index": 0,
+          "started_at": "2026-09-20T15:39:05Z",
+          "type": "action",
+          "verification": "not_evaluated"
+        },
+        {
+          "after_snapshot": 1090,
+          "artifact": {
+            "bytes": 269444,
+            "coordinateSpace": "window_screenshot_pixels",
+            "file": "/Users/ryan/src/claude-leap/.leap/sessions/A1EF4E5B-F445-46EC-8D41-3CBAB5D66AD8/621C5D9F-D7B3-4BFE-87BB-2686A5795999.png",
+            "height": 780,
+            "pointsPerPixel": 1,
+            "session_id": "A1EF4E5B-F445-46EC-8D41-3CBAB5D66AD8",
+            "snapshot": 1090,
+            "type": "screenshot",
+            "width": 1006
+          },
+          "before_snapshot": 1090,
+          "delta": {
+            "changes": [],
+            "complete": true,
+            "meaning": "Observed differences, not causal attribution; IDs can churn",
+            "omitted": 0,
+            "totalChanges": 0
+          },
+          "dispatch": "not_sent",
+          "execution": "completed",
+          "finished_at": "2026-09-20T15:39:07Z",
+          "id": "1",
+          "index": 1,
+          "started_at": "2026-09-20T15:39:06Z",
+          "type": "capture",
+          "verification": "not_evaluated"
+        }
+      ],
+      "verification": "not_evaluated"
+    },
+    {
+      "deadlineOverrun": false,
+      "duration_ms": 4210,
+      "execution": "completed",
+      "inputReplay": "never",
+      "interaction_id": "728AEBC6-6CA5-43E9-B2E2-2D377F9276CF",
+      "schemaVersion": 2,
+      "session_id": "A1EF4E5B-F445-46EC-8D41-3CBAB5D66AD8",
+      "steps": [
+        {
+          "acknowledgement": "returned",
+          "after_snapshot": 1101,
+          "before_snapshot": 1095,
+          "delta": {
+            "changes": [],
+            "complete": true,
+            "meaning": "Observed differences, not causal attribution; IDs can churn",
+            "omitted": 0,
+            "totalChanges": 0
+          },
+          "dispatch": "attempted",
+          "execution": "completed",
+          "finished_at": "2026-09-20T15:39:17Z",
+          "id": "0",
+          "index": 0,
+          "scroll_effect": {
+            "additionalObservations": 1,
+            "after_artifact": {
+              "bytes": 269408,
+              "coordinateSpace": "window_screenshot_pixels",
+              "file": "/Users/ryan/src/claude-leap/.leap/sessions/A1EF4E5B-F445-46EC-8D41-3CBAB5D66AD8/5F5FE9F6-6AEB-4A35-B061-E4AA78A125DE.png",
+              "height": 780,
+              "pointsPerPixel": 1,
+              "session_id": "A1EF4E5B-F445-46EC-8D41-3CBAB5D66AD8",
+              "snapshot": 1101,
+              "type": "screenshot",
+              "width": 1006
+            },
+            "after_snapshot": 1101,
+            "basis": "scoped AX displacement in requested direction",
+            "before_artifact": {
+              "bytes": 269458,
+              "coordinateSpace": "window_screenshot_pixels",
+              "file": "/Users/ryan/src/claude-leap/.leap/sessions/A1EF4E5B-F445-46EC-8D41-3CBAB5D66AD8/9323240E-C48F-4238-AF75-0C7C5E907984.png",
+              "height": 780,
+              "pointsPerPixel": 1,
+              "session_id": "A1EF4E5B-F445-46EC-8D41-3CBAB5D66AD8",
+              "snapshot": 1095,
+              "type": "screenshot",
+              "width": 1006
+            },
+            "before_snapshot": 1095,
+            "boundary": "unknown",
+            "causality": "Observed after input; concurrent user/app changes are possible",
+            "count": 0,
+            "samples": [],
+            "status": "unverified",
+            "visual": {
+              "changedFraction": 0,
+              "meaning": "Visual difference is not proof of scroll displacement or boundary; cursor/animation may contribute",
+              "sampling": "128x128 grayscale; difference >12, more than32 pixels",
+              "scope": "region",
+              "status": "no_visual_change_observed"
+            }
+          },
+          "started_at": "2026-09-20T15:39:13Z",
+          "type": "action",
+          "verification": "not_evaluated"
+        }
+      ],
+      "verification": "not_evaluated"
+    },
+    {
+      "deadlineOverrun": false,
+      "duration_ms": 4330,
+      "execution": "completed",
+      "inputReplay": "never",
+      "interaction_id": "5053BE4C-650C-48A9-9153-270C1D0DB179",
+      "schemaVersion": 2,
+      "session_id": "A1EF4E5B-F445-46EC-8D41-3CBAB5D66AD8",
+      "steps": [
+        {
+          "acknowledgement": "returned",
+          "after_snapshot": 1109,
+          "before_snapshot": 1106,
+          "delta": {
+            "changes": [
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      567.3220338983051,
+                      117.9466463414634,
+                      35.08474576271186,
+                      89.68597560975616
+                    ],
+                    "before": [
+                      -142.55932203389824,
+                      117.9466463414634,
+                      35.08474576271186,
+                      89.68597560975616
+                    ]
+                  },
+                  "offscreen": {
+                    "after": false,
+                    "before": true
+                  }
+                },
+                "id": "w/AXWindow[iPad Air 11-inch (M2) \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[3-4 (BUCK)]#51"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      567.3220338983051,
+                      213.0917682926829,
+                      35.08474576271186,
+                      89.6859756097561
+                    ],
+                    "before": [
+                      -142.55932203389824,
+                      213.0917682926829,
+                      35.08474576271186,
+                      89.6859756097561
+                    ]
+                  },
+                  "offscreen": {
+                    "after": false,
+                    "before": true
+                  }
+                },
+                "id": "w/AXWindow[iPad Air 11-inch (M2) \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[3-4 (TITE)]#52"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      607.8644067796611,
+                      117.9466463414634,
+                      35.084745762711876,
+                      89.68597560975616
+                    ],
+                    "before": [
+                      -102.01694915254234,
+                      117.9466463414634,
+                      35.084745762711876,
+                      89.68597560975616
+                    ]
+                  },
+                  "offscreen": {
+                    "after": false,
+                    "before": true
+                  }
+                },
+                "id": "w/AXWindow[iPad Air 11-inch (M2) \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[3-4]#49"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      607.4745762711864,
+                      212.7018292682926,
+                      35.86440677966101,
+                      90.46585365853662
+                    ],
+                    "before": [
+                      -102.40677966101688,
+                      212.7018292682926,
+                      35.86440677966101,
+                      90.46585365853662
+                    ]
+                  },
+                  "offscreen": {
+                    "after": false,
+                    "before": true
+                  }
+                },
+                "id": "w/AXWindow[iPad Air 11-inch (M2) \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[3-4]#50"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      717.4067796610169,
+                      213.0917682926829,
+                      35.08474576271187,
+                      89.6859756097561
+                    ],
+                    "before": [
+                      7.525423728813536,
+                      213.0917682926829,
+                      35.08474576271187,
+                      89.6859756097561
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[iPad Air 11-inch (M2) \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[3\u20134 Tite]#46"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      717.0169491525423,
+                      117.55670731707323,
+                      35.86440677966102,
+                      90.4658536585365
+                    ],
+                    "before": [
+                      7.13559322033899,
+                      117.55670731707323,
+                      35.86440677966102,
+                      90.4658536585365
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[iPad Air 11-inch (M2) \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[3\u20134]#45"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      526.7796610169491,
+                      117.9466463414634,
+                      35.08474576271186,
+                      89.68597560975616
+                    ],
+                    "before": [
+                      -183.10169491525414,
+                      117.9466463414634,
+                      35.08474576271186,
+                      89.68597560975616
+                    ]
+                  },
+                  "offscreen": {
+                    "after": false,
+                    "before": true
+                  }
+                },
+                "id": "w/AXWindow[iPad Air 11-inch (M2) \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[4-2]#53"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      526.7796610169491,
+                      213.0917682926829,
+                      35.08474576271186,
+                      89.6859756097561
+                    ],
+                    "before": [
+                      -183.10169491525414,
+                      213.0917682926829,
+                      35.08474576271186,
+                      89.6859756097561
+                    ]
+                  },
+                  "offscreen": {
+                    "after": false,
+                    "before": true
+                  }
+                },
+                "id": "w/AXWindow[iPad Air 11-inch (M2) \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[4-2]#54"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      486.2372881355932,
+                      117.9466463414634,
+                      35.08474576271186,
+                      89.68597560975616
+                    ],
+                    "before": [
+                      -223.64406779661027,
+                      117.9466463414634,
+                      35.08474576271186,
+                      89.68597560975616
+                    ]
+                  },
+                  "offscreen": {
+                    "after": false,
+                    "before": true
+                  }
+                },
+                "id": "w/AXWindow[iPad Air 11-inch (M2) \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[4-2]#55"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      1191.8305084745764,
+                      117.9466463414634,
+                      35.084745762711805,
+                      89.68597560975616
+                    ],
+                    "before": [
+                      481.9491525423729,
+                      117.9466463414634,
+                      35.084745762711805,
+                      89.68597560975616
+                    ]
+                  },
+                  "offscreen": {
+                    "after": true,
+                    "before": false
+                  }
+                },
+                "id": "w/AXWindow[iPad Air 11-inch (M2) \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[49ERS]#24"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      676.864406779661,
+                      117.9466463414634,
+                      35.08474576271187,
+                      89.68597560975616
+                    ],
+                    "before": [
+                      -33.01694915254238,
+                      117.9466463414634,
+                      35.08474576271187,
+                      89.68597560975616
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[iPad Air 11-inch (M2) \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[4\u20132\u20135 Nickel]#47"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      1191.8305084745764,
+                      213.0917682926829,
+                      35.084745762711805,
+                      89.6859756097561
+                    ],
+                    "before": [
+                      481.9491525423729,
+                      213.0917682926829,
+                      35.084745762711805,
+                      89.6859756097561
+                    ]
+                  },
+                  "offscreen": {
+                    "after": true,
+                    "before": false
+                  }
+                },
+                "id": "w/AXWindow[iPad Air 11-inch (M2) \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[ANY]#25"
+              }
+            ],
+            "complete": true,
+            "meaning": "Observed differences, not causal attribution; IDs can churn",
+            "omitted": 38,
+            "totalChanges": 50
+          },
+          "dispatch": "attempted",
+          "execution": "completed",
+          "finished_at": "2026-09-20T15:39:28Z",
+          "id": "0",
+          "index": 0,
+          "started_at": "2026-09-20T15:39:25Z",
+          "type": "action",
+          "verification": "not_evaluated"
+        },
+        {
+          "after_snapshot": 1112,
+          "artifact": {
+            "bytes": 272986,
+            "coordinateSpace": "window_screenshot_pixels",
+            "file": "/Users/ryan/src/claude-leap/.leap/sessions/A1EF4E5B-F445-46EC-8D41-3CBAB5D66AD8/A4EC0999-823E-41B5-BC11-C3B4CFA6D0F9.png",
+            "height": 780,
+            "pointsPerPixel": 1,
+            "session_id": "A1EF4E5B-F445-46EC-8D41-3CBAB5D66AD8",
+            "snapshot": 1112,
+            "type": "screenshot",
+            "width": 1006
+          },
+          "before_snapshot": 1112,
+          "delta": {
+            "changes": [],
+            "complete": true,
+            "meaning": "Observed differences, not causal attribution; IDs can churn",
+            "omitted": 0,
+            "totalChanges": 0
+          },
+          "dispatch": "not_sent",
+          "execution": "completed",
+          "finished_at": "2026-09-20T15:39:29Z",
+          "id": "1",
+          "index": 1,
+          "started_at": "2026-09-20T15:39:28Z",
+          "type": "capture",
+          "verification": "not_evaluated"
+        }
+      ],
+      "verification": "not_evaluated"
+    },
+    {
+      "deadlineOverrun": false,
+      "duration_ms": 4361,
+      "execution": "completed",
+      "inputReplay": "never",
+      "interaction_id": "CD21724F-9177-446F-BB51-F62A9E5FB542",
+      "schemaVersion": 2,
+      "session_id": "A1EF4E5B-F445-46EC-8D41-3CBAB5D66AD8",
+      "steps": [
+        {
+          "acknowledgement": "returned",
+          "after_snapshot": 1120,
+          "before_snapshot": 1117,
+          "delta": {
+            "changes": [
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      -142.55932203389824,
+                      117.9466463414634,
+                      35.08474576271186,
+                      89.68597560975616
+                    ],
+                    "before": [
+                      567.3220338983051,
+                      117.9466463414634,
+                      35.08474576271186,
+                      89.68597560975616
+                    ]
+                  },
+                  "offscreen": {
+                    "after": true,
+                    "before": false
+                  }
+                },
+                "id": "w/AXWindow[iPad Air 11-inch (M2) \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[3-4 (BUCK)]#51"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      -142.55932203389824,
+                      213.0917682926829,
+                      35.08474576271186,
+                      89.6859756097561
+                    ],
+                    "before": [
+                      567.3220338983051,
+                      213.0917682926829,
+                      35.08474576271186,
+                      89.6859756097561
+                    ]
+                  },
+                  "offscreen": {
+                    "after": true,
+                    "before": false
+                  }
+                },
+                "id": "w/AXWindow[iPad Air 11-inch (M2) \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[3-4 (TITE)]#52"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      -102.01694915254234,
+                      117.9466463414634,
+                      35.084745762711876,
+                      89.68597560975616
+                    ],
+                    "before": [
+                      607.8644067796611,
+                      117.9466463414634,
+                      35.084745762711876,
+                      89.68597560975616
+                    ]
+                  },
+                  "offscreen": {
+                    "after": true,
+                    "before": false
+                  }
+                },
+                "id": "w/AXWindow[iPad Air 11-inch (M2) \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[3-4]#49"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      -102.40677966101688,
+                      212.7018292682926,
+                      35.86440677966101,
+                      90.46585365853662
+                    ],
+                    "before": [
+                      607.4745762711864,
+                      212.7018292682926,
+                      35.86440677966101,
+                      90.46585365853662
+                    ]
+                  },
+                  "offscreen": {
+                    "after": true,
+                    "before": false
+                  }
+                },
+                "id": "w/AXWindow[iPad Air 11-inch (M2) \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[3-4]#50"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      7.525423728813536,
+                      213.0917682926829,
+                      35.08474576271187,
+                      89.6859756097561
+                    ],
+                    "before": [
+                      717.4067796610169,
+                      213.0917682926829,
+                      35.08474576271187,
+                      89.6859756097561
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[iPad Air 11-inch (M2) \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[3\u20134 Tite]#46"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      7.13559322033899,
+                      117.55670731707323,
+                      35.86440677966102,
+                      90.4658536585365
+                    ],
+                    "before": [
+                      717.0169491525423,
+                      117.55670731707323,
+                      35.86440677966102,
+                      90.4658536585365
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[iPad Air 11-inch (M2) \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[3\u20134]#45"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      -183.10169491525414,
+                      117.9466463414634,
+                      35.08474576271186,
+                      89.68597560975616
+                    ],
+                    "before": [
+                      526.7796610169491,
+                      117.9466463414634,
+                      35.08474576271186,
+                      89.68597560975616
+                    ]
+                  },
+                  "offscreen": {
+                    "after": true,
+                    "before": false
+                  }
+                },
+                "id": "w/AXWindow[iPad Air 11-inch (M2) \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[4-2]#53"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      -183.10169491525414,
+                      213.0917682926829,
+                      35.08474576271186,
+                      89.6859756097561
+                    ],
+                    "before": [
+                      526.7796610169491,
+                      213.0917682926829,
+                      35.08474576271186,
+                      89.6859756097561
+                    ]
+                  },
+                  "offscreen": {
+                    "after": true,
+                    "before": false
+                  }
+                },
+                "id": "w/AXWindow[iPad Air 11-inch (M2) \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[4-2]#54"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      -223.64406779661027,
+                      117.9466463414634,
+                      35.08474576271186,
+                      89.68597560975616
+                    ],
+                    "before": [
+                      486.2372881355932,
+                      117.9466463414634,
+                      35.08474576271186,
+                      89.68597560975616
+                    ]
+                  },
+                  "offscreen": {
+                    "after": true,
+                    "before": false
+                  }
+                },
+                "id": "w/AXWindow[iPad Air 11-inch (M2) \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[4-2]#55"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      481.9491525423729,
+                      117.9466463414634,
+                      35.084745762711805,
+                      89.68597560975616
+                    ],
+                    "before": [
+                      1191.8305084745764,
+                      117.9466463414634,
+                      35.084745762711805,
+                      89.68597560975616
+                    ]
+                  },
+                  "offscreen": {
+                    "after": false,
+                    "before": true
+                  }
+                },
+                "id": "w/AXWindow[iPad Air 11-inch (M2) \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[49ERS]#24"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      -33.01694915254238,
+                      117.9466463414634,
+                      35.08474576271187,
+                      89.68597560975616
+                    ],
+                    "before": [
+                      676.864406779661,
+                      117.9466463414634,
+                      35.08474576271187,
+                      89.68597560975616
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[iPad Air 11-inch (M2) \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[4\u20132\u20135 Nickel]#47"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      481.9491525423729,
+                      213.0917682926829,
+                      35.084745762711805,
+                      89.6859756097561
+                    ],
+                    "before": [
+                      1191.8305084745764,
+                      213.0917682926829,
+                      35.084745762711805,
+                      89.6859756097561
+                    ]
+                  },
+                  "offscreen": {
+                    "after": false,
+                    "before": true
+                  }
+                },
+                "id": "w/AXWindow[iPad Air 11-inch (M2) \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[ANY]#25"
+              }
+            ],
+            "complete": true,
+            "meaning": "Observed differences, not causal attribution; IDs can churn",
+            "omitted": 38,
+            "totalChanges": 50
+          },
+          "dispatch": "attempted",
+          "execution": "completed",
+          "finished_at": "2026-09-20T15:39:51Z",
+          "id": "0",
+          "index": 0,
+          "started_at": "2026-09-20T15:39:48Z",
+          "type": "action",
+          "verification": "not_evaluated"
+        },
+        {
+          "after_snapshot": 1123,
+          "artifact": {
+            "bytes": 269413,
+            "coordinateSpace": "window_screenshot_pixels",
+            "file": "/Users/ryan/src/claude-leap/.leap/sessions/A1EF4E5B-F445-46EC-8D41-3CBAB5D66AD8/3D8F3F59-DD60-4220-BB25-CE30DA473038.png",
+            "height": 780,
+            "pointsPerPixel": 1,
+            "session_id": "A1EF4E5B-F445-46EC-8D41-3CBAB5D66AD8",
+            "snapshot": 1123,
+            "type": "screenshot",
+            "width": 1006
+          },
+          "before_snapshot": 1123,
+          "delta": {
+            "changes": [],
+            "complete": true,
+            "meaning": "Observed differences, not causal attribution; IDs can churn",
+            "omitted": 0,
+            "totalChanges": 0
+          },
+          "dispatch": "not_sent",
+          "execution": "completed",
+          "finished_at": "2026-09-20T15:39:52Z",
+          "id": "1",
+          "index": 1,
+          "started_at": "2026-09-20T15:39:51Z",
+          "type": "capture",
+          "verification": "not_evaluated"
+        }
+      ],
+      "verification": "not_evaluated"
+    }
+  ],
+  "raw_files": "Local-only ignored .leap/sessions/A1EF4E5B-F445-46EC-8D41-3CBAB5D66AD8",
+  "evidence_read": {
+    "record": 1104,
+    "path": [
+      "steps",
+      "0",
+      "scroll_effect",
+      "visual"
+    ],
+    "status": "native success; changedFraction 0, no_visual_change_observed"
+  }
+}

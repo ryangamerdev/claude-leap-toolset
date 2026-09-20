@@ -58,3 +58,7 @@ leap-cli, physical-device provisioning, Android/Windows/browser backends, arbitr
 ## Scroll-effect evidence candidate
 
 **IMPLEMENTED, native RECHECK:** scroll_effect separates scoped coherent AX displacement, bounded visual differences, and unverified effects from dispatch/expectation results. Automatic retained before/after captures, optional observation_region, bounded delayed observations, explicit capture diagnostics, no boundary inference and no automatic retry. offscreen changes are now included in generic deltas. This does not fix wheel delivery or certify scrolling. See [iteration](iterations/2026-09-20-scroll-evidence.md).
+
+## Native scroll-evidence checkpoint
+
+[Iteration](iterations/2026-09-20-scroll-evidence-native.md): **TESTED** scoped negative-case reporting, automatic retained captures, additional observation and nested evidence retrieval on restarted bc78636. Both wheel trials: unverified, boundary unknown, image changedFraction0; explicit foreground did not alter result. Drag visibly scrolled and restored sidebar, with50 observed changes including offscreen. Positive automatic movement detection remains **RECHECK**, not proved by the separate drag action. No wheel delivery fix claimed.
