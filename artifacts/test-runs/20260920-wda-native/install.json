@@ -1,0 +1,8 @@
+{
+  "sha256": "6df9b4060129ea9fb5f49758bc2114ef24f454e4582570436298514366f1d7a9",
+  "installedAt": "2026-09-20T13:41:53.444293+00:00",
+  "bundle": "/Users/ryan/Applications/claude-leap.app",
+  "rollback": "/Users/ryan/src/claude-leap/artifacts/backups/20260920-wda-native/previous.app",
+  "rollbackScope": "ignored local-only",
+  "nativeAcceptance": "pending restart; fixes false rejection of identical bounds"
+}

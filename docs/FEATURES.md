@@ -11,7 +11,7 @@ Status: PENDING = absent; RESEARCH = unresolved approach; PARTIAL = missing requ
 | R03 Normalized observations | IMPLEMENTED | Mac AX + WDA JSON normalization, partial-read metadata and raw backend roles. Verify guest controls/geometry; selected can be unavailable on WDA. |
 | R04 Shared selectors | PARTIAL | Exact id/identifier/role/label, contains/root; complete unique observation required. WDA re-resolution conservatively requires a globally unique named control; scoped repeated-label actions remain a gap. |
 | R05 Bounded queries/content | IMPLEMENTED | Fields/depth/filter/frozen pagination; full envelope budget; retained raw field/chunk evidence_read. Verify large native tree and long value. |
-| R06 Actions/backends | PARTIAL | Mac click/double-click/type/set/key/scroll/drag/activate; WDA click/double-tap/type/key subset/scroll/drag/activate/rotate. Guest replace-text and broader gestures unavailable; add only if gate needs them. All new adapter paths await native acceptance. |
+| R06 Actions/backends | FAILED | Mac click/double-click/type/set/key/scroll/drag/activate; WDA click/double-tap/type/key subset/scroll/drag/activate/rotate. Guest replace-text and broader gestures unavailable; add only if gate needs them. All new adapter paths await native acceptance. |
 | R07 Coordinate provenance | IMPLEMENTED | Snapshot + space required, same session/tree/bounds/window/orientation; valid point bounds. No inferred host↔device conversion. Visual changes invisible to AX still require fresh screenshot judgment. Native move/rotate acceptance pending. |
 | R08 Truthful outcomes/no replay | IMPLEMENTED | Step execution/dispatch/acknowledgement/check separated; ambiguous input halts workflow. Protocol fault fixture: one click after lost acknowledgement, completed effect retained, second action skipped. Not a native pass. |
 | R09 Assertions/readiness | PARTIAL | Exact values, contains/count, enabled/disabled/selected/existence; preconditions and bounded polling. Partial observations produce unknown. Broader compound predicates and action-specific readiness need acceptance-driven completion. |
@@ -30,3 +30,7 @@ Status: PENDING = absent; RESEARCH = unresolved approach; PARTIAL = missing requ
 ## Deferred scope
 
 leap-cli, physical-device provisioning, Android/Windows/browser backends, arbitrary code execution inside workflows, complete event sourcing and virtual HID are not prerequisites. Existing history is preserved; no data reset performed.
+
+## First native WDA checkpoint
+
+[Native WDA trial](iterations/2026-09-20-wda-native.md): guest attachment,619-node observation, correct in-bounds information-control geometry, history and nested retrieval passed scoped native calls. Selector taps returned without expected effect both before and after verified host foreground activation. R06 remains failed for that case. A coordinate test exposed false stale rejection of equal numeric bounds; corrected and installed, pending restart. Neither this correction nor observation success establishes device input parity.

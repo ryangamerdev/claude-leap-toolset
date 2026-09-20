@@ -44,3 +44,5 @@ Coordinates are rejected if the source observation and fresh target/tree/bounds 
 Development regression scenarios: scripts/run-scenario.py executes {session,steps,timeout?} through stdio MCP and records a JSON run result. This is harness evidence, not the native-host acceptance gate. scripts/wda.py provisions the pinned local Simulator runner; consult --help for build/start/status. Runtime artifacts stay ignored in the repository.
 
 `evidence_read(session_id,record,path?,offset?,max_bytes?,project?)` retrieves raw retained JSON or a nested value. path is an array of object keys/array indices, e.g. ["nodes","2","value"]. offset is in characters; max_bytes bounds chunk size. Follow nextOffset; reads never reacquire UI.
+
+Native development checkpoint (2026-09-20): WDA iPad observation/history/raw retrieval worked, but the information-button tap returned without the expected UI change both before and after verified host foregrounding. Do not infer effect from acknowledgement. Numeric bounds comparison now fixes false stale-coordinate rejection; native coordinate acceptance awaits restart.

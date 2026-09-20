@@ -2,6 +2,14 @@ import XCTest
 @testable import LeapCore
 
 final class AutomationModelTests:XCTestCase {
+    func testBoundsSurviveJSONRoundTrip() throws {
+        let live:[Double]=[0,0,1180,820]
+        let stored=try JSONSerialization.jsonObject(with:JSONSerialization.data(withJSONObject:live))
+        XCTAssertTrue(AutomationModel.sameBounds(live,stored))
+        XCTAssertFalse(AutomationModel.sameBounds(live,[0,0,820,1180]))
+        XCTAssertFalse(AutomationModel.sameBounds(live,[0,0,1180]))
+        XCTAssertFalse(AutomationModel.sameBounds(live,[0,0,Double.nan,820]))
+    }
     func testPartialAcquisitionCannotProveAbsenceOrUniqueState() {
         let node:[String:Any] = ["label":"Save","enabled":true]
         for condition in ["absent","count","enabled","exists"] {

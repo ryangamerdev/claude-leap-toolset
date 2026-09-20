@@ -1,0 +1,156 @@
+{
+  "testedBuild": "b727dc103a5c7c4011ce92091c6e31443f0450933838c1208afa48d238db5a6d",
+  "nativeSession": "A8A182F5-52D5-4388-950F-50018F4A252D",
+  "backend": "wda",
+  "app": "local.gameday.ios",
+  "selectedControl": {
+    "label": "Show play information",
+    "frame": [
+      1120,
+      679,
+      20,
+      20
+    ]
+  },
+  "bounds": [
+    0,
+    0,
+    1180,
+    820
+  ],
+  "orientation": "LANDSCAPE",
+  "nodeCount": 619,
+  "coordinateComparison": {
+    "before": 763,
+    "after": 767,
+    "boundsEqual": true,
+    "nodesEqual": true
+  },
+  "foreground": "activate(Simulator) returned verified frontmost before second semantic tap; failed postcheck remained",
+  "outcomes": [
+    {
+      "deadlineOverrun": false,
+      "duration_ms": 21047,
+      "execution": "stopped",
+      "inputReplay": "never",
+      "interaction_id": "D03FBB57-16AF-4E38-9BB4-C900DB317BAD",
+      "schemaVersion": 2,
+      "session_id": "A8A182F5-52D5-4388-950F-50018F4A252D",
+      "steps": [
+        {
+          "acknowledgement": "returned",
+          "after_snapshot": 749,
+          "before_snapshot": 747,
+          "delta": {
+            "changes": [],
+            "complete": true,
+            "meaning": "Observed differences, not causal attribution; IDs can churn",
+            "omitted": 0,
+            "totalChanges": 0
+          },
+          "dispatch": "attempted",
+          "execution": "completed",
+          "failure_artifact": {
+            "bytes": 342267,
+            "coordinateSpace": "device_screenshot_pixels",
+            "file": "/Users/ryan/src/claude-leap/.leap/sessions/A8A182F5-52D5-4388-950F-50018F4A252D/67A343F4-0431-41C2-B447-60BAD89435ED.png",
+            "session_id": "A8A182F5-52D5-4388-950F-50018F4A252D",
+            "snapshot": 749,
+            "type": "screenshot"
+          },
+          "finished_at": "2026-09-20T13:38:26Z",
+          "id": "0",
+          "index": 0,
+          "started_at": "2026-09-20T13:38:05Z",
+          "type": "action",
+          "verification": "failed"
+        },
+        {
+          "dispatch": "not_sent",
+          "execution": "skipped",
+          "id": "1",
+          "index": 1,
+          "started_at": "2026-09-20T13:38:26Z",
+          "type": "capture",
+          "verification": "not_evaluated"
+        }
+      ],
+      "verification": "failed"
+    },
+    {
+      "deadlineOverrun": false,
+      "duration_ms": 20785,
+      "execution": "stopped",
+      "inputReplay": "never",
+      "interaction_id": "D12AC615-55EC-4BCD-A7EA-D864E9365D4B",
+      "schemaVersion": 2,
+      "session_id": "A8A182F5-52D5-4388-950F-50018F4A252D",
+      "steps": [
+        {
+          "acknowledgement": "returned",
+          "after_snapshot": 763,
+          "before_snapshot": 761,
+          "delta": {
+            "changes": [],
+            "complete": true,
+            "meaning": "Observed differences, not causal attribution; IDs can churn",
+            "omitted": 0,
+            "totalChanges": 0
+          },
+          "dispatch": "attempted",
+          "execution": "completed",
+          "failure_artifact": {
+            "bytes": 342247,
+            "coordinateSpace": "device_screenshot_pixels",
+            "file": "/Users/ryan/src/claude-leap/.leap/sessions/A8A182F5-52D5-4388-950F-50018F4A252D/C2731FAC-FCF4-4465-AED5-E15D2CCFD15E.png",
+            "session_id": "A8A182F5-52D5-4388-950F-50018F4A252D",
+            "snapshot": 763,
+            "type": "screenshot"
+          },
+          "finished_at": "2026-09-20T13:39:16Z",
+          "id": "0",
+          "index": 0,
+          "started_at": "2026-09-20T13:38:55Z",
+          "type": "action",
+          "verification": "failed"
+        }
+      ],
+      "verification": "failed"
+    },
+    {
+      "deadlineOverrun": false,
+      "duration_ms": 18946,
+      "execution": "stopped",
+      "inputReplay": "never",
+      "interaction_id": "69005B21-F38B-4037-B8CA-9FEEB6E6437C",
+      "schemaVersion": 2,
+      "session_id": "A8A182F5-52D5-4388-950F-50018F4A252D",
+      "steps": [
+        {
+          "after_snapshot": 768,
+          "before_snapshot": 767,
+          "dispatch": "not_sent",
+          "error": "Coordinates require snapshot and space with unchanged target bounds; no input sent",
+          "execution": "failed",
+          "failure_artifact": {
+            "bytes": 342247,
+            "coordinateSpace": "device_screenshot_pixels",
+            "file": "/Users/ryan/src/claude-leap/.leap/sessions/A8A182F5-52D5-4388-950F-50018F4A252D/B5D809BD-0678-4222-9F8A-B4F819791F85.png",
+            "session_id": "A8A182F5-52D5-4388-950F-50018F4A252D",
+            "snapshot": 768,
+            "type": "screenshot"
+          },
+          "finished_at": "2026-09-20T13:39:46Z",
+          "id": "0",
+          "index": 0,
+          "started_at": "2026-09-20T13:39:27Z",
+          "type": "action",
+          "verification": "unknown"
+        }
+      ],
+      "verification": "unknown"
+    }
+  ],
+  "retrieval": "session_history returned all three results; evidence_read returned nested step from766",
+  "rawEvidence": "Full snapshots and original screenshot paths in .leap are local-only; curated screenshot retained here"
+}

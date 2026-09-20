@@ -59,6 +59,12 @@ public enum AutomationModel {
         default: return "unknown"
         }
     }
+    static func sameBounds(_ lhs:Any?, _ rhs:Any?) -> Bool {
+        guard let a=lhs as? [NSNumber],let b=rhs as? [NSNumber],a.count==4,b.count==4 else {return false}
+        return zip(a,b).allSatisfy { x,y in
+            x.doubleValue.isFinite && y.doubleValue.isFinite && x.doubleValue == y.doubleValue
+        }
+    }
     static func delta(_ before: [[String:Any]], _ after: [[String:Any]], complete: Bool) -> [String:Any] {
         func keyed(_ nodes: [[String:Any]]) -> [String:[String:Any]] {
             var result: [String:[String:Any]]=[:]
