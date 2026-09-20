@@ -391,3 +391,5 @@ Current update: [interaction timeline/deltas](iterations/2026-09-20-interaction-
 | ID | Priority | Feature | Status | Evidence / boundary |
 |---|---|---|---|---|
 | DATA-22 | P1 | Named logical sessions/groups spanning application capture epochs, with clear storage/count summaries and preserved interaction references. | IMPLEMENTED | recording_group and recording_sessions add persistent task grouping and bounded inventory/counts; interaction_timeline filters groups. Seven focused tests passed; native restart/resume acceptance pending. Existing history preserved. [Iteration](iterations/2026-09-20-logical-sessions.md). |
+
+Latest native checkpoint: [grouped evidence acceptance](iterations/2026-09-20-group-native.md). DATA-20/21 scoped native tests passed; DATA-22 same-process grouping and discovery passed, cross-process resume remains pending. Next restart resumes group E02D3027-C127-4760-A280-7E2FC74244C4. Delta verbosity/key churn remains an open quality gap; no token savings claimed.

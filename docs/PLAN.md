@@ -76,3 +76,5 @@ Current update: [interaction timeline/deltas](iterations/2026-09-20-interaction-
 Retention audit: older records remain intact; no reset fix is indicated. Track DATA-22 logical campaign grouping and storage discoverability separately from per-app recording sessions. Check empty-interaction filtering during timeline acceptance. [Audit](iterations/2026-09-20-storage-audit.md).
 
 Latest increment: DATA-22 grouping/discovery implemented with additive schema migration; empty-interaction timeline filtering fixed. Native acceptance after restart: inspect retained inventory, create a named Simulator task, exercise grouped app captures and automatic deltas, then verify explicit group resume across a later restart. [Rationale](iterations/2026-09-20-logical-sessions.md).
+
+Latest native checkpoint: [grouped evidence acceptance](iterations/2026-09-20-group-native.md). DATA-20/21 scoped native tests passed; DATA-22 same-process grouping and discovery passed, cross-process resume remains pending. Next restart resumes group E02D3027-C127-4760-A280-7E2FC74244C4. Delta verbosity/key churn remains an open quality gap; no token savings claimed.

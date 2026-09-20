@@ -25,3 +25,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-20 — Recording retention audit](2026-09-20-storage-audit.md): all compared historical records retained; shared SQLite storage and logical grouping gap explained.
 
 - [2026-09-20 — Named logical sessions](2026-09-20-logical-sessions.md): persistent task grouping, storage discovery, empty-interaction filtering and installer argument safety.
+
+- [2026-09-20 — Native grouped evidence acceptance](2026-09-20-group-native.md): retention/migration, historical brackets, automatic action deltas and same-process grouping passed; cross-process resume pending.

@@ -18,7 +18,7 @@ those development documents for unrelated app tasks.
 - For a named task across apps/restarts, use recording_group(action:start,name), then explicitly
   resume its group_id after restart. Switching/ending groups closes current app capture epochs;
   next observations create new ones. Prior IDs and history stay intact. End closes grouping,
-  not automatic recording. Stopped apps stay paused. Grouping native acceptance is pending.
+  not automatic recording. Stopped apps stay paused. Same-process grouping passed native tests; cross-process resume remains pending.
 - recording_sessions lists groups or app captures, counts and storage sizes with pagination.
   Payloads live in SQLite; empty asset directories do not mean missing history. Existing captures
   stay ungrouped. interaction_timeline(group_id) spans the group's captures; session_id narrows one.
@@ -34,7 +34,8 @@ those development documents for unrelated app tasks.
 - Recorded successful single actions with default then_state return an outcome plus a bounded
   interaction delta. Errors and batches retain their full responses; unrecorded actions use
   rendered text diffs. A delta uses retained observations around input, not the last displayed
-  tree. Missing pre/post evidence is unavailable, never inferred. Native acceptance is pending.
+  tree. Missing pre/post evidence is unavailable, never inferred. iPad toggles passed native tests;
+  deltas can still be noisy when accessibility keys shift.
 - State settling is not business completion. Use bounded wait_for/verified_action conditions
   for delayed outcomes. Retry observations, not uncertain inputs. A partial capture cannot
   establish absence; inspect readFailures, readFailureDetails, deadlineExceeded and truncation.
