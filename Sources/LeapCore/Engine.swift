@@ -829,7 +829,15 @@ public actor Engine {
         case .unchanged, .notText:
             break
         }
-        Diagnostics.shared.record(level:"warning",kind:"set_value_fallback",detail:"Selection-based value replacement unavailable or unchanged; attempting direct AX value. Value omitted.")
+        // A provider can accept AXValue and change its displayed text without updating
+        // the application binding. Simulator TextEditor reproduced this: immediate
+        // readback matched, but save/reopen lost the notes. Respect the provider's
+        // capability instead of probing an unsupported write or guessing keyboard focus.
+        guard AX.isSettable(rec.node.element, kAXValueAttribute) else {
+            Diagnostics.shared.record(level:"warning",kind:"set_value_not_settable",detail:"Direct AX value replacement refused: provider does not advertise a settable value. No value write or keyboard fallback sent. Text omitted.")
+            throw LeapError.unsupported("[\(elementIndex)] does not expose a settable value and selection replacement was unavailable or unchanged. Direct value write was not sent. Focus the editable control, use type_text for normal text input, and verify the saved result by reopening it.")
+        }
+        Diagnostics.shared.record(level:"warning",kind:"set_value_fallback",detail:"Selection-based value replacement unavailable or unchanged; attempting supported direct AX value. Readback does not prove application persistence. Value omitted.")
         // 2. Generic settable value (sliders, checkboxes, steppers, non-text fields). Numeric
         //    controls want a number, not a string.
         let current: CFTypeRef? = AX.attr(rec.node.element, kAXValueAttribute)

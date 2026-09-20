@@ -16,7 +16,8 @@ its coordinates are device points, not host-window points. No silent backend fal
 Explicit foreground input can change focus; Mac keyboard fallback may use system input.
 
 Read execution, dispatch and verification separately. Never replay uncertain input. A partial
-observation cannot prove absence. A satisfied current-state check does not prove saving:
+observation cannot prove absence. Unsupported direct value writes are refused; use focused normal text input for such editors.
+A satisfied current-state check does not prove saving:
 reopen to verify persistence. Use screenshots for canvases or visual state the tree cannot express.
 
 Large results include immutable snapshot/record/file references. evidence_read retrieves a

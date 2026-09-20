@@ -1,0 +1,9 @@
+{
+  "installed_at": "2026-09-20T16:16:01.272300+00:00",
+  "sha256": "651ac4e5fcc6ba3f50672944b9149ce638f85b88326e2dfcd91be6d0d601d548",
+  "rollback": "/Users/ryan/src/claude-leap/artifacts/backups/20260920-text-capability/previous.app",
+  "rollback_local_only": true,
+  "skills_synced": true,
+  "native_acceptance": "pending restart",
+  "registration": "leap unchanged"
+}

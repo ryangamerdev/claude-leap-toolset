@@ -70,3 +70,7 @@ Native on bc78636: iPhone Playbook→Next→Filters passed Leap assertions and S
 ## Desktop creation repeat and editor metadata correction
 
 Native full-page scroll detection **TESTED** down/up via scoped scrollbar values on0c63b3e. Sky created and reopened SKY ACCEPTANCE 0920 - Slant Flat using2X2 SLOTS,2 Step Slant and Flat route assignments plus player/coaching notes. Leap opened New Play1 but metadata failures in coaching-notes AXTextArea blocked global completeness, even foregrounded. Candidate retains unavailableFields and selectorComplete, permits unrelated role-qualified/ID targeting and preserves unknown for metadata-dependent assertions. **RECHECK after restart**. Desktop Leap creation and paired iPad creation now take priority before Blender; user authorizes leaving all test changes in place.
+
+## Native creation and text capability checkpoint
+
+Desktop create/save/reopen **TESTED**, including named routes and notes on1b7be96. Editor metadata correction **TESTED**. iPad title/routes/player1 note persisted; coaching direct-value write failed persistence despite immediate readback. Raw unsupported value guard **IMPLEMENTED / RECHECK**. Sky normal typing retained notes in duplicate; Sky receiver-coordinate targeting failed even foregrounded. Both Save paths unexpectedly reached Team libraries; **RESEARCH**, not expected behavior. R16 remains PARTIAL, not certified. See [iteration](iterations/2026-09-20-text-capability.md).

@@ -59,3 +59,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-20 — Phone comparison and full-page scroll evidence](2026-09-20-scroll-page.md): paired phone semantic navigation and desktop scroll; corrects full-page detection false-negative and adds scrollbar evidence.
 
 - [2026-09-20 — Desktop creation and metadata uncertainty](2026-09-20-editor-metadata.md): native scroll detector passes; Sky creation/reopen passes; fixes unrelated text-area metadata blocking Leap editor.
+
+- [2026-09-20 — Native creation and unsupported text values](2026-09-20-text-capability.md): desktop creation passes; iPad persistence exposes unsupported value write; guard installed for restart.
