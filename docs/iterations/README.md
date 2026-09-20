@@ -19,3 +19,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-20 — Sky/iPad attribute comparison](2026-09-20-sky-subrole.md): both controllers click successfully; Leap completeness/settling is the demonstrated gap.
 
 - [2026-09-20 — Field-specific capture quality](2026-09-20-field-quality.md): conservative advisory metadata classification and explicitly retained observations; native acceptance pending.
+
+- [2026-09-20 — Interaction timeline and deltas](2026-09-20-interaction-deltas.md): iPad quality passed; adds bounded timeline and action-bracketed observations.

@@ -62,6 +62,32 @@ final class EvidenceTests:XCTestCase {
         XCTAssertEqual(result["outcome"] as? String,"requested current-state checks met")
         XCTAssertEqual((result["actions"] as? [[String:Any]])?.first?["acknowledgement"] as? String,"error; inspect evidence")
     }
+    func testInteractionBracketsAndFrozenTimeline() throws {
+        var db:OpaquePointer?;sqlite3_open(root+"/.leap/leap.db",&db);defer{sqlite3_close(db)}
+        let sql = """
+        ALTER TABLE records ADD COLUMN wall TEXT NOT NULL DEFAULT '2026-09-20T12:00:00Z';
+        UPDATE records SET interaction='trial';
+        INSERT INTO records(seq,session,interaction,kind,payload) SELECT 3,session,'trial',kind,payload FROM records WHERE seq=1;
+        INSERT INTO records(seq,session,interaction,kind,payload) SELECT 4,session,'trial','action_intent','{"actionId":"a","tool":"click"}' FROM records WHERE seq=1;
+        INSERT INTO records(seq,session,interaction,kind,payload) SELECT 5,session,'trial',kind,payload FROM records WHERE seq=2;
+        INSERT INTO records(seq,session,interaction,kind,payload) SELECT 6,session,'next','action_intent','{"actionId":"b","tool":"click"}' FROM records WHERE seq=1;
+        """
+        XCTAssertEqual(sqlite3_exec(db,sql,nil,nil,nil),SQLITE_OK)
+        let e=try Evidence(project:root)
+        let delta=try object(e.interactionDelta("trial"))
+        XCTAssertEqual(delta["beforeSnapshot"] as? Int,3)
+        XCTAssertEqual(delta["afterSnapshot"] as? Int,5)
+        XCTAssertEqual(delta["available"] as? Bool,true)
+        let missing=try object(e.interactionDelta("next"))
+        XCTAssertEqual(missing["available"] as? Bool,false)
+        let first=try object(e.timeline(session:nil,after:0,through:nil,limit:1))
+        XCTAssertEqual(first["hasMore"] as? Bool,true)
+        XCTAssertEqual(first["through"] as? Int,6)
+        let next=try object(e.timeline(session:nil,after:1,through:6,limit:1))
+        XCTAssertEqual((next["items"] as? [[String:Any]])?.first?["interaction"] as? String,"next")
+        let frozen=try object(e.timeline(session:nil,after:1,through:5,limit:1))
+        XCTAssertTrue((frozen["items"] as? [[String:Any]])?.isEmpty == true)
+    }
     func testInvalidReferencesAndUnknownRoot() throws {
         let e=try Evidence(project:root)
         XCTAssertThrowsError(try e.asset(id:"../../outside",mode:"file",offset:0,limit:1))

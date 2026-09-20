@@ -122,6 +122,53 @@ public final class Evidence {
         let result:[String:Any]=["interaction":id,"outcome":outcome,"actions":order.prefix(20).compactMap{actions[$0]},"checks":Array(checks.prefix(20)),"snapshots":snapshots,"captureGapRecords":gaps,"omitted":facts.count>200 || order.count>20 || checks.count>20,"meaning":"Current-state checks do not prove persistence or causation. Preserve API uncertainty; never replay merely because acknowledgement failed.","next":"recording_review(view: actions, interaction_id: this interaction) for all records; ui_diff for snapshot changes"]
         return try RecordingStore.json(result)
     }
+    /// Bracket inputs by record order; never use a previous interaction's displayed baseline.
+    public func interactionDelta(_ id: String) throws -> String {
+        let intents = try rows("SELECT MIN(seq) AS first,MAX(seq) AS last FROM records WHERE interaction=? AND kind='action_intent'", [id])
+        guard let first = intents.first?["first"] as? String,
+              let last = intents.first?["last"] as? String else {
+            return try RecordingStore.json(["available":false,"reason":"No retained action intent"])
+        }
+        let before = try rows("SELECT seq FROM records WHERE interaction=? AND kind='snapshot' AND seq<CAST(? AS INTEGER) ORDER BY seq DESC LIMIT 1", [id,first]).first?["seq"] as? String
+        let after = try rows("SELECT seq FROM records WHERE interaction=? AND kind='snapshot' AND seq>CAST(? AS INTEGER) ORDER BY seq DESC LIMIT 1", [id,last]).first?["seq"] as? String
+        guard let before,let b=Int(before),let after,let a=Int(after) else {
+            return try RecordingStore.json(["available":false,"reason":"Missing pre/post observation; no state inferred or input replayed"])
+        }
+        let (bm,_)=try snapshot(b), (am,_)=try snapshot(a)
+        var result: [String:Any] = ["beforeSnapshot":b,"afterSnapshot":a,
+            "beforeQuality":bm,"afterQuality":am,
+            "next":"ui_diff(before: beforeSnapshot, after_snapshot: afterSnapshot) for more changes; ui_to_text(snapshot: ...) for full controls"]
+        do {
+            let raw=try diff(before:b,after:a,cursor:0,limit:10,maxBytes:4000)
+            result["delta"]=try JSONSerialization.jsonObject(with:Data(raw.utf8))
+            result["available"]=true
+        } catch {
+            result["available"]=false;result["reason"]="Comparison unavailable: \(error)"
+        }
+        return try RecordingStore.json(result)
+    }
+    public func timeline(session:String?,after:Int,through:Int?,limit:Int) throws -> String {
+        let ceiling: Int
+        if let through { ceiling = through }
+        else { ceiling = Int((try rows("SELECT MAX(seq) AS seq FROM records").first?["seq"] as? String) ?? "0") ?? 0 }
+        let count=max(1,min(20,limit))
+        var args=[String(ceiling)]
+        let filter=session == nil ? "" : " AND session=?"
+        if let session { args.append(session) }
+        args += [String(after),String(count+1)]
+        let groups=try rows("SELECT interaction,session,MIN(seq) AS ordinal,MIN(wall) AS startedAt,MAX(wall) AS lastRecordedAt, SUM(CASE WHEN kind='action_intent' THEN 1 ELSE 0 END) AS inputs,MIN(CASE WHEN kind='snapshot' THEN seq END) AS firstSnapshot,MAX(CASE WHEN kind='snapshot' THEN seq END) AS lastSnapshot FROM records WHERE interaction IS NOT NULL AND seq<=CAST(? AS INTEGER)"+filter+" GROUP BY interaction,session HAVING MIN(seq)>CAST(? AS INTEGER) ORDER BY MIN(seq) LIMIT CAST(? AS INTEGER)",args)
+        let items=groups.prefix(count).map { row -> [String:Any] in
+            var item=row
+            item["ordinal"]=Int(row["ordinal"] as? String ?? "0") ?? 0
+            item["next"]="interaction_result(interaction_id) for acknowledgement/checks; interaction_delta(interaction_id) for bracketed changes"
+            return item
+        }
+        let (page,cut,next)=try Self.page(items,budget:12000,after:after)
+        return try RecordingStore.json(["items":page,"through":ceiling,"nextCursor":next,
+            "hasMore":cut || groups.count>page.count,
+            "meaning":"Recorded interactions only, frozen through cursor. lastRecordedAt is not a completion assertion. first/lastSnapshot include prechecks; interaction_delta brackets actual input.",
+            "next":"interaction_timeline with same session/through and after=nextCursor"])
+    }
     public func diff(before:Int,after:Int,cursor:Int,limit:Int,maxBytes:Int) throws -> String {
         let (bm,bn)=try snapshot(before);let(am,an)=try snapshot(after)
         guard bm["session"] as? String == am["session"] as? String,bm["window"] as? String == am["window"] as? String else {throw LeapError.unsupported("Snapshots must belong to the same recorded app session/window title; cross-process identity is not inferred")}
@@ -139,6 +186,18 @@ public final class Evidence {
             }
             if prior == nil || !changed.isEmpty {
                 var item:[String:Any]=["change":prior == nil ? "added":"changed","key":k,"fields":changed,"afterOrdinal":i+1,"label":String((n["label"] as? String ?? "").prefix(160))]
+                func projection(_ node: [String:Any]?) -> [String:Any] {
+                    var out:[String:Any]=[:]
+                    for field in changed {
+                        if let value=node?[field] {
+                            if let text=value as? String, text.utf8.count>128 {
+                                out[field]=["preview":String(text.prefix(64)),"shortened":true]
+                            } else {out[field]=value}
+                        }
+                    }
+                    return out
+                }
+                item["beforeValues"]=projection(prior);item["afterValues"]=projection(n)
                 if k.utf8.count>256 {item["key"]=Self.assetRef(snapshot:after,ordinal:i+1,field:"key",value:k)}
                 changes.append(item)
             }

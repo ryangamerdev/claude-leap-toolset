@@ -21,7 +21,7 @@ private func schema(_ props: [String: Value], required: [String] = []) -> Value 
 
 private let appProp = prop("string", "Target app: display name (\"Blender\"), bundle id (\"org.blenderfoundation.blender\"), or .app path. Launched in the background if not running.")
 private let foregroundProp = prop("boolean", "Default false: keep the user’s frontmost app. True explicitly brings the target app forward when synthesized input is needed. Mouse gestures use the same window-targeted delivery in both modes and do not move the real cursor. Keyboard fallback may use system events.")
-private let thenStateProp = prop("boolean", "Default true: append the app's updated accessibility state (diff) to the result so you don't need a separate get_app_state call.")
+private let thenStateProp = prop("boolean", "Default true: observe updated state. Recorded successful single actions return a compact outcome/delta and snapshot references; other paths return state text.")
 
 private let labelProp = prop("string", "Alternative to element_index: the element's visible title/description/value, e.g. \"Save notes\". Case-insensitive; exact match wins, else a unique substring match. Errors list candidates if ambiguous.")
 
@@ -36,6 +36,8 @@ private let targetProps: [String: Value] = [
 
 enum LeapTools {
     static let all: [Tool] = [
+        Tool(name:"interaction_timeline",description:"List timestamped recorded interactions with snapshot references and input counts. Bounded pages; freeze through while paging. Read-only discovery, not full UI dumps.",inputSchema:schema(["project":prop("string","Optional bound-project override."),"session_id":prop("string","Optional recorded session."),"after":prop("integer","Exclusive interaction ordinal cursor."),"through":prop("integer","Frozen record boundary returned by first page."),"limit":prop("integer","Default 10, maximum 20.")]),annotations:.init(readOnlyHint:true)),
+        Tool(name:"interaction_delta",description:"Compare snapshots immediately before the first retained input and after the last input in one interaction. Returns bounded changes, quality and baseline IDs. Missing/incompatible observations remain unavailable; no input replay. ui_diff paginates or compares any compatible snapshots.",inputSchema:schema(["project":prop("string","Optional bound-project override."),"interaction_id":prop("string","Recorded interaction ID.")],required:["interaction_id"]),annotations:.init(readOnlyHint:true)),
         Tool(name:"interaction_result",description:"Explain one recorded interaction: joined input intent/acknowledgement, before/after check outcomes, observation references and uncertainty. Does not imply a persisted save from a current-state check. Details remain available through recording_review.",inputSchema:schema(["project":prop("string","Optional bound-project override."),"interaction_id":prop("string","Interaction ID returned by an action.")],required:["interaction_id"]),annotations:.init(readOnlyHint:true)),
         Tool(name:"bind_project",description:"Bind the evidence project once. Subsequent app actions and observations automatically retain history; evidence tools can omit project. No UI input.",inputSchema:schema(["project":prop("string","Absolute project directory.")],required:["project"])),
         Tool(name:"ui_to_text",description:"Inspect a UI as compact structured JSON: fresh app observation or immutable snapshot. Filter roles, IDs, labels, states, subtree/depth and fields. Long strings become leapAsset references. Historical IDs require fresh validation before input. Bind a project first.",inputSchema:schema(["app":appProp,"window":prop("string","Optional window title for fresh observation."),"project":prop("string","Optional bound-project override for historical reads."),"snapshot":prop("integer","Historical snapshot; omit and supply app for a fresh observation."),"types":.object(["type":.string("array"),"items":.object(["type":.string("string")])]),"ids":.object(["type":.string("array"),"items":.object(["type":.string("string")])]),"fields":.object(["type":.string("array"),"items":.object(["type":.string("string")])]),"contains":prop("string","Label/value substring."),"root":prop("string","Subtree key from this snapshot."),"depth":prop("integer","Maximum rendered depth relative to root."),"enabled":prop("boolean","Filter enabled state."),"selected":prop("boolean","Filter selected state."),"visible":prop("boolean","Frame intersects window; not occlusion."),"after":prop("integer","Exclusive ordinal cursor."),"limit":prop("integer","Maximum 100 nodes; default 20."),"max_bytes":prop("integer","Item budget, 2048–32000; default 8000.")]),annotations:.init(readOnlyHint:true)),
@@ -214,7 +216,7 @@ enum LeapTools {
             let name = params.name
             return try await engine.serialized {
                 let interaction = await engine.beginInteraction()
-                let result: CallTool.Result
+                var result: CallTool.Result
                 do { result = try await dispatch(name, args, engine) }
                 catch {
                     var message = "Error: \(error)\ninteraction=\(interaction)"
@@ -223,6 +225,14 @@ enum LeapTools {
                         catch { message += "\nPost-error observation unavailable: \(error). Do not blindly repeat prior input." }
                     }
                     result = .init(content:[.text(text:message,annotations:nil,_meta:nil)],isError:true)
+                }
+                // Successful single-action calls return the recorded outcome/delta rather
+                // than duplicating the entire rendered tree. Preserve full errors and batches.
+                if result.isError != true && (Self.actionTools.contains(name) || name == "verified_action"),
+                   args.bool("then_state") != false {
+                    if let summary = try? await engine.interactionResult() {
+                        result = summary.result
+                    }
                 }
                 await engine.endInteraction()
                 return result
@@ -234,6 +244,11 @@ enum LeapTools {
 
     static func dispatch(_ name: String, _ a: Args, _ engine: Engine) async throws -> CallTool.Result {
         switch name {
+        case "interaction_timeline":
+            return try Evidence(project:await engine.recordingProject(a.string("project"))).timeline(session:a.string("session_id"),after:a.int("after") ?? 0,through:a.int("through"),limit:a.int("limit") ?? 10).result
+        case "interaction_delta":
+            guard let id=a.string("interaction_id") else {throw LeapError.unsupported("interaction_id required")}
+            return try Evidence(project:await engine.recordingProject(a.string("project"))).interactionDelta(id).result
         case "interaction_result":
             guard let id=a.string("interaction_id") else {throw LeapError.unsupported("interaction_id required")}
             return try Evidence(project:await engine.recordingProject(a.string("project"))).interaction(id).result

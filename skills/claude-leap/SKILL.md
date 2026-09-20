@@ -24,9 +24,10 @@ those development documents for unrelated app tasks.
 - Use verified_action for one input with an observable expected state. Acknowledgement and
   postcondition are separate. A met check does not establish saved persistence: reopen when
   persistence matters. An ambiguous acknowledgement must never cause an automatic replay.
-- Ordinary actions return updated text, normally a diff against the last rendered baseline.
-  That baseline is not necessarily the immediate pre-action observation. Automatic structured
-  interaction deltas and a dedicated timestamped interaction timeline are still pending.
+- Recorded successful single actions with default then_state return an outcome plus a bounded
+  interaction delta. Errors and batches retain their full responses; unrecorded actions use
+  rendered text diffs. A delta uses retained observations around input, not the last displayed
+  tree. Missing pre/post evidence is unavailable, never inferred. Native acceptance is pending.
 - State settling is not business completion. Use bounded wait_for/verified_action conditions
   for delayed outcomes. Retry observations, not uncertain inputs. A partial capture cannot
   establish absence; inspect readFailures, readFailureDetails, deadlineExceeded and truncation.
@@ -44,8 +45,11 @@ those development documents for unrelated app tasks.
   It reports observed changes, not causal proof. Partial captures and content-derived keys
   limit what removals mean. Retain the baseline IDs and follow bounded pages as needed.
 - interaction_result explains one interaction; recording_review offers overview/actions/issues
-  and grouped events. Fix through while paging with after. Timestamped records exist, but a
-  dedicated joined timeline with automatic before/after selection is not yet available.
+  and grouped events. interaction_timeline lists timestamps, input counts and snapshot references;
+  fix through while paging with after. interaction_delta selects the last observation before
+  the first input and the last after the final input. Use its IDs with ui_diff to paginate or
+  compare other compatible states. first/lastSnapshot in the timeline include prechecks;
+  they are not automatically the action's baseline. Value previews may be shortened.
 - Large captured values use leapAsset references. leap_asset returns bounded raw text or a
   materialized file. It retrieves captured data, not a fresh app value. Capture limits cannot
   be undone by retrieval. Current asset support covers text/node fields, not general binaries.

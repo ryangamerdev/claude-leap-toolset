@@ -85,7 +85,13 @@ extension Engine {
     }
     public func interactionResult() throws -> String? {
         guard let root=boundProject,let id=recordingInteraction else {return nil}
-        return try Evidence(project:root).interaction(id)
+        let evidence=try Evidence(project:root)
+        let summary=try evidence.interaction(id)
+        guard var parsed=try JSONSerialization.jsonObject(with:Data(summary.utf8)) as? [String:Any],
+              let actions=parsed["actions"] as? [[String:Any]], !actions.isEmpty else { return nil }
+        let delta=try evidence.interactionDelta(id)
+        parsed["observation"]=try JSONSerialization.jsonObject(with:Data(delta.utf8))
+        return try RecordingStore.json(parsed)
     }
     public func bindProject(_ project:String) throws -> String {
         let root=RecordingStore.git(project,["rev-parse","--show-toplevel"]) ?? URL(fileURLWithPath:project).standardizedFileURL.path
