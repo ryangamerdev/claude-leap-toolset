@@ -21,3 +21,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-20 — Field-specific capture quality](2026-09-20-field-quality.md): conservative advisory metadata classification and explicitly retained observations; native acceptance pending.
 
 - [2026-09-20 — Interaction timeline and deltas](2026-09-20-interaction-deltas.md): iPad quality passed; adds bounded timeline and action-bracketed observations.
+
+- [2026-09-20 — Recording retention audit](2026-09-20-storage-audit.md): all compared historical records retained; shared SQLite storage and logical grouping gap explained.

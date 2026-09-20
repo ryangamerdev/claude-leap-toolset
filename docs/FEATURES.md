@@ -385,3 +385,9 @@ Latest paired iPad result: Sky and Leap both toggled information/field successfu
 Current candidate: [field-specific quality](iterations/2026-09-20-field-quality.md) adds conservative advisory subrole errors on known non-text controls, blocking coverage checks and explicitly retained earlier observations. IMPLEMENTED, native verification pending; broader predicate-specific dependencies remain incomplete. Next restart test is the same paired iPad transition, then DATA-20/21.
 
 Current update: [interaction timeline/deltas](iterations/2026-09-20-interaction-deltas.md). Field-quality native iPad toggles passed with two checkbox metadata warnings and zero blocking errors; iPhone clean. DATA-20/21 now have implemented timeline/delta tools and automatic successful single-action summaries; native acceptance pending. Error/batch responses retain existing behavior.
+
+## Session discoverability follow-up
+
+| ID | Priority | Feature | Status | Evidence / boundary |
+|---|---|---|---|---|
+| DATA-22 | P1 | Named logical sessions/groups spanning application capture epochs, with clear storage/count summaries and preserved interaction references. | PLANNED | Current persistent per-app sessions retain history: 11 sessions/589 records, four older backups compared with no missing/changed records. Logical campaign grouping is not implemented. [Audit](iterations/2026-09-20-storage-audit.md). |
