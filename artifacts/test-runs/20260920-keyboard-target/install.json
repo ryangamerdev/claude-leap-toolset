@@ -1,0 +1,12 @@
+{
+  "installed_at": "2026-09-20T17:28:57.223471+00:00",
+  "sha256": "f3e621d9231c10ed167e0650313b4be50acd03a1d934e077b90870f0ef2aece2",
+  "rollback": "/Users/ryan/src/claude-leap/artifacts/backups/20260920-keyboard-target/previous.app",
+  "rollback_local_only": true,
+  "skills_synced": true,
+  "native_acceptance": "pending restart",
+  "registration": "leap unchanged",
+  "build": "passed",
+  "focused_tests": "9 passed",
+  "scope": "process-directed app keyboard in foreground/background; insights off"
+}

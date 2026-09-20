@@ -1,0 +1,207 @@
+{
+  "functions_indexed": 134750,
+  "shards_indexed": 90,
+  "scope": "Symbol index search, not exhaustive function-body review",
+  "matches": [
+    {
+      "address": "100068c14",
+      "shard": "part-0001.c",
+      "symbol": "ComputerUse.ComputerUseAppController.focusEnforcer.getter : AccessibilitySupport.SyntheticAppFocusEnforcer?"
+    },
+    {
+      "address": "100068c20",
+      "shard": "part-0001.c",
+      "symbol": "ComputerUse.ComputerUseAppController.focusEnforcer.setter : AccessibilitySupport.SyntheticAppFocusEnforcer?"
+    },
+    {
+      "address": "100068c2c",
+      "shard": "part-0001.c",
+      "symbol": "ComputerUse.ComputerUseAppController.focusEnforcer.modify : AccessibilitySupport.SyntheticAppFocusEnforcer?"
+    },
+    {
+      "address": "10006b620",
+      "shard": "part-0001.c",
+      "symbol": "ComputerUse.ComputerUseAppController.createVirtualCursorIfNeeded() -> ComputerUse.ComputerUseCursor"
+    },
+    {
+      "address": "10006e868",
+      "shard": "part-0001.c",
+      "symbol": "ComputerUse.ComputerUseAppController.activateFocusEnforcer() -> AccessibilitySupport.SyntheticAppFocusEnforcer"
+    },
+    {
+      "address": "10006f6d8",
+      "shard": "part-0001.c",
+      "symbol": "ComputerUse.ComputerUseAppController.prepareToInteract(with: Swift.Int, cursorNextInteractionTiming: ComputerUse.ComputerUseCursor.CursorNextInteractionTiming?, positionElement: Swift.Bool) async throws -> (ComputerUse.RefetchableSkyshotAXTree, AccessibilitySupport.UIElementProtocol)"
+    },
+    {
+      "address": "1000764d4",
+      "shard": "part-0001.c",
+      "symbol": "ComputerUse.ComputerUseAppController.performKeyboardAction(_: ComputerUse.ComputerUseAppController.KeyboardAction, text: Swift.String?, duration: Swift.Int?, waitForUIToSettle: Swift.Bool, returnSkyshot: Swift.Bool) async throws -> ComputerUse.ComputerUseAppController.SkyshotCapture?"
+    },
+    {
+      "address": "1006d4008",
+      "shard": "part-0024.c",
+      "symbol": "variable initialization expression of AccessibilitySupport.SyntheticAppFocusEnforcer.frontmostApplicationTracker : AccessibilitySupport.SystemFrontmostApplicationTracker"
+    },
+    {
+      "address": "1006d4040",
+      "shard": "part-0024.c",
+      "symbol": "variable initialization expression of AccessibilitySupport.SyntheticAppFocusEnforcer.(_state in _611A56775C2CE520572275E46FA3C77D) : os.OSAllocatedUnfairLock<AccessibilitySupport.SyntheticAppFocusEnforcer.State>"
+    },
+    {
+      "address": "1006e925c",
+      "shard": "part-0025.c",
+      "symbol": "AccessibilitySupport.ApplicationUIElement.syntheticallyActivateIfNeededForSendingClick(to: AccessibilitySupport.UIElementProtocol?, isInsideWebView: Swift.Bool, window: AccessibilitySupport.WindowUIElement?, focusEnforcer: AccessibilitySupport.SyntheticAppFocusEnforcer?, clickingByCoordinate: Swift.Bool) async throws -> Swift.Bool"
+    },
+    {
+      "address": "1006e97e8",
+      "shard": "part-0025.c",
+      "symbol": "AccessibilitySupport.ApplicationUIElement.sendClick(to: AccessibilitySupport.ApplicationUIElement.MouseEventTarget, at: __C.CGPoint, insideWebView: Swift.Bool, andDragTo: __C.CGPoint?, mouseButton: __C.CGMouseButton, count: Swift.Int, delay: Swift.Duration?, window: AccessibilitySupport.WindowUIElement?, focusEnforcer: AccessibilitySupport.SyntheticAppFocusEnforcer?, virtualCursor: AccessibilitySupport.VirtualCursor?) async throws -> ()"
+    },
+    {
+      "address": "1006f19c8",
+      "shard": "part-0025.c",
+      "symbol": "AccessibilitySupport.ApplicationUIElement.outOfProcessTargetWindow(for: AccessibilitySupport.UIElementProtocol, appPID: Swift.Int32) throws -> (pid: Swift.Int32, windowID: Swift.UInt32)?"
+    },
+    {
+      "address": "1006f1d48",
+      "shard": "part-0025.c",
+      "symbol": "AccessibilitySupport.ApplicationUIElement.targetForKeyboardEvent() throws -> AccessibilitySupport.ApplicationUIElement.KeyboardEventTarget"
+    },
+    {
+      "address": "1006f1f54",
+      "shard": "part-0025.c",
+      "symbol": "AccessibilitySupport.ApplicationUIElement.outOfProcessTarget(for: AccessibilitySupport.UIElementProtocol, appPID: Swift.Int32) -> (pid: Swift.Int32, effectiveElement: AccessibilitySupport.UIElementProtocol)?"
+    },
+    {
+      "address": "10071e07c",
+      "shard": "part-0026.c",
+      "symbol": "AccessibilitySupport.SyntheticAppFocusEnforcer.__allocating_init(pid: Swift.Int32) -> AccessibilitySupport.SyntheticAppFocusEnforcer"
+    },
+    {
+      "address": "10071e0b8",
+      "shard": "part-0026.c",
+      "symbol": "AccessibilitySupport.SyntheticAppFocusEnforcer.State.applicationBelievesItIsActive.modify : Swift.Bool"
+    },
+    {
+      "address": "10071e0d4",
+      "shard": "part-0026.c",
+      "symbol": "AccessibilitySupport.SyntheticAppFocusEnforcer.State.applicationBelievesItHasFocus.modify : Swift.Bool"
+    },
+    {
+      "address": "10071e0f8",
+      "shard": "part-0026.c",
+      "symbol": "AccessibilitySupport.SyntheticAppFocusEnforcer.State.applicationIsActive.modify : Swift.Bool"
+    },
+    {
+      "address": "10071e188",
+      "shard": "part-0026.c",
+      "symbol": "AccessibilitySupport.SyntheticAppFocusEnforcer.state.getter : AccessibilitySupport.SyntheticAppFocusEnforcer.State"
+    },
+    {
+      "address": "10071e274",
+      "shard": "part-0026.c",
+      "symbol": "AccessibilitySupport.SyntheticAppFocusEnforcer.init(pid: Swift.Int32) -> AccessibilitySupport.SyntheticAppFocusEnforcer"
+    },
+    {
+      "address": "10071e738",
+      "shard": "part-0026.c",
+      "symbol": "AccessibilitySupport.SyntheticAppFocusEnforcer.deinit"
+    },
+    {
+      "address": "10071e864",
+      "shard": "part-0026.c",
+      "symbol": "AccessibilitySupport.SyntheticAppFocusEnforcer.__deallocating_deinit"
+    },
+    {
+      "address": "10071e884",
+      "shard": "part-0026.c",
+      "symbol": "AccessibilitySupport.SyntheticAppFocusEnforcer.enforceActiveState(for: AccessibilitySupport.WindowUIElementProtocol?) throws -> ()"
+    },
+    {
+      "address": "10071f1b0",
+      "shard": "part-0026.c",
+      "symbol": "AccessibilitySupport.SyntheticAppFocusEnforcer.deactivateFocusEnforcer() throws -> ()"
+    },
+    {
+      "address": "10071f4bc",
+      "shard": "part-0026.c",
+      "symbol": "AccessibilitySupport.SyntheticAppFocusEnforcer.startSuppressingMenuDismissalEvents(menuPID: Swift.Int32?) -> ()"
+    },
+    {
+      "address": "10071f6f4",
+      "shard": "part-0026.c",
+      "symbol": "AccessibilitySupport.SyntheticAppFocusEnforcer.stopSuppressingMenuDismissalEvents() -> ()"
+    },
+    {
+      "address": "10071f87c",
+      "shard": "part-0026.c",
+      "symbol": "AccessibilitySupport.SyntheticAppFocusEnforcer.synthesizedActionWasPerformed() -> ()"
+    },
+    {
+      "address": "10071fbd8",
+      "shard": "part-0026.c",
+      "symbol": "type metadata accessor for AccessibilitySupport.SyntheticAppFocusEnforcer"
+    },
+    {
+      "address": "10071fd18",
+      "shard": "part-0026.c",
+      "symbol": "type metadata accessor for AccessibilitySupport.SyntheticAppFocusEnforcer.State"
+    },
+    {
+      "address": "100728cbc",
+      "shard": "part-0026.c",
+      "symbol": "AccessibilitySupport.SynthesizedEvent.send(to: Swift.Int32, handler: (__C.CGEventRef, () -> ()) async throws -> ()) async throws -> ()"
+    },
+    {
+      "address": "100728ff0",
+      "shard": "part-0026.c",
+      "symbol": "AccessibilitySupport.SynthesizedEvent.send(to: Swift.Int32, delay: Swift.Duration?) async throws -> ()"
+    },
+    {
+      "address": "1007296b8",
+      "shard": "part-0026.c",
+      "symbol": "AccessibilitySupport.SynthesizedEvent.send(to: Swift.Int32) throws -> ()"
+    },
+    {
+      "address": "10072a4a4",
+      "shard": "part-0026.c",
+      "symbol": "static AccessibilitySupport.SynthesizedEvent.type(string: Swift.String) async throws -> AccessibilitySupport.SynthesizedEvent"
+    },
+    {
+      "address": "10072ab20",
+      "shard": "part-0026.c",
+      "symbol": "AccessibilitySupport.SynthesizedEvent.send(delay: Swift.Duration?) async throws -> ()"
+    },
+    {
+      "address": "10076281c",
+      "shard": "part-0026.c",
+      "symbol": "static AccessibilitySupport.UIElement.ProcessType.containingElement(for: AccessibilitySupport.UIElementProtocol, ofTypes: Swift.Set<AccessibilitySupport.UIElement.ProcessType>) -> (AccessibilitySupport.UIElementProtocol, AccessibilitySupport.UIElement.ProcessType, Swift.Int32)?"
+    },
+    {
+      "address": "100795934",
+      "shard": "part-0027.c",
+      "symbol": "(extension in AccessibilitySupport):AccessibilitySupport.UIElementProtocol.select(in: AccessibilitySupport.WindowUIElement, app: AccessibilitySupport.ApplicationUIElement, focusEnforcer: AccessibilitySupport.SyntheticAppFocusEnforcer?) async throws -> ()"
+    },
+    {
+      "address": "100795aac",
+      "shard": "part-0027.c",
+      "symbol": "(extension in AccessibilitySupport):AccessibilitySupport.UIElementProtocol.click(_: __C.CGMouseButton, count: Swift.Int, delay: Swift.Duration?, alwaysSimulateClick: Swift.Bool, in: AccessibilitySupport.WindowUIElement, app: AccessibilitySupport.ApplicationUIElement, focusEnforcer: AccessibilitySupport.SyntheticAppFocusEnforcer?, virtualCursor: AccessibilitySupport.VirtualCursor?) async throws -> ()"
+    },
+    {
+      "address": "100795bd0",
+      "shard": "part-0027.c",
+      "symbol": "(extension in AccessibilitySupport):AccessibilitySupport.UIElementProtocol.focusFieldIfNeeded(in: AccessibilitySupport.WindowUIElement, app: AccessibilitySupport.ApplicationUIElement, focusEnforcer: AccessibilitySupport.SyntheticAppFocusEnforcer?) async throws -> ()"
+    },
+    {
+      "address": "100796020",
+      "shard": "part-0027.c",
+      "symbol": "(extension in AccessibilitySupport):AccessibilitySupport.UIElementProtocol.focus(in: AccessibilitySupport.WindowUIElement, app: AccessibilitySupport.ApplicationUIElement, focusEnforcer: AccessibilitySupport.SyntheticAppFocusEnforcer?) async throws -> ()"
+    },
+    {
+      "address": "1007a4998",
+      "shard": "part-0028.c",
+      "symbol": "(extension in AccessibilitySupport):AccessibilitySupport.VirtualCursor.press() async throws -> ()"
+    }
+  ]
+}

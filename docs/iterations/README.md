@@ -75,3 +75,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-20 — Foreground typing failure, scoped persistence pass, whole-text preparation](2026-09-20-foreground-acceptance.md)
 
 - [2026-09-20 — Insights-off native result and whole-text preparation](2026-09-20-insights-off-native.md)
+
+- [2026-09-20 — Full keyboard-controller trace and process-directed delivery](2026-09-20-keyboard-target.md)

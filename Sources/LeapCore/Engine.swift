@@ -394,25 +394,21 @@ public actor Engine {
 
     func withInput<T>(_ s: AppSession, _ mode: InputMode, _ body: (Delivery) throws -> T) async throws -> T {
         let wantsForeground = mode.foreground || (hold?.session.pid == s.pid && hold?.mode.foreground == true)
-        guard wantsForeground else {
-            // Background: events go straight to the process. The user's frontmost app,
-            // keyboard focus and real cursor are all untouched.
-            s.refreshWindowFrame()
-            let title: String? = s.lastWindow.flatMap { AX.attr($0, kAXTitleAttribute) }
-            let window = WindowInfo.match(pid: s.pid, frame: s.lastWindowFrame, title: title)
-            try ensureKeyWindow(s)
-            return try body(.app(s.pid, window: window))
-        }
-        if let hold, hold.session.pid == s.pid, hold.delivery != nil {
-            // The user may have changed focus since the preceding batch action.
-            try await activate(s)
-            try ensureKeyWindow(s)
-            return try body(.system)
-        }
-        try await activate(s)
-        hold?.delivery = .system
+        if wantsForeground { try await activate(s) }
         try ensureKeyWindow(s)
-        return try body(.system)
+        s.refreshWindowFrame()
+        let title: String? = s.lastWindow.flatMap { AX.attr($0, kAXTitleAttribute) }
+        guard !s.app.isTerminated,
+              let window = WindowInfo.match(pid: s.pid, frame: s.lastWindowFrame, title: title) else {
+            throw LeapError.unsupported("Keyboard target window is unavailable. No keyboard input sent.")
+        }
+        // Sky's app keyboard controller resolves a KeyboardEventTarget then calls
+        // send(to:pid), even when the app is foreground. Activation is a policy,
+        // not permission to send keys into the system-wide input stream.
+        let delivery = try Input.appKeyboardDelivery(pid: s.pid, window: window)
+        hold?.delivery = delivery
+        Diagnostics.shared.record(level:"info",kind:"keyboard_target",detail:"Process-directed keyboard delivery pid=\(s.pid) window=\(window.id); foreground requested=\(wantsForeground). No system-wide fallback.")
+        return try body(delivery)
     }
 
     /// Native pointer transport is independent of foreground policy. Both modes

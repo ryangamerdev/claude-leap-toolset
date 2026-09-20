@@ -104,3 +104,7 @@ User steering supersedes pending whole-text candidate: **insights-off experiment
 ### Insights-off native result
 
 **TESTED:** session advertises insights disabled; action-only results omit post scans/deltas. Exact Test 79. replacement passed. Appended Read flat. became Red flat.: **FAILED** even with insights off. No CPU causation established. Whole-text preconstruction/frozen modifier restoration now applied as **IMPLEMENTED / RECHECK**,12 focused tests. [Iteration](iterations/2026-09-20-insights-off-native.md).
+
+### App keyboard target correction
+
+Full [controller trace](research/sky-keyboard-controller-trace.md) confirms Sky app text/chords resolve a PID and post to it. Prior inference from global sender was incomplete. Leap foreground app keyboard now process-directed, never .system: **IMPLEMENTED / native RECHECK**. User observed a in ChatGPT on prior build; full-text preparation did not resolve Read→Red. Hosted target/focus state-machine parity remains **RESEARCH**.9 routing/text tests passed.

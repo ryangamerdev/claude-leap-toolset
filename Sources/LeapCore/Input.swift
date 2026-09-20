@@ -54,6 +54,13 @@ public enum Input {
         return unsafeBitCast(symbol, to: SetWindowLocation.self)
     }()
 
+    static func appKeyboardDelivery(pid: pid_t, window: WindowInfo) throws -> Delivery {
+        guard pid > 0, window.pid == pid else {
+            throw LeapError.unsupported("Keyboard process/window ownership mismatch; no input sent")
+        }
+        return .app(pid, window: window)
+    }
+
     static func routedEvent(_ event: CGEvent, _ delivery: Delivery) throws -> CGEvent {
         switch delivery {
         case .app(let pid, let window):

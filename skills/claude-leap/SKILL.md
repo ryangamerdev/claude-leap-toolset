@@ -13,7 +13,7 @@ Mac/WDA adapters have scoped native passes; full acceptance remains open.
 
 Use mac_ax for Mac applications. WDA targets the guest app on a specific Simulator runner;
 its coordinates are device points, not host-window points. No silent backend fallback.
-Explicit foreground input can change focus; Mac keyboard fallback may use system input.
+Explicit foreground input can change focus; app keyboard events remain process-directed with no system-wide fallback.
 
 Read execution, dispatch and verification separately. Never replay uncertain input. A partial
 observation cannot prove absence. Unsupported direct value writes are refused; use focused normal text input for such editors.
