@@ -1,0 +1,15 @@
+{
+  "kind": "infrastructure readiness, not native UI acceptance",
+  "wdaRevision": "1892efc71cc6e5bc8a20b083acc2753ea2288b62",
+  "version": "16.12.9",
+  "deviceUDID": "C2CC7242-41E7-4EB3-BDA9-758D00DF5CDD",
+  "endpoint": "http://127.0.0.1:8100",
+  "buildExit": 0,
+  "healthReady": true,
+  "unitTests": {
+    "run": 7,
+    "failed": 0
+  },
+  "protocolFixture": "passed; see contract-results.json",
+  "localArtifacts": "artifacts/test-runs/wda/<UDID> and artifacts/test-runs/20260920-rebuild/*.log; ignored"
+}

@@ -1,0 +1,12 @@
+{
+  "installedAt": "2026-09-20T13:35:46.802403+00:00",
+  "sha256": "b727dc103a5c7c4011ce92091c6e31443f0450933838c1208afa48d238db5a6d",
+  "bundle": "/Users/ryan/Applications/claude-leap.app",
+  "rollback": "/Users/ryan/src/claude-leap/artifacts/backups/20260920-intent-rebuild/previous.app",
+  "rollbackScope": "local-only ignored artifact",
+  "sourceBase": "241888a",
+  "contractVersion": 2,
+  "nativeAcceptance": "pending session restart",
+  "wdaRevision": "1892efc71cc6e5bc8a20b083acc2753ea2288b62",
+  "finalReview": "Reject unsupported/mistyped arguments before any input; role-only WDA targeting requires unique backend match"
+}

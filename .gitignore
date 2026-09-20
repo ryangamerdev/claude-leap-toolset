@@ -30,3 +30,6 @@ artifacts/test-runs/**/fixtures/
 # Recovered scratch history is documented, not a reproducible source distribution.
 artifacts/reference/2026-09-20-recovered/*
 !artifacts/reference/2026-09-20-recovered/README.md
+
+# Pinned XCTest runner products/endpoint manifests are local; curated identity is separate.
+artifacts/test-runs/wda/

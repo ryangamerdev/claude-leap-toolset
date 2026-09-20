@@ -5,6 +5,7 @@ import Foundation
 /// Coordinates app sessions and executes actions. One instance per server.
 public actor Engine {
     var sessions: [pid_t: AppSession] = [:]
+    var automationSessions: [String: AutomationSession] = [:]
     var recordings: [pid_t: AXRecording] = [:]
     var recordingStores: [String: RecordingStore] = [:]
     var boundProject: String?

@@ -1,0 +1,165 @@
+{
+  "evidenceType": "protocol fixture, not native acceptance",
+  "assertionFailure": {
+    "deadlineOverrun": false,
+    "duration_ms": 10,
+    "execution": "stopped",
+    "inputReplay": "never",
+    "interaction_id": "401CD8BA-A5AB-41F1-9F1B-D956DDB5F469",
+    "schemaVersion": 2,
+    "session_id": "860B3630-510B-424F-9C42-1581D035CD77",
+    "steps": [
+      {
+        "after_snapshot": 17,
+        "before_snapshot": 16,
+        "delta": {
+          "changes": [],
+          "complete": true,
+          "meaning": "Observed differences, not causal attribution; IDs can churn",
+          "omitted": 0,
+          "totalChanges": 0
+        },
+        "dispatch": "not_sent",
+        "execution": "completed",
+        "failure_artifact": {
+          "bytes": 5,
+          "coordinateSpace": "device_screenshot_pixels",
+          "file": "/Users/ryan/src/claude-leap/artifacts/test-runs/20260920-rebuild/fixtures/contract/.leap/sessions/860B3630-510B-424F-9C42-1581D035CD77/EDCC4BAC-BBB8-4148-9C06-097FB7A91A29.png",
+          "session_id": "860B3630-510B-424F-9C42-1581D035CD77",
+          "snapshot": 17,
+          "type": "screenshot"
+        },
+        "finished_at": "2026-09-20T13:35:47Z",
+        "id": "0",
+        "index": 0,
+        "started_at": "2026-09-20T13:35:47Z",
+        "type": "assert",
+        "verification": "failed"
+      },
+      {
+        "dispatch": "not_sent",
+        "execution": "skipped",
+        "id": "1",
+        "index": 1,
+        "started_at": "2026-09-20T13:35:47Z",
+        "type": "action",
+        "verification": "not_evaluated"
+      }
+    ],
+    "verification": "failed"
+  },
+  "ambiguousInput": {
+    "deadlineOverrun": false,
+    "duration_ms": 16,
+    "execution": "stopped",
+    "inputReplay": "never",
+    "interaction_id": "61969D82-1CD4-4A08-ADEB-A2FB77A8CAB7",
+    "schemaVersion": 2,
+    "session_id": "860B3630-510B-424F-9C42-1581D035CD77",
+    "steps": [
+      {
+        "after_snapshot": 23,
+        "before_snapshot": 21,
+        "dispatch": "uncertain",
+        "error": "WDA POST /session/fixture/element/save/click: Injected lost acknowledgement after app effect",
+        "execution": "failed",
+        "failure_artifact": {
+          "bytes": 5,
+          "coordinateSpace": "device_screenshot_pixels",
+          "file": "/Users/ryan/src/claude-leap/artifacts/test-runs/20260920-rebuild/fixtures/contract/.leap/sessions/860B3630-510B-424F-9C42-1581D035CD77/C311ADBB-FC3F-4C24-95EA-A6DBC51EEE78.png",
+          "session_id": "860B3630-510B-424F-9C42-1581D035CD77",
+          "snapshot": 23,
+          "type": "screenshot"
+        },
+        "finished_at": "2026-09-20T13:35:47Z",
+        "id": "0",
+        "index": 0,
+        "started_at": "2026-09-20T13:35:47Z",
+        "type": "action",
+        "verification": "passed"
+      },
+      {
+        "dispatch": "not_sent",
+        "execution": "skipped",
+        "id": "1",
+        "index": 1,
+        "started_at": "2026-09-20T13:35:47Z",
+        "type": "action",
+        "verification": "not_evaluated"
+      }
+    ],
+    "verification": "unknown"
+  },
+  "history": {
+    "hasMore": false,
+    "items": [
+      {
+        "execution": "stopped",
+        "file": "/Users/ryan/src/claude-leap/artifacts/test-runs/20260920-rebuild/fixtures/contract/.leap/sessions/860B3630-510B-424F-9C42-1581D035CD77/20-result.json",
+        "interaction": "401CD8BA-A5AB-41F1-9F1B-D956DDB5F469",
+        "kind": "automation_result",
+        "seq": "20",
+        "session": "860B3630-510B-424F-9C42-1581D035CD77",
+        "verification": "failed",
+        "wall": "2026-09-20T13:35:47Z"
+      },
+      {
+        "execution": "stopped",
+        "file": "/Users/ryan/src/claude-leap/artifacts/test-runs/20260920-rebuild/fixtures/contract/.leap/sessions/860B3630-510B-424F-9C42-1581D035CD77/26-result.json",
+        "interaction": "61969D82-1CD4-4A08-ADEB-A2FB77A8CAB7",
+        "kind": "automation_result",
+        "seq": "26",
+        "session": "860B3630-510B-424F-9C42-1581D035CD77",
+        "verification": "unknown",
+        "wall": "2026-09-20T13:35:47Z"
+      }
+    ],
+    "nextCursor": 26,
+    "schemaVersion": 2
+  },
+  "historicalSnapshot": {
+    "app": "fixture.app",
+    "backend": "wda",
+    "bounds": [
+      0,
+      0,
+      800,
+      600
+    ],
+    "complete": true,
+    "coordinateSpace": "device_points",
+    "deviceIdentity": "fixture-device",
+    "file": "/Users/ryan/src/claude-leap/artifacts/test-runs/20260920-rebuild/fixtures/contract/.leap/sessions/860B3630-510B-424F-9C42-1581D035CD77/15-snapshot.json",
+    "finished_at": "2026-09-20T13:35:47Z",
+    "hasMore": false,
+    "historical": true,
+    "items": [
+      {
+        "enabled": true,
+        "frame": [
+          100,
+          100,
+          50,
+          30
+        ],
+        "id": "0.0",
+        "identifier": "save",
+        "label": "Save",
+        "role": "Button"
+      }
+    ],
+    "limitations": [
+      "XCTest accessibility projection; custom canvas content may be absent",
+      "selected may be unavailable; backend nodes are not durable handles"
+    ],
+    "matched": 1,
+    "nextCursor": 1,
+    "orientation": "PORTRAIT",
+    "schemaVersion": 2,
+    "session_id": "860B3630-510B-424F-9C42-1581D035CD77",
+    "snapshot": 15,
+    "started_at": "2026-09-20T13:35:47Z"
+  },
+  "clicks": 1,
+  "unsupportedArgumentPrevalidation": true
+}

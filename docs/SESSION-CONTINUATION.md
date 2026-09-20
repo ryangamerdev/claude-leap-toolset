@@ -1,42 +1,23 @@
-# Session continuation — current handoff
+# Current handoff — intent rebuild
 
-Updated 2026-09-20. Workspace: `/Users/ryan/src/claude-leap`.
+Updated 2026-09-20. Read [SPECIFICATION.md](SPECIFICATION.md), [PLAN.md](PLAN.md), [FEATURES.md](FEATURES.md), then the source skill. Older handoff is [archived](research/archive/session-continuation-before-intent-rebuild.md).
 
-Read [PLAN.md](PLAN.md) for execution order, [FEATURES.md](FEATURES.md) for status, and [observation-session-design.md](research/observation-session-design.md) for architecture. Older handoff archived under [research/archive](research/archive/session-continuation-before-20260920-review.md); its paths, process IDs, assertions and instructions are superseded.
+User authorized aggressive replacement with a complete spec and implementation, not preserving existing architecture. Spec and new orchestration are implemented; full release acceptance remains open. No new subagents used. Preserve name leap and user history; commit/push after each install.
 
-## Current objective
+## Installed candidate and next action
 
-Sky-or-better native app operation, demonstrated with Gameday, iPhone/iPad Simulator and separate paired Blender basic-shape Mickey-head artifacts. Immediate direction: durable session/event capture plus accurate action outcomes, then complete the remaining app campaign. `leap-cli` deferred. Preserve the same user-level operations for Sky then Leap; scripts must not bypass the UI modeling benchmark.
+Installed executable SHA256 `b727dc103a5c7c4011ce92091c6e31443f0450933838c1208afa48d238db5a6d`, server version0.2.0, intent contract2. [Install metadata](../artifacts/test-runs/20260920-rebuild/install.json). Signed release, synchronized skills. Old native MCP connection cannot expose the new tools until user restarts. Do not mark native pass from this delivery.
 
-## Latest research checkpoint
+New preferred tools: target_list, session_open, session_close, ui_observe, ui_perform, session_history, evidence_read. Legacy tools remain for compatibility. Read skills/claude-leap/references/intent-workflows.md for exact syntax. Actions/assertions share selectors; full snapshots retained; failed/unknown steps stop dependent input; uncertainty never triggers replay.
 
-Read [native test stack review](research/native-test-stack-review.md) before choosing the Simulator fix. Evaluated seven proposals against code and primary sources. XCTest/WDA is a candidate device backend, not implemented or proven. Add explicit target/coordinate provenance and typed outcomes; preserve Mac AX backend and no-replay protection. Current request was evaluation only. No binary changed; prior activation install still awaits restart/native acceptance. Older “no restart needed” text below belongs to earlier checkpoints.
+After restart, start with session_open(project:/Users/ryan/src/claude-leap, app:local.gameday.ios, backend:wda, endpoint:http://127.0.0.1:8100). The pinned WDA runner was built/launched on iPad UDID C2CC7242-41E7-4EB3-BDA9-758D00DF5CDD. Health endpoint ready; no actual guest UI action tested via the new adapter. Opening may foreground/launch the guest app, with no data reset. Discover/observe before choosing the reversible information/field toggle; assert its new state, restore and query history.
 
-## Resume checkpoint
+Runner source commit1892efc71cc6e5bc8a20b083acc2753ea2288b62 (WebDriverAgent16.12.9). scripts/wda.py status <UDID> checks readiness. Local-only manifest/log/builds: artifacts/test-runs/wda/<UDID>/. On missing runner, inspect logs before starting a duplicate. iPhone UDID08385748-DE3D-45D0-A0DA-75F69B0191B5 is booted; separate runner/port still needs setup. No old app data erased.
 
-Newest candidate: public activate verification correction, identity artifacts/test-runs/20260920-activation/install.json. User prompted actual foreground test: old activate falsely said success, state background. press_key(Escape,foreground:true) used verified path; state frontmost, but button still relative418,969 outside1006x780. Geometry NOT fixed by foreground. Public activate now reuses that verified routine and logs activation_verified. After restart verify public activate from background (Simulator currently foreground). [Iteration](iterations/2026-09-20-activation.md).
+## Evidence and gaps
 
-- Installed b3c359b5c8d86319897ef0b1b5cc285d3b18947a0e1df592629cb45910be779f has now passed scoped native diagnostics: before binding, invalid read-only query retained errors, per-interaction suppression/capture/check audit. Config ~/.config/leap/leap.json; logs ~/.leap/logs/diagnostics.db, info level. No new binary this iteration.
-- Group E02D3027-C127-4760-A280-7E2FC74244C4 resumed across MCP restart successfully; new capture081006C4-A5E8-4823-855A-DC70B668B454 alongside prior3. Last capture stopped cleanly; recording_start required to resume Simulator in this connection, new connection automatic after binding.
-- Two iPad AX toggles met postchecks with explicit marker suppression; restored field. Short precheck deadlines are unknown, not failure of input. Diagnostic interactions73F9C5CA-CE52-4683-9D8F-D2182AC6252C andE93484AD-7C09-4374-AA14-4DDF6B39AFB1.
-- Sky rotation test: landscape window1006x780, button relative418,969; rotated-left window727x1059, button917,625; screenshot sideways. Right rotation restored original landscape field at(377,58). Final snapshot744. This supports coordinate-space mismatch but supplies no validated transform. AXTree.swift uses AXPosition/AXSize directly; reference strings do not prove a correction.
-- NEXT investigate Simulator raw/batched coordinate values and orientation/source-space metadata before implementing a transform. Also fix generic read-only tool error wording (currently says input may have been sent), and reduce diagnostic repetition. No restart needed now. Then Simulator/Blender campaign; no Blender artifacts yet.
-- [Native evidence](iterations/2026-09-20-diagnostics-native.md). Source/installed skills synced; commit/push documentation checkpoint.
+Seven AutomationModel tests passed. Signed installed MCP protocol fixture passed failed-assertion stop, ambiguous-click single dispatch, retained changed state, skipped next input, historical snapshot and two-result history. [Results](../artifacts/test-runs/20260920-rebuild/contract-results.json) contain mock data, not native acceptance; referenced fixture files are ignored/local-only. WDA boot readiness is infrastructure evidence only.
 
-## Working constraints
+Shared Mac input primitives and SQLite history were reused; orchestration/normalized result/query layer is new. Known gaps: globally unique WDA semantic re-resolution, limited guest keyboard/set-value, pre-armed transient expectations, hard cancellation of OS calls, asset file storage budgeting, native coordinate/focus coverage. No backend silently falls back. No Blender artifacts yet. Finish fixed R16 gate rather than widening platform scope.
 
-- Keep registration `leap`, installed bundle `~/Applications/claude-leap.app`; no rename workaround.
-- Fix/build/install promptly and request restart for native validation. A build is not a live pass. Announce before foreground activation; authorized when needed for comparison/recovery.
-- Keep visible pointer/ripple. Background/foreground pointer delivery shares process/window targeting; keyboard fallback can differ. Sky does synthesize targeted input: old absence-of-import inference was wrong; dynamically resolved APIs exist in the extracted reference.
-- Source reference: `/Users/ryan/src/sky`; Runner and Tracer references: `/Users/ryan/src/runner-mcp`, `/Users/ryan/src/tracer-mcp`. External reference projects are read-only unless separately authorized.
-- All scripts, fixtures, logs, screenshots, backups and outputs stay in this repo. Opt-in automatic records in `.leap/`; curated exports in `artifacts/test-runs/`; existing `Tests/` capitalization. Never revive `/tmp/astra` workflows from the historical handoff.
-- Commit/push after build/install is now explicitly authorized; follow AGENTS.md. Preserve unrelated working-tree changes. No currently active delegated review work remains after the recorded peer review.
-- Native tools are the acceptance path. `scripts/mcp-call.py` can diagnose the installed binary through stdio; label harness evidence separately. Build with `scripts/bundle.py`, retain logs, stage and atomically replace installed app with a repo-local rollback bundle.
-
-## Evidence to retain
-
-[Scroll](research/trial-scroll-details.md), [navigation](research/trial-navigation-details.md), [editor incident](research/trial-editor-details.md), [field](research/trial-field-details.md), [coach baseline](research/trial-sky-details.md), [Leap replay](research/trial-leap.details.md). The full historical pass is not a substitute for the specific changed-route or ambiguous-error tests still pending.
-
-Latest paired iPad result: Sky and Leap both toggled information/field successfully; Sky independently verified Leap restored the field. Leap global read-failure gating and sparse final-deadline observations remain the gap, not demonstrated input failure. Next correction should use attribute/predicate-specific coverage and preserve usable timed observations. [Evidence and rationale](iterations/2026-09-20-sky-subrole.md).
-
-Storage audit: 11 sessions/589 records/82 snapshots retained; four older backups have zero missing or changed records. Empty session folders are expected because payloads are in SQLite. No clearing performed. DATA-22 logical grouping remains planned. Check empty interaction IDs in timeline pagination. [Audit](iterations/2026-09-20-storage-audit.md).
+Prior baseline: Sky/Leap screenshot-coordinate iPad toggles worked. Actual foreground did not fix invalid Mac AX rectangles. Public activate correction was installed previously but its direct native entrypoint still needs acceptance. Historical group E02D3027-C127-4760-A280-7E2FC74244C4 and old records remain intact.

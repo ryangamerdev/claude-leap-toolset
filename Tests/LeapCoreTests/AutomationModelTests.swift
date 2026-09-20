@@ -1,0 +1,40 @@
+import XCTest
+@testable import LeapCore
+
+final class AutomationModelTests:XCTestCase {
+    func testPartialAcquisitionCannotProveAbsenceOrUniqueState() {
+        let node:[String:Any] = ["label":"Save","enabled":true]
+        for condition in ["absent","count","enabled","exists"] {
+            XCTAssertEqual(AutomationModel.verdict(nodes:[node],complete:false,expectation:["selector":["label":"Save"],"condition":condition,"value":1]),"unknown")
+        }
+    }
+    func testDuplicatesAreUnknownForStateChecks() {
+        let node:[String:Any] = ["label":"Save","enabled":true]
+        XCTAssertEqual(AutomationModel.verdict(nodes:[node,node],complete:true,expectation:["selector":["label":"Save"],"condition":"enabled"]),"unknown")
+        XCTAssertEqual(AutomationModel.verdict(nodes:[node,node],complete:true,expectation:["selector":["label":"Save"],"condition":"count","value":2]),"passed")
+    }
+    func testTruncatedValueCannotEstablishEquality() {
+        XCTAssertEqual(AutomationModel.verdict(nodes:[["label":"Notes","value":"x","valueLimited":true]],complete:true,expectation:["selector":["label":"Notes"],"condition":"value_equals","value":"x"]),"unknown")
+    }
+    func testSelectorScopeAndExactMatching() throws {
+        let node:[String:Any] = ["id":"child","label":"Save as","role":"AXButton","ancestors":["root"]]
+        XCTAssertFalse(AutomationModel.matches(node,["label":"Save"]))
+        XCTAssertTrue(AutomationModel.matches(node,["contains":"Save","role":"button","root":"root"]))
+        XCTAssertThrowsError(try AutomationModel.validateSelector(["lable":"Save"]))
+    }
+    func testIncompleteDeltaDoesNotClaimRemoval() {
+        let d=AutomationModel.delta([["id":"a"]],[],complete:false)
+        XCTAssertEqual((d["changes"] as? [[String:Any]])?.first?["change"] as? String,"not_observed")
+    }
+    func testWholeResponseBudgetRetainsReference() throws {
+        let result=try AutomationModel.bounded(["session_id":"s","steps":String(repeating:"x",count:30000)],budget:2048,file:"/repo/.leap/result.json")
+        XCTAssertLessThan(result.utf8.count,2048)
+        let decoded=try JSONSerialization.jsonObject(with:Data(result.utf8)) as? [String:Any]
+        XCTAssertEqual(decoded?["file"] as? String,"/repo/.leap/result.json")
+    }
+    func testWDARejectsNonlocalAndCredentialEndpoints() {
+        for endpoint in ["https://example.com:8100","http://user:pass@127.0.0.1:8100","http://localhost","http://localhost:8100/path"] {
+            XCTAssertThrowsError(try WDAClient(endpoint:endpoint))
+        }
+    }
+}

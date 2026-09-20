@@ -1,0 +1,11 @@
+{
+  "installedAt": "2026-09-20T13:29:56.163994+00:00",
+  "sha256": "673a9e682459c0e41304003e9dab95fc49df5ee032c7170a99b251a33118c4c9",
+  "bundle": "/Users/ryan/Applications/claude-leap.app",
+  "rollback": "/Users/ryan/src/claude-leap/artifacts/backups/20260920-intent-rebuild/previous.app",
+  "rollbackScope": "local-only ignored artifact",
+  "sourceBase": "241888a",
+  "contractVersion": 2,
+  "nativeAcceptance": "pending session restart",
+  "wdaRevision": "1892efc71cc6e5bc8a20b083acc2753ea2288b62"
+}

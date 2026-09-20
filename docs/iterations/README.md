@@ -37,3 +37,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-20 — Verified public activation](2026-09-20-activation.md): explicit foreground test leaves geometry unchanged; fixes activate falsely reporting success.
 
 - [2026-09-20 — Native testing architecture review](2026-09-20-native-test-review.md): Apple/Appium comparison, existing Leap coverage, schema corrections and prioritized backend/test gaps; research only.
+
+- [2026-09-20 — Specification and intent-layer rebuild](2026-09-20-intent-rebuild.md): new session/workflow API, Mac and native XCTest adapters, retained evidence and regression tooling; signed install ready for restart/native acceptance.

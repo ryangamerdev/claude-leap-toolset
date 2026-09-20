@@ -34,6 +34,7 @@ public final class AppSession {
     /// caller that lost or skipped an observation knows its diff is against something it never
     /// saw and asks for the full tree (disable_diff=true).
     public private(set) var generation = 0
+    var automationSnapshot: AXWindowSnapshot?
     /// Whether the last post-action settle ended because the tree stopped changing (true) or
     /// because the deadline was hit (false); nil when no settle was needed.
     public var lastSettleStable: Bool?
@@ -121,6 +122,7 @@ public final class AppSession {
     /// Returns the full text and, when a previous render exists for the same window,
     /// a diff-only text.
     public func render(_ snap: AXWindowSnapshot, walker: AXWalker, includeFrames: Bool = false) -> (full: String, diff: String?) {
+        automationSnapshot = snap
         // Never renumber: `indexByKey` is keyed by a content-addressed AX path, so an index
         // keeps pointing at the same element for the life of the session. AX hands back fresh
         // AXUIElement objects (e.g. after the window moves), so element identity must not be
