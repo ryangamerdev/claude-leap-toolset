@@ -1,0 +1,11 @@
+{
+  "installed_at": "2026-09-20T16:35:57.231057+00:00",
+  "sha256": "30f198516ac01b0aed6bbb946eeca4fdffb52300f87df7b44861e1c367691a10",
+  "rollback": "/Users/ryan/src/claude-leap/artifacts/backups/20260920-click-center/previous.app",
+  "rollback_local_only": true,
+  "skills_synced": true,
+  "native_acceptance": "pending restart",
+  "registration": "leap unchanged",
+  "build": "passed",
+  "focused_tests": "3 passed"
+}

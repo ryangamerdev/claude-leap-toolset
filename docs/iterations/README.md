@@ -65,3 +65,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-20 — Preserve backend input results](2026-09-20-input-result.md): native saved comparison verified; expose actual backend delivery description and target for navigation diagnosis.
 
 - [2026-09-20 — Reference review](2026-09-20-reference-revisit.md): exact preparation/focus/synthesis evidence and priority correction after user challenge.
+
+- [2026-09-20 — Live control centers](2026-09-20-click-center.md): reference-derived center containment/live reveal geometry and Simulator multiline direct-value refusal.

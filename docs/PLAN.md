@@ -21,3 +21,5 @@ New session/observation/workflow orchestration replaces the old agent-managed se
 Record every iteration in docs/iterations. Keep name leap, preserve history, and keep scripts/downloads/builds/evidence under the repository. Runtime artifacts stay ignored with tracked summaries. Configuration and independent logs remain in the user-requested ~/.config/leap and ~/.leap/logs locations.
 
 Reference investigation priority (2026-09-20): consult research/sky-native-input-audit.md latest addendum. Trace active Save route using pending input_result before another patch; compare target preparation, uncached focus verification and hosted-process routing. Sky force-synthesis flag is present but runtime value unknown. Do not assume AX-only behavior from manifest.
+
+Current next restart: live-center candidate (iterations/2026-09-20-click-center.md). Verify native center/reveal; resolve Simulator keyboard focus/chord and semantic Save transition. No additional generic diagnostics; input_result now works.

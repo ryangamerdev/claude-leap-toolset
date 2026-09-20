@@ -544,7 +544,9 @@ public actor Engine {
     private func visibleClickPoint(_ s: AppSession, _ target: Target) throws -> CGPoint? {
         guard let index = target.elementIndex else { return nil }
         let record = try s.element(index)
-        guard let frame = record.node.frame else { return nil }
+        // Reveal/scroll can move a control without rebuilding the indexed tree.
+        // Resolve its live geometry instead of retaining the pre-reveal rectangle.
+        guard let frame = AX.frame(record.node.element) else { return nil }
         s.refreshWindowFrame()
         var visible = frame.intersection(s.lastWindowFrame)
         var ancestor: AXUIElement? = AX.attr(record.node.element, kAXParentAttribute)
@@ -562,7 +564,7 @@ public actor Engine {
             let point = CGPoint(x: frame.minX + x, y: frame.minY + y)
             return visible.contains(point) ? point : nil
         }
-        return CGPoint(x: visible.midX, y: visible.midY)
+        return ClickGeometry.center(frame: frame, visible: visible)
     }
 
     public func drag(app query: String, from: Target, to: Target, steps: Int = 12, modifiers: String? = nil,
@@ -833,9 +835,10 @@ public actor Engine {
         // the application binding. Simulator TextEditor reproduced this: immediate
         // readback matched, but save/reopen lost the notes. Respect the provider's
         // capability instead of probing an unsupported write or guessing keyboard focus.
-        guard AX.isSettable(rec.node.element, kAXValueAttribute) else {
-            Diagnostics.shared.record(level:"warning",kind:"set_value_not_settable",detail:"Direct AX value replacement refused: provider does not advertise a settable value. No value write or keyboard fallback sent. Text omitted.")
-            throw LeapError.unsupported("[\(elementIndex)] does not expose a settable value and selection replacement was unavailable or unchanged. Direct value write was not sent. Focus the editable control, use type_text for normal text input, and verify the saved result by reopening it.")
+        let unsafeSimulatorTextValue = s.app.bundleIdentifier == "com.apple.iphonesimulator" && rec.node.role == "AXTextArea"
+        guard !unsafeSimulatorTextValue, AX.isSettable(rec.node.element, kAXValueAttribute) else {
+            Diagnostics.shared.record(level:"warning",kind:"set_value_not_settable",detail:"Direct AX value replacement refused: unsupported value capability or Simulator multiline binding risk. No value write or keyboard fallback sent. Text omitted.")
+            throw LeapError.unsupported("[\(elementIndex)] requires normal text input: direct value replacement is unsupported or unsafe for this multiline editor, and selection replacement was unavailable or unchanged. Direct value write was not sent. Focus the editable control, use type_text, and verify the saved result by reopening it.")
         }
         Diagnostics.shared.record(level:"warning",kind:"set_value_fallback",detail:"Selection-based value replacement unavailable or unchanged; attempting supported direct AX value. Readback does not prove application persistence. Value omitted.")
         // 2. Generic settable value (sliders, checkboxes, steppers, non-text fields). Numeric

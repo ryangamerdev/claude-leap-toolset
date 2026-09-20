@@ -78,3 +78,7 @@ Desktop create/save/reopen **TESTED**, including named routes and notes on1b7be9
 ## Input delivery evidence
 
 R08/R12: action, resolved target and backend input_result now retained in intent results (**IMPLEMENTED**, restart acceptance pending). Previously backend descriptions were discarded while snapshots/deltas remained stored. Saved SKY IPAD KEYBOARD comparison coaching/title **TESTED**. Screenshot Save eventually returned to playbook;20-second check unknown and user window movement qualifies result. Team libraries cause remains **RESEARCH**. Blank-field set_value refusal still awaits native acceptance. [Iteration](iterations/2026-09-20-input-result.md).
+
+## Live center candidate
+
+Native input_result **TESTED**: Save semantic AXPress confirmed, unexpected Team libraries persists. Pointer full-control midpoint/live frame **IMPLEMENTED**,3 focused tests passed, native restart pending. Simulator multiline raw-value refusal expanded after saved value failed despite settable. Foreground super+a produced accent popup: keyboard **FAILED** for that scoped case, no select-all pass. See [iteration](iterations/2026-09-20-click-center.md).
