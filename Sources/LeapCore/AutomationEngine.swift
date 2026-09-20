@@ -221,7 +221,7 @@ extension Engine {
                     keys.insert("foreground")
                     if ["click","double_click","drag"].contains(action) {keys.insert("modifiers")}
                     if ["click","double_click"].contains(action) {keys.insert("button")}
-                    if action == "scroll" {keys.insert("pages")}
+                    if action == "scroll" {keys.formUnion(["pages","x","y","snapshot","space"])}
                 }
                 guard Set(a.keys).isSubset(of:keys) else {throw AutomationModel.fail("Unsupported arguments for \(s.backend) \(action); no input sent")}
                 for (key,value) in a {
@@ -235,7 +235,7 @@ extension Engine {
                 if s.backend == "wda",action == "press_key",!["Return","Enter","Backspace","Tab"].contains(a["key"] as? String ?? "") {throw AutomationModel.fail("Unsupported device key; no steps sent")}
                 if ["type_text","set_value"].contains(action),!(a["text"] is String) {throw AutomationModel.fail("Text action needs arguments.text")}
                 if action == "scroll", !["up","down","left","right"].contains(a["direction"] as? String ?? "") {throw AutomationModel.fail("Scroll needs valid direction")}
-                if action == "scroll",step["selector"] == nil {throw AutomationModel.fail("Scroll requires selector for target/container")}
+                if action == "scroll",step["selector"] == nil, !(s.backend == "mac_ax" && a["x"] is NSNumber && a["y"] is NSNumber) {throw AutomationModel.fail("Scroll requires selector or Mac x/y with snapshot and space")}
                 if action == "rotate", !["PORTRAIT","PORTRAIT_UPSIDEDOWN","LANDSCAPE","LANDSCAPE_RIGHT"].contains(a["orientation"] as? String ?? "") {throw AutomationModel.fail("Invalid orientation")}
                 if action == "press_key",!(a["key"] is String) {throw AutomationModel.fail("press_key needs arguments.key")}
                 if ["type_text","set_value"].contains(action),step["selector"] == nil {throw AutomationModel.fail("Text actions require selector")}
@@ -274,7 +274,7 @@ extension Engine {
                         node=hits[0]
                         guard node?["enabled"] as? Bool != false else {throw AutomationModel.fail("Target disabled; no input sent")}
                     }
-                    if action == "drag" || (["click","double_click"].contains(action) && node == nil) {
+                    if action == "drag" || (["click","double_click","scroll"].contains(action) && node == nil) {
                         guard let baseline=a["snapshot"] as? Int,let prior=try automationStoredSnapshot(s,seq:baseline),
                               prior["coordinateSpace"] as? String == a["space"] as? String,
                               prior["coordinateSpace"] as? String == pre["coordinateSpace"] as? String,

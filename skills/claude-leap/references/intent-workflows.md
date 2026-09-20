@@ -30,7 +30,7 @@ Action arguments:
 - click/double_click: selector; or x/y plus snapshot and space from the observation. Mac button/modifiers optional.
 - type_text/set_value: selector and arguments.text. set_value Mac only.
 - press_key: arguments.key; device backend supports Return, Enter, Backspace, Tab only.
-- scroll: selector for control/container plus direction up/down/left/right; Mac pages optional.
+- scroll: selector for control/container plus direction up/down/left/right; Mac pages optional. Mac also accepts x/y with snapshot and space for screenshot-derived targeting when AX geometry is unusable. WDA still requires a selector.
 - drag: arguments.from_x/from_y/to_x/to_y, snapshot, space; Mac modifiers optional.
 - activate: selected application. Mac foreground:true may be supplied to input actions.
 - rotate: device backend only; arguments.orientation PORTRAIT, PORTRAIT_UPSIDEDOWN, LANDSCAPE, LANDSCAPE_RIGHT. These select physical device direction, not a guarantee of an upright host Simulator display. Respect app orientation support. WDA observations retain orientationIdentity and orientationStable because the coarse orientation string merges opposite directions.
@@ -46,3 +46,5 @@ Development regression scenarios: scripts/run-scenario.py executes {session,step
 `evidence_read(session_id,record,path?,offset?,max_bytes?,project?)` retrieves raw retained JSON or a nested value. path is an array of object keys/array indices, e.g. ["nodes","2","value"]. offset is in characters; max_bytes bounds chunk size. Follow nextOffset; reads never reacquire UI.
 
 Native development checkpoint (2026-09-20): use the explicit mac_ax Simulator session for the Sky-equivalent acceptance path. Information/field toggle and Previous play passed native postconditions. Host AX geometry can remain invalid despite working semantic actions; do not infer valid pointer coordinates from semantic success. WDA observation/history/navigation passed, but the information-toggle touch still had no effect. Neither backend silently substitutes for the other. Gameday is landscape-only; use its existing orientation. Exact WDA rotation tracking and protocol translation are installed candidates awaiting restart acceptance. See the development handoff for next cases rather than repeating failed taps.
+
+Pointer construction errors are surfaced; do not treat delivery acknowledgement as observed effect. Background pointer activation is window-targeted. These changes require native acceptance on the installed candidate; they do not certify every app or hosted-process window.

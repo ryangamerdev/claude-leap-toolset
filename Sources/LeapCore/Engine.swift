@@ -533,7 +533,7 @@ public actor Engine {
                 p = finalPoint
             }
         }
-        try await withPointerInput(s, mode) { d in Input.click(at: p, button: button, count: count, flags: flags, d) }
+        try await withPointerInput(s, mode) { d in try Input.click(at: p, button: button, count: count, flags: flags, d) }
         await signal(p, .click)
         return "clicked \(button.rawValue)×\(count) at window (\(Int(p.x - s.lastWindowFrame.minX)),\(Int(p.y - s.lastWindowFrame.minY)))" + (rec.map { " on [\($0.index)]" } ?? "")
     }
@@ -574,7 +574,7 @@ public actor Engine {
         let flags = try modifierFlags(modifiers)
         let steps = max(1, min(steps, 200))
         defer { s.lastActionAt = Date() }
-        try await withPointerInput(s, mode) { d in Input.drag(from: a, to: b, flags: flags, steps: steps, d) }
+        try await withPointerInput(s, mode) { d in try Input.drag(from: a, to: b, flags: flags, steps: steps, d) }
         await MainActor.run { Overlay.shared.signalDrag(from: a, to: b) }
         return "dragged"
     }
@@ -630,7 +630,7 @@ public actor Engine {
             }
         }
         Diagnostics.shared.record(level:"warning",kind:"scroll_pointer_route",detail:"Using wheel events; semantic page scrolling unavailable or unsuitable for requested scroll. Movement requires verification.")
-        try await withPointerInput(s, mode) { d in Input.scroll(at: p, dx: dx, dy: dy, d) }
+        try await withPointerInput(s, mode) { d in try Input.scroll(at: p, dx: dx, dy: dy, d) }
         await signal(p, .scroll)
         return "dispatched scroll \(direction) (wheel events; verify movement in the returned state)"
     }
@@ -640,8 +640,7 @@ public actor Engine {
         let s = try await actionSession(query, needsElements: false)
         let chord = try Keys.parse(key)
         defer { s.lastActionAt = Date() }
-        // Accessibility first, the way the Sky service does it (its binary imports no
-        // CGEventPost at all): command chords press the matching menu item, Return confirms,
+        // Prefer semantic keyboard equivalents: command chords press the matching menu item, Return confirms,
         // Escape cancels. Synthesized keystrokes are the fallback, not the mechanism.
         if !mode.foreground, let done = axKeyPress(s, chord, key) {
             await signal(indicatorPoint(s, nil), .edit)
@@ -649,7 +648,7 @@ public actor Engine {
         }
         try ensureKeyWindow(s)
         Diagnostics.shared.record(level:"warning",kind:"keyboard_route",detail:"Using synthesized key input; semantic route unavailable or foreground mode requested. foreground=\(mode.foreground)")
-        try await withInput(s, mode) { d in Input.press(chord, d) }
+        try await withInput(s, mode) { d in try Input.press(chord, d) }
         await signal(indicatorPoint(s, nil), .edit)
         return "pressed \(key) (synthesized keystroke)"
     }
@@ -809,7 +808,7 @@ public actor Engine {
         }
         try ensureKeyWindow(s)
         Diagnostics.shared.record(level:"warning",kind:"text_keyboard_route",detail:"Using synthesized text input; not verified. foreground=\(mode.foreground). Text omitted.")
-        try await withInput(s, mode) { d in Input.type(text, d) }
+        try await withInput(s, mode) { d in try Input.type(text, d) }
         await signal(indicatorPoint(s, elementIndex), .edit)
         return "typed \(text.count) characters (keystrokes dispatched; not verified)"
     }
@@ -867,8 +866,8 @@ public actor Engine {
         AXUIElementSetAttributeValue(rec.node.element, kAXFocusedAttribute as CFString, kCFBooleanTrue)
         usleep(80_000)
         try await withInput(s, mode) { d in
-            Input.press(KeyChord(keyCode: 0, flags: .maskCommand), d) // ⌘A
-            Input.type(value, d)
+            try Input.press(KeyChord(keyCode: 0, flags: .maskCommand), d) // ⌘A
+            try Input.type(value, d)
         }
         return "AX set failed (\(err.name)); focused [\(elementIndex)], selected all and typed instead"
     }
@@ -896,7 +895,7 @@ public actor Engine {
         let s = try await actionSession(query, needsElements: false)
         defer { s.lastActionAt = Date() }
         try ensureKeyWindow(s)
-        try await withInput(s, mode) { d in Input.paste(text, html: html, d) }
+        try await withInput(s, mode) { d in try Input.paste(text, html: html, d) }
         await signal(indicatorPoint(s, nil), .edit)
         return "paste of \(text.count) characters dispatched (⌘V posted; check the state to verify insertion)"
     }

@@ -42,3 +42,7 @@ leap-cli, physical-device provisioning, Android/Windows/browser backends, arbitr
 ## Backend comparison and orientation correction
 
 [Iteration](iterations/2026-09-20-wda-orientation.md): Sky semantic and coordinate information toggles passed; Leap mac_ax information toggle and Previous play passed with postconditions. WDA Next play passed; information toggle failed even after landscape orientation and alternate direct-backend touch diagnostic. Corrected WDA protocol aliases and exact orientation provenance; candidate requires restart. Primary next acceptance follows Sky-equivalent mac_ax behavior; WDA remains an explicit additional backend. No scroll pass claimed from the interrupted upside-down trial.
+
+## Sky native pointer correction
+
+[Reference audit](research/sky-native-input-audit.md), [iteration](iterations/2026-09-20-sky-pointer.md). Window-specific synthetic activation, explicit event-construction failures, prebuilt click/drag sequences and provenance-checked Mac coordinate scroll are implemented. Native acceptance awaits restart; existing MCP transport was closed. Sky field zoom/reset passed; sidebar scrolling had no confirmed effect in this trial. Hosted-process target routing and full synthetic focus-state tracking remain gaps, not presumed solved.

@@ -4,11 +4,13 @@ Updated 2026-09-20. Read [SPECIFICATION.md](SPECIFICATION.md), [PLAN.md](PLAN.md
 
 User authorized aggressive replacement with a complete spec and implementation, not preserving existing architecture. Spec and new orchestration are implemented; full release acceptance remains open. No new subagents used. Preserve name leap and user history; commit/push after each install.
 
-## Latest orientation fix and backend decision
+## Latest Sky-derived pointer candidate
 
-See [orientation iteration](iterations/2026-09-20-wda-orientation.md) and [install identity](../artifacts/test-runs/20260920-wda-hit-diagnostics/install.json). WDA protocol translation and exact rotation provenance corrected; install requires restart/native acceptance. Prior loaded binary6df9b406 had native Mac successes: information toggle interaction55CD79A1-DAC5-4B0E-9554-C7D6214BEAF1 and Previous play C35F72A5-4A26-4C4A-97C3-97C825EE8681. Sky semantic and coordinate toggles also passed. WDA Next play passed; information touch remains failed. App restored upright, field visible, original5 of11 play. Both live sessions closed; history remains.
+Read [native reference audit](research/sky-native-input-audit.md) and [iteration](iterations/2026-09-20-sky-pointer.md). [Install identity](../artifacts/test-runs/20260920-sky-pointer/install.json). Changes: target-window activation metadata, no raw-pointer fallback or silent allocation failure, prebuilt click/drag, coordinate scroll via Mac intent API. Requires restart; native session_open returned Transport closed before this install.
 
-NEXT: open WDA only to verify exact orientationIdentity/orientationStable on the installed build without rotation. Then open mac_ax Simulator/iPad session and pair Sky then Leap landscape filter scroll and field double-click/drag, using fresh screenshots when host AX geometry is invalid. The user challenged spending time on a different backend despite having Sky reference; prioritize behavioral parity through the same host accessibility route. WDA is optional additional capability, not a prerequisite. No repeat portrait or speculative orientation experiments. Scope-limited source inspection found no proven Gameday defect; no Gameday edits made.
+NEXT: open explicit mac_ax Simulator session, iPad Air11-inch(M2); fresh capture supplies image scale and snapshot. Repeat Sky's successful field double-click zoom and reset through Leap, then drag; inspect screenshot for field motion and window stability. If background fails, explicitly foreground and compare. Sky sidebar wheel and drag showed no confirmed movement this trial, so they are not a successful baseline. Gameday is upright/landscape, original5 of11 play, default field view. No active Leap sessions known. Do not use stale screenshot coordinates after window changes.
+
+The audit index's AX-only/no-synthesis claim is incorrect: native factories synthesize mouse/scroll events and post to PID. Source has distinct same-process and hosted-process targets, per-target flipping and focus state tracking. This increment does not implement all of those branches; record remaining defects from native evidence. Do not return to repeated WDA taps or rotate Gameday to diagnose Mac input.
 
 ## Previous candidate and initial action
 

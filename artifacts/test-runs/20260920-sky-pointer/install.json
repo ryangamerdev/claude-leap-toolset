@@ -1,0 +1,13 @@
+{
+  "installed_at": "2026-09-20T15:18:25.709003+00:00",
+  "sha256": "a9f22dcf9c42bc229f4bc9218c2899ade30f0b04f9cb0fc7662aca9b46fabc8d",
+  "rollback": "/Users/ryan/src/claude-leap/artifacts/backups/20260920-sky-pointer/previous.app",
+  "rollback_local_only": true,
+  "skills_synced": true,
+  "native_acceptance": "pending restart; previous MCP transport closed",
+  "tests": {
+    "AutomationModelTests": 10,
+    "PointerRoutingTests": 3
+  },
+  "registration": "leap unchanged"
+}
