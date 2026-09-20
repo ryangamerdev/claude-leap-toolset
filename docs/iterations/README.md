@@ -79,3 +79,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-20 — Full keyboard-controller trace and process-directed delivery](2026-09-20-keyboard-target.md)
 
 - [2026-09-20 — Restore insights and narrow Simulator acceptance](2026-09-20-restore-insights.md): user stops Simulator typing; desktop workflows and Simulator clicks continue after insights restart.
+
+- [2026-09-20 — Desktop checkpoint and user pause](2026-09-20-paused.md): scoped desktop pass, MCP registration removed, campaign paused.

@@ -1,3 +1,5 @@
+> **PAUSED by user, 2026-09-20.** Leap MCP removed from Codex configuration. Do not resume or reinstall without user direction. Desktop recheck results and unresolved gaps: [pause checkpoint](iterations/2026-09-20-paused.md).
+
 # Leap completion plan
 
 Updated 2026-09-20. [SPECIFICATION.md](SPECIFICATION.md) is the release contract; existing implementation is replaceable. [FEATURES.md](FEATURES.md) distinguishes implementation from native acceptance. Earlier evolving plans are [archived](research/archive/plan-before-intent-rebuild.md).

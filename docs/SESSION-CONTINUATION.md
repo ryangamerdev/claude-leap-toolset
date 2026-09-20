@@ -1,3 +1,5 @@
+> **PAUSED by user, 2026-09-20.** Leap MCP removed from Codex configuration. Do not resume or reinstall without user direction. Desktop recheck results and unresolved gaps: [pause checkpoint](iterations/2026-09-20-paused.md).
+
 # Current handoff — foreground-first acceptance
 
 Read docs/PLAN.md, FEATURES.md and iterations/2026-09-20-foreground-acceptance.md. User accepts foreground operation, wants rapid paired end-to-end parity. Defer background parity, TUI and optional feature expansion. Keep database/deltas/history.

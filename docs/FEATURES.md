@@ -1,3 +1,5 @@
+> **PAUSED by user, 2026-09-20.** Leap MCP removed from Codex configuration. Do not resume or reinstall without user direction. Desktop recheck results and unresolved gaps: [pause checkpoint](iterations/2026-09-20-paused.md).
+
 # Leap release checklist
 
 Updated 2026-09-20. Scope and requirements: [SPECIFICATION.md](SPECIFICATION.md). This table replaces the accumulating checklist for current delivery decisions. The [historical inventory](research/archive/features-before-intent-rebuild.md) preserves feature IDs, earlier passes and evidence; those passes do not certify the rebuilt orchestration.
