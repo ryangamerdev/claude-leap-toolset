@@ -12,6 +12,7 @@ public final class RecordingStore: @unchecked Sendable {
     public var warning: String = ""
     private var failure: String?
     private var writes = 0
+    private(set) var activeGroup: String?
     private let transient = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
 
     static func git(_ root: String, _ args: [String]) -> String? {
@@ -42,7 +43,7 @@ public final class RecordingStore: @unchecked Sendable {
             try sql("PRAGMA journal_mode=WAL; PRAGMA synchronous=FULL; PRAGMA foreign_keys=ON;")
             let version = try rows("PRAGMA user_version", [])
             let n = version.first?["user_version"] as? Int64 ?? 0
-            guard n == 0 || n == 1 else { throw LeapError.unsupported("Unsupported Leap recording schema \(n); database preserved") }
+            guard n == 0 || n == 1 || n == 2 else { throw LeapError.unsupported("Unsupported Leap recording schema \(n); database preserved") }
             if n == 0 {
                 guard try rows("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'", []).isEmpty else {
                     throw LeapError.unsupported("Unrecognized recording database; preserved without migration")
@@ -54,6 +55,16 @@ public final class RecordingStore: @unchecked Sendable {
                 CREATE INDEX record_session ON records(session,seq);
                 CREATE INDEX record_interaction ON records(interaction,seq);
                 PRAGMA user_version=1;
+                COMMIT;
+                """)
+            }
+            if n < 2 {
+                try sql("""
+                BEGIN IMMEDIATE;
+                CREATE TABLE recording_groups(id TEXT PRIMARY KEY, name TEXT NOT NULL, started TEXT NOT NULL, ended TEXT);
+                CREATE TABLE recording_group_members(session TEXT PRIMARY KEY REFERENCES sessions(id), group_id TEXT NOT NULL REFERENCES recording_groups(id));
+                CREATE INDEX group_members ON recording_group_members(group_id);
+                PRAGMA user_version=2;
                 COMMIT;
                 """)
             }
@@ -102,10 +113,38 @@ public final class RecordingStore: @unchecked Sendable {
     public static func json(_ value: Any) throws -> String {
         String(data: try JSONSerialization.data(withJSONObject: value, options: [.sortedKeys]), encoding: .utf8)!
     }
+    func selectGroup(action:String,name:String?,id:String?) throws -> String {
+        lock.lock(); defer {lock.unlock()}
+        let selected:String
+        switch action {
+        case "start":
+            guard let name=name?.trimmingCharacters(in:.whitespacesAndNewlines), !name.isEmpty, name.utf8.count<=200 else {throw LeapError.unsupported("name required, maximum 200 UTF-8 bytes")}
+            selected=UUID().uuidString
+            _ = try rows("INSERT INTO recording_groups(id,name,started) VALUES(?,?,?)",[selected,name,ISO8601DateFormatter().string(from:Date())])
+        case "resume":
+            guard let id, !(try rows("SELECT id FROM recording_groups WHERE id=?",[id])).isEmpty else {throw LeapError.unsupported("Unknown group_id; use recording_sessions(view: groups)")}
+            selected=id
+            _ = try rows("UPDATE recording_groups SET ended=NULL WHERE id=?",[id])
+        case "end":
+            guard let current=activeGroup else {throw LeapError.unsupported("No active group in this connection; resume it first")}
+            selected=current
+            _ = try rows("UPDATE recording_groups SET ended=? WHERE id=?",[ISO8601DateFormatter().string(from:Date()),current])
+        default: throw LeapError.unsupported("action must be start, resume or end")
+        }
+        activeGroup=action == "end" ? nil:selected
+        return selected
+    }
     func attach(app: String, pid: pid_t) throws -> String {
         lock.lock(); defer { lock.unlock() }
         let id = UUID().uuidString
-        _ = try rows("INSERT INTO sessions(id,app,pid,epoch,started) VALUES(?,?,?,?,?)", [id,app,String(pid),UUID().uuidString,ISO8601DateFormatter().string(from: Date())])
+        try sql("BEGIN IMMEDIATE")
+        do {
+            _ = try rows("INSERT INTO sessions(id,app,pid,epoch,started) VALUES(?,?,?,?,?)", [id,app,String(pid),UUID().uuidString,ISO8601DateFormatter().string(from: Date())])
+            if let group=activeGroup {
+                _ = try rows("INSERT INTO recording_group_members(session,group_id) VALUES(?,?)",[id,group])
+            }
+            try sql("COMMIT")
+        } catch {try? sql("ROLLBACK");throw error}
         try FileManager.default.createDirectory(atPath: root + "/.leap/sessions/" + id, withIntermediateDirectories: true)
         return id
     }

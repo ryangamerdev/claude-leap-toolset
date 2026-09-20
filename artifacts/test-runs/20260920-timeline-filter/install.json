@@ -1,0 +1,15 @@
+{
+  "installed": "/Users/ryan/Applications/claude-leap.app",
+  "backup": "/Users/ryan/src/claude-leap/artifacts/backups/leap-groups-20260920-052223/claude-leap.app",
+  "databaseBackup": "/Users/ryan/src/claude-leap/artifacts/backups/leap-groups-20260920-052223/pre-migration.db",
+  "backupScope": "local-only; no live database migration performed",
+  "preMigration": {
+    "sessions": 11,
+    "records": 589,
+    "schema": 1
+  },
+  "sha256": "444130a908e54dff63cb2a618a60bde37c75121fc33713da4334e98ecf8521db",
+  "installedAt": "2026-09-20T05:22:23.980483-07:00",
+  "verification": "7 focused Swift tests, installer argument safety and skill validation passed; release build/signature passed; installed skills match source; native MCP verification pending restart",
+  "registration": "leap unchanged"
+}

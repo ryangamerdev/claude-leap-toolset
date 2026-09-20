@@ -15,6 +15,13 @@ those development documents for unrelated app tasks.
 
 - Bind the intended project once per MCP process with bind_project. Subsequent app reads and
   actions retain evidence automatically. recording_stop pauses that app until recording_start.
+- For a named task across apps/restarts, use recording_group(action:start,name), then explicitly
+  resume its group_id after restart. Switching/ending groups closes current app capture epochs;
+  next observations create new ones. Prior IDs and history stay intact. End closes grouping,
+  not automatic recording. Stopped apps stay paused. Grouping native acceptance is pending.
+- recording_sessions lists groups or app captures, counts and storage sizes with pagination.
+  Payloads live in SQLite; empty asset directories do not mean missing history. Existing captures
+  stay ungrouped. interaction_timeline(group_id) spans the group's captures; session_id narrows one.
 - Prefer ui_to_text for filtered structured controls or get_app_state for a readable tree.
   Request only useful roles, fields and nodes. Use a screenshot when AX cannot express the
   answer, such as field geometry or a Blender viewport; text cannot verify a canvas change.
@@ -46,7 +53,8 @@ those development documents for unrelated app tasks.
   limit what removals mean. Retain the baseline IDs and follow bounded pages as needed.
 - interaction_result explains one interaction; recording_review offers overview/actions/issues
   and grouped events. interaction_timeline lists timestamps, input counts and snapshot references;
-  fix through while paging with after. interaction_delta selects the last observation before
+  fix through while paging with after. Unassociated background events stay in recording_query,
+  not the interaction timeline. interaction_delta selects the last observation before
   the first input and the last after the final input. Use its IDs with ui_diff to paginate or
   compare other compatible states. first/lastSnapshot in the timeline include prechecks;
   they are not automatically the action's baseline. Value previews may be shortened.

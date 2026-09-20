@@ -390,4 +390,4 @@ Current update: [interaction timeline/deltas](iterations/2026-09-20-interaction-
 
 | ID | Priority | Feature | Status | Evidence / boundary |
 |---|---|---|---|---|
-| DATA-22 | P1 | Named logical sessions/groups spanning application capture epochs, with clear storage/count summaries and preserved interaction references. | PLANNED | Current persistent per-app sessions retain history: 11 sessions/589 records, four older backups compared with no missing/changed records. Logical campaign grouping is not implemented. [Audit](iterations/2026-09-20-storage-audit.md). |
+| DATA-22 | P1 | Named logical sessions/groups spanning application capture epochs, with clear storage/count summaries and preserved interaction references. | IMPLEMENTED | recording_group and recording_sessions add persistent task grouping and bounded inventory/counts; interaction_timeline filters groups. Seven focused tests passed; native restart/resume acceptance pending. Existing history preserved. [Iteration](iterations/2026-09-20-logical-sessions.md). |

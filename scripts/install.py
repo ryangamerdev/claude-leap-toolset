@@ -16,6 +16,7 @@ or deleted and the install keeps working. Re-run to update to a newer build.
 
 Claude Code loads MCP servers and skills at session start: restart the session afterwards.
 """
+import argparse
 import os
 import shutil
 import subprocess
@@ -89,7 +90,13 @@ def install_skills():
 
 
 def main():
-    args = set(sys.argv[1:])
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--no-build", action="store_true", help="Install the existing dist bundle")
+    mode.add_argument("--skills-only", action="store_true", help="Refresh skills without app/config changes")
+    mode.add_argument("--uninstall", action="store_true", help="Remove the app, registration and skills")
+    parsed = parser.parse_args()
+    args = {"--" + name.replace("_", "-") for name, enabled in vars(parsed).items() if enabled}
     if "--skills-only" in args:
         if args != {"--skills-only"}:
             raise SystemExit("--skills-only cannot be combined with other options")

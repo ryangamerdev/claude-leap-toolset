@@ -88,6 +88,30 @@ final class EvidenceTests:XCTestCase {
         let frozen=try object(e.timeline(session:nil,after:1,through:5,limit:1))
         XCTAssertTrue((frozen["items"] as? [[String:Any]])?.isEmpty == true)
     }
+    func testTimelineExcludesUnassociatedEventsWithoutDeletingThem() throws {
+        var db:OpaquePointer?;sqlite3_open(root+"/.leap/leap.db",&db);defer{sqlite3_close(db)}
+        let sql = """
+        ALTER TABLE records ADD COLUMN wall TEXT NOT NULL DEFAULT '2026-09-20T12:00:00Z';
+        UPDATE records SET interaction='observation';
+        INSERT INTO records VALUES(3,'session','','ax_notification','{}','2026-09-20T12:00:01Z');
+        INSERT INTO records VALUES(4,'session',NULL,'session_start','{}','2026-09-20T12:00:02Z');
+        INSERT INTO records VALUES(5,'session','action','action_intent','{}','2026-09-20T12:00:03Z');
+        """
+        XCTAssertEqual(sqlite3_exec(db,sql,nil,nil,nil),SQLITE_OK)
+        let e=try Evidence(project:root)
+        let first=try object(e.timeline(session:nil,after:0,through:nil,limit:1))
+        XCTAssertEqual(first["through"] as? Int,5)
+        XCTAssertEqual(first["hasMore"] as? Bool,true)
+        let second=try object(e.timeline(session:nil,after:1,through:5,limit:1))
+        XCTAssertEqual((second["items"] as? [[String:Any]])?.first?["interaction"] as? String,"action")
+        XCTAssertEqual(second["hasMore"] as? Bool,false)
+        let scoped=try object(e.timeline(session:"session",after:0,through:4,limit:20))
+        XCTAssertTrue((scoped["items"] as? [[String:Any]])?.isEmpty == true)
+        var st:OpaquePointer?;sqlite3_prepare_v2(db,"SELECT COUNT(*) FROM records WHERE interaction='' OR interaction IS NULL",-1,&st,nil)
+        defer{sqlite3_finalize(st)}
+        XCTAssertEqual(sqlite3_step(st),SQLITE_ROW)
+        XCTAssertEqual(sqlite3_column_int(st,0),2)
+    }
     func testInvalidReferencesAndUnknownRoot() throws {
         let e=try Evidence(project:root)
         XCTAssertThrowsError(try e.asset(id:"../../outside",mode:"file",offset:0,limit:1))

@@ -74,3 +74,5 @@ Current candidate: [field-specific quality](iterations/2026-09-20-field-quality.
 Current update: [interaction timeline/deltas](iterations/2026-09-20-interaction-deltas.md). Field-quality native iPad toggles passed with two checkbox metadata warnings and zero blocking errors; iPhone clean. DATA-20/21 now have implemented timeline/delta tools and automatic successful single-action summaries; native acceptance pending. Error/batch responses retain existing behavior.
 
 Retention audit: older records remain intact; no reset fix is indicated. Track DATA-22 logical campaign grouping and storage discoverability separately from per-app recording sessions. Check empty-interaction filtering during timeline acceptance. [Audit](iterations/2026-09-20-storage-audit.md).
+
+Latest increment: DATA-22 grouping/discovery implemented with additive schema migration; empty-interaction timeline filtering fixed. Native acceptance after restart: inspect retained inventory, create a named Simulator task, exercise grouped app captures and automatic deltas, then verify explicit group resume across a later restart. [Rationale](iterations/2026-09-20-logical-sessions.md).

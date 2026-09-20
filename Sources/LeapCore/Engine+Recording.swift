@@ -42,7 +42,7 @@ extension Engine {
         }
         let seq=try r.store.append(session:r.id,interaction:recordingInteraction,kind:"snapshot",payload:["window":snap.title ?? "","screenFrame":[snap.frame.minX,snap.frame.minY,snap.frame.width,snap.frame.height],"nodes":nodes,"truncated":snap.truncated,"retainedEarlierObservation":snap.retainedEarlierObservation,"readFailures":snap.readFailures,"advisoryReadFailures":snap.advisoryReadFailures,"blockingReadFailures":snap.blockingReadFailures,"batchReadRetries":snap.batchReadRetries,"batchReadRecoveries":snap.batchReadRecoveries,"readFailureDetails":snap.readFailureDetails,"readFailureDetailsOmitted":snap.readFailureDetailsOmitted,"deadlineExceeded":snap.deadlineExceeded,"captureStarted":snap.captureStarted,"captureEnded":snap.captureEnded,"nodeCount":nodes.count,"captureLimit":walker.maxNodes,"generation":s.generation,"source":"AX snapshot; attributes read over an interval, not atomic"])
         latestEvidence[s.pid]=Int(seq)
-        return "\nRecording: session=\(r.id) snapshot=\(seq) coverage=\(snap.truncated || snap.readFailures>0 || snap.deadlineExceeded ? "partial" : "captured") interaction=\(recordingInteraction ?? "none"); inspect with ui_to_text(snapshot: \(seq)) or recording_review(interaction_id: \(recordingInteraction ?? "none"))."
+        return "\nRecording: group=\(r.store.activeGroup ?? "ungrouped") session=\(r.id) snapshot=\(seq) coverage=\(snap.truncated || snap.readFailures>0 || snap.deadlineExceeded ? "partial" : "captured") interaction=\(recordingInteraction ?? "none"); inspect with ui_to_text(snapshot: \(seq)) or recording_review(interaction_id: \(recordingInteraction ?? "none"))."
     }
     public func beginRecordedAction(app:String,tool:String) async throws -> String? {
         let s=try await session(for:app)
@@ -90,15 +90,26 @@ extension Engine {
         guard var parsed=try JSONSerialization.jsonObject(with:Data(summary.utf8)) as? [String:Any],
               let actions=parsed["actions"] as? [[String:Any]], !actions.isEmpty else { return nil }
         let delta=try evidence.interactionDelta(id)
+        if let group=recordingStores[root]?.activeGroup {parsed["groupId"]=group}
         parsed["observation"]=try JSONSerialization.jsonObject(with:Data(delta.utf8))
         return try RecordingStore.json(parsed)
+    }
+    public func recordingGroup(action:String,name:String?,id:String?) throws -> String {
+        guard let root=boundProject,let store=recordingStores[root] else {throw LeapError.unsupported("bind_project first")}
+        // Existing captures keep their membership. Future observations start fresh epochs.
+        let group=try store.selectGroup(action:action,name:name,id:id)
+        let old=recordings.filter {$0.value.store.root == root}
+        for (pid,recorder) in old {recorder.stop();recordings.removeValue(forKey:pid);latestEvidence.removeValue(forKey:pid)}
+        return try RecordingStore.json(["groupId":group,"active":action != "end","closedCaptureEpochs":old.count,
+            "meaning":"History retained. Next app observation starts a new capture epoch. Resume this group explicitly after restart; no observation is implied during gaps.",
+            "next":"recording_sessions(group_id) lists captures; interaction_timeline(group_id) lists interactions"])
     }
     public func bindProject(_ project:String) throws -> String {
         let root=RecordingStore.git(project,["rev-parse","--show-toplevel"]) ?? URL(fileURLWithPath:project).standardizedFileURL.path
         if let existing=boundProject,existing != root {throw LeapError.unsupported("Project already bound in this MCP session; restart to change binding without mixing evidence")}
         if recordingStores[root] == nil {recordingStores[root]=try RecordingStore(project:project)}
         boundProject=root
-        return "Project bound. App observations/actions now retain evidence automatically. Query tools can omit project."
+        return "Project bound. App observations/actions now retain evidence automatically. Existing history preserved. recording_sessions lists retained captures/storage; recording_group starts or resumes a named task across apps/restarts. Query tools can omit project."
     }
     func autoRecord(_ s:AppSession) throws {
         guard let root=boundProject,recordings[s.pid]==nil,!recordingSuppressed.contains(s.pid),let store=recordingStores[root] else {return}

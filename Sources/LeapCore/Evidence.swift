@@ -147,16 +147,43 @@ public final class Evidence {
         }
         return try RecordingStore.json(result)
     }
-    public func timeline(session:String?,after:Int,through:Int?,limit:Int) throws -> String {
+    public func sessions(view:String,group:String?,after:Int,limit:Int) throws -> String {
+        guard ["groups","recordings"].contains(view) else {throw LeapError.unsupported("view must be groups or recordings")}
+        let modern = !(try rows("SELECT name FROM sqlite_master WHERE type='table' AND name='recording_groups'")).isEmpty
+        let cap=max(1,min(20,limit))
+        var items:[[String:Any]]=[]
+        if view == "groups" {
+            if modern {
+                items=try rows("SELECT rowid AS ordinal,id AS groupId,name,started,ended,(SELECT COUNT(*) FROM recording_group_members m WHERE m.group_id=g.id) AS captureCount FROM recording_groups g WHERE rowid>CAST(? AS INTEGER)" + (group == nil ? "" : " AND id=?") + " ORDER BY rowid LIMIT CAST(? AS INTEGER)",[String(after)] + (group.map {[$0]} ?? []) + [String(cap+1)])
+            }
+        } else {
+            var args=[String(after)]
+            let membership=modern ? "(SELECT group_id FROM recording_group_members m WHERE m.session=s.id)" : "NULL"
+            let filter=group == nil ? "" : " AND \(membership)=?"
+            if let group {args.append(group)}
+            args.append(String(cap+1))
+            items=try rows("SELECT s.rowid AS ordinal,s.id AS sessionId,s.app,s.started,s.ended,\(membership) AS groupId,(SELECT COUNT(*) FROM records r WHERE r.session=s.id) AS records,(SELECT COUNT(DISTINCT NULLIF(interaction,'')) FROM records r WHERE r.session=s.id) AS interactions,(SELECT COUNT(*) FROM records r WHERE r.session=s.id AND kind='snapshot') AS snapshots FROM sessions s WHERE s.rowid>CAST(? AS INTEGER)\(filter) ORDER BY s.rowid LIMIT CAST(? AS INTEGER)",args)
+        }
+        let page=Array(items.prefix(cap))
+        var sizes:[String:Int64]=[:]
+        for name in ["leap.db","leap.db-wal","leap.db-shm"] {sizes[name]=((try? FileManager.default.attributesOfItem(atPath:root+"/.leap/"+name)[.size]) as? NSNumber)?.int64Value ?? 0}
+        let totals=try rows("SELECT COUNT(*) AS records,COUNT(DISTINCT session) AS recordedSessions,COUNT(DISTINCT NULLIF(interaction,'')) AS interactions,SUM(CASE WHEN kind='snapshot' THEN 1 ELSE 0 END) AS snapshots FROM records").first ?? [:]
+        return try RecordingStore.json(["items":page,"hasMore":items.count>cap,"nextCursor":Int(page.last?["ordinal"] as? String ?? "") ?? after,"projectTotals":totals,"storageBytes":sizes,
+            "storage":"Payloads are in .leap/leap.db. Session directories may be empty until assets are materialized. WAL sizes vary without deleting history.",
+            "coverage":"Each recording is an application capture epoch, not continuous task history. Groups can span epochs/apps/restarts. Missing ended means not explicitly closed, not proof of a live observer.",
+            "next":"recording_sessions(view: recordings, group_id) for members; interaction_timeline(group_id or session_id) for calls; recording_query for background events"])
+    }
+    public func timeline(session:String?,after:Int,through:Int?,limit:Int,group:String? = nil) throws -> String {
         let ceiling: Int
         if let through { ceiling = through }
         else { ceiling = Int((try rows("SELECT MAX(seq) AS seq FROM records").first?["seq"] as? String) ?? "0") ?? 0 }
         let count=max(1,min(20,limit))
         var args=[String(ceiling)]
-        let filter=session == nil ? "" : " AND session=?"
+        var filter=session == nil ? "" : " AND session=?"
         if let session { args.append(session) }
+        if let group {filter += " AND session IN (SELECT session FROM recording_group_members WHERE group_id=?)";args.append(group)}
         args += [String(after),String(count+1)]
-        let groups=try rows("SELECT interaction,session,MIN(seq) AS ordinal,MIN(wall) AS startedAt,MAX(wall) AS lastRecordedAt, SUM(CASE WHEN kind='action_intent' THEN 1 ELSE 0 END) AS inputs,MIN(CASE WHEN kind='snapshot' THEN seq END) AS firstSnapshot,MAX(CASE WHEN kind='snapshot' THEN seq END) AS lastSnapshot FROM records WHERE interaction IS NOT NULL AND seq<=CAST(? AS INTEGER)"+filter+" GROUP BY interaction,session HAVING MIN(seq)>CAST(? AS INTEGER) ORDER BY MIN(seq) LIMIT CAST(? AS INTEGER)",args)
+        let groups=try rows("SELECT interaction,session,MIN(seq) AS ordinal,MIN(wall) AS startedAt,MAX(wall) AS lastRecordedAt, SUM(CASE WHEN kind='action_intent' THEN 1 ELSE 0 END) AS inputs,MIN(CASE WHEN kind='snapshot' THEN seq END) AS firstSnapshot,MAX(CASE WHEN kind='snapshot' THEN seq END) AS lastSnapshot FROM records WHERE interaction IS NOT NULL AND interaction<>'' AND seq<=CAST(? AS INTEGER)"+filter+" GROUP BY interaction,session HAVING MIN(seq)>CAST(? AS INTEGER) ORDER BY MIN(seq) LIMIT CAST(? AS INTEGER)",args)
         let items=groups.prefix(count).map { row -> [String:Any] in
             var item=row
             item["ordinal"]=Int(row["ordinal"] as? String ?? "0") ?? 0
