@@ -1,0 +1,22 @@
+The following is a diff from the previous accessibility tree for Window: "Gameday" with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 274-288
+~			20 button (selected) PASS
++		296 text 13 more selected filters below
++		297 image 13 more selected filters below
++				298 button Select play: BULLY
++				299 button Select play: BULLY (DART 52 BRANCH SONICS)
++				300 button Select play: BULLY (DUAL 53 BRANCH SONICS)
++				301 button Select play: DART 52 CHEVRON SPURS T-FLAT
++				302 button Select play: DART 52 F-BENZ T-RAIL
++				303 button Select play: DART 62 CADILLAC
++				304 button (selected) Select play: DART 62 DEVILS T-BAT
++				305 button Select play: DART 63 DODGE
++				306 button Select play: DART 63 F-VIPER
++				307 button Select play: DART 63 OMAHA PATRIOT
++				308 button Select play: DART 63 Z LEXUS
++				309 button Select play: DART 65 MAUI
++				310 button Select play: DART BUNCH FLY 63 CHEVRON
++				311 button Select play: DART FLY 63 SPURS
++				312 button Select play: DUAL 53 CHEVRON SONICS
+~			289 text 55 matching plays
+The focused UI element is 76 text field (settable) Search plays

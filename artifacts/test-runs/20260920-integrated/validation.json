@@ -1,0 +1,15 @@
+{
+  "codeTests": {
+    "suite": "EvidenceTests",
+    "tests": 4,
+    "failures": 0,
+    "log": "test-acceptance.log"
+  },
+  "skill": "quick_validate passed",
+  "nativeAcceptance": "pending installation/restart",
+  "notes": [
+    "No UI input sent during this implementation turn",
+    "AX batch fallback recovered reads do not count as incomplete",
+    "Hard OS cancellation remains unproven"
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "initial": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Error: Bind a project first to retain queryable UI evidence\ninteraction=C23EC03A-45AC-4E79-981D-A76C99166766"
+      }
+    ],
+    "isError": true
+  },
+  "initialretry": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"coordinateSpace\":\"screen points, top-left origin; visibility is frame-based, not occlusion\",\"hasMore\":true,\"historical\":true,\"items\":[{\"index\":2,\"key\":\"w\\/AXWindow[Gameday]#0\\/AXGroup[]#0\\/AXButton[Team library: Higley High School Knights · Freshman]#0\",\"label\":\"Team library: Higley High School Knights · Freshman\",\"ordinal\":2,\"screenFrame\":[305.5,210,366,74.5],\"selected\":false},{\"index\":3,\"key\":\"w\\/AXWindow[Gameday]#0\\/AXGroup[]#0\\/AXButton[Playbook: Freshman 2026]#1\",\"label\":\"Playbook: Freshman 2026\",\"ordinal\":3,\"screenFrame\":[678.5,238.5,366,45],\"selected\":false},{\"index\":4,\"key\":\"w\\/AXWindow[Gameday]#0\\/AXGroup[]#0\\/AXButton[Playbook]#2\",\"label\":\"Playbook\",\"ordinal\":4,\"screenFrame\":[1051.5,238.5,63,45],\"selected\":false},{\"index\":5,\"key\":\"w\\/AXWindow[Gameday]#0\\/AXGroup[]#0\\/AXButton[Formations]#3\",\"label\":\"Formations\",\"ordinal\":5,\"screenFrame\":[1119.5,238.5,63,45],\"selected\":false},{\"index\":6,\"key\":\"w\\/AXWindow[Gameday]#0\\/AXGroup[]#0\\/AXButton[Route library]#4\",\"label\":\"Route library\",\"ordinal\":6,\"screenFrame\":[1187.5,238.5,63,45],\"selected\":false},{\"index\":7,\"key\":\"w\\/AXWindow[Gameday]#0\\/AXGroup[]#0\\/AXButton[Flashcards]#5\",\"label\":\"Flashcards\",\"ordinal\":7,\"screenFrame\":[1255.5,238.5,63,45],\"selected\":false},{\"index\":8,\"key\":\"w\\/AXWindow[Gameday]#0\\/AXGroup[]#0\\/AXButton[Import]#6\",\"label\":\"Import\",\"ordinal\":8,\"screenFrame\":[1323.5,238.5,63,45],\"selected\":false},{\"index\":12,\"key\":\"w\\/AXWindow[Gameday]#0\\/AXGroup[]#0\\/AXGroup[]#0\\/AXButton[Offense]#0\",\"label\":\"Offense\",\"ordinal\":12,\"screenFrame\":[1062.5,299.5,91,45],\"selected\":true}],\"liveTargetWarning\":\"Historical indices\\/keys require fresh target validation before input\",\"matched\":44,\"next\":\"ui_to_text with same snapshot and filters, after=nextCursor; leap_asset for references\",\"nextCursor\":12,\"snapshot\":{\"captureEnded\":2307497.2571796253,\"captureLimit\":1500,\"captureStarted\":2307497.1199180419,\"deadlineExceeded\":false,\"generation\":2,\"interaction\":\"218AB690-BF43-44EA-945F-49A5683F879E\",\"nodeCount\":258,\"readFailures\":0,\"screenFrame\":[306,210,1080,748],\"session\":\"DD5F7E9C-3E0E-4B51-8AF5-3489195B96DE\",\"snapshot\":370,\"source\":\"AX snapshot; attributes read over an interval, not atomic\",\"truncated\":false,\"window\":\"Gameday\"}}"
+      }
+    ],
+    "isError": false
+  },
+  "action": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"actions\":[{\"acknowledgement\":\"returned\",\"actionId\":\"3A3E7359-7D95-4254-B764-54862685A939\",\"detail\":\"pressed [88] via accessibility\",\"intentRecord\":\"374\",\"resultRecord\":\"377\",\"tool\":\"click\"}],\"captureGapRecords\":0,\"checks\":[{\"condition\":\"appears\",\"label\":\"Show play information\",\"outcome\":\"unknown\",\"phase\":\"before\",\"record\":\"372\"},{\"condition\":\"appears\",\"label\":\"Show play information\",\"outcome\":\"met\",\"phase\":\"after\",\"record\":\"379\"}],\"interaction\":\"149318D6-461E-4143-BCA3-9BEE6C7F94E0\",\"meaning\":\"Current-state checks do not prove persistence or causation. Preserve API uncertainty; never replay merely because acknowledgement failed.\",\"next\":\"recording_review(view: actions, interaction_id: this interaction) for all records; ui_diff for snapshot changes\",\"omitted\":false,\"outcome\":\"requested current-state checks met\",\"snapshots\":[{\"count\":\"4\",\"first\":\"371\",\"last\":\"380\"}]}\n## Gameday — window \"Gameday\" 1080x748 at screen (306,210) [background] — state #3 (settled)\nIndices are stable; act with element_index or label. Screenshot pixels are window points at scale=1; pass include_frames=true for per-element coordinates.\n## Diff vs state #2 (247 unchanged elements omitted; indices are stable; pass disable_diff=true if you did not see #2)\n+ [259] Unknown desc=\"Offense LT\"\n+ [260] Unknown desc=\"Offense LG\"\n+ [261] Unknown desc=\"Offense C\"\n+ [262] Unknown desc=\"Offense RG\"\n+ [263] Unknown desc=\"Offense RT\"\n+ [264] Unknown desc=\"Offense 1\"\n+ [265] Unknown desc=\"Offense 2\"\n+ [266] Unknown desc=\"Offense 2\"\n+ [267] Unknown desc=\"Offense 1\"\n+ [268] Unknown desc=\"Offense Q\"\n+ [269] Unknown desc=\"Offense RB\"\n+ [270] Unknown desc=\"Defense T\"\n+ [271] Unknown desc=\"Defense N\"\n+ [272] Unknown desc=\"Defense T\"\n+ [273] Unknown desc=\"Defense D\"\n+ [274] Unknown desc=\"Defense S\"\n+ [275] Unknown desc=\"Defense M\"\n+ [276] Unknown desc=\"Defense K\"\n+ [277] Button value=\"Default view\" desc=\"Zoom to 150 percent\"\n+ [278] StaticText value=\"DEFENSE  ↑\"\n+ [279] StaticText value=\"11 O  /  7 D\"\n+ [280] Button desc=\"Show play information\"\n+ [281] StaticText value=\"1 of 1\" desc=\"Active sequence position\"\nRemoved element indices: 79-88, 90\nFocused element: [1]\n\nRecording: session=DD5F7E9C-3E0E-4B51-8AF5-3489195B96DE snapshot=380 coverage=captured interaction=149318D6-461E-4143-BCA3-9BEE6C7F94E0; inspect with ui_to_text(snapshot: 380) or recording_review(interaction_id: 149318D6-461E-4143-BCA3-9BEE6C7F94E0)."
+      }
+    ],
+    "isError": false
+  },
+  "diff": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"after\":380,\"before\":370,\"changes\":[{\"afterOrdinal\":1,\"change\":\"changed\",\"fields\":[\"screenFrame\"],\"key\":\"w\\/AXWindow[Gameday]#0\",\"label\":\"Gameday\",\"ordinal\":1},{\"afterOrdinal\":2,\"change\":\"changed\",\"fields\":[\"screenFrame\"],\"key\":\"w\\/AXWindow[Gameday]#0\\/AXGroup[]#0\\/AXButton[Team library: Higley High School Knights · Freshman]#0\",\"label\":\"Team library: Higley High School Knights · Freshman\",\"ordinal\":2},{\"afterOrdinal\":3,\"change\":\"changed\",\"fields\":[\"screenFrame\"],\"key\":\"w\\/AXWindow[Gameday]#0\\/AXGroup[]#0\\/AXButton[Playbook: Freshman 2026]#1\",\"label\":\"Playbook: Freshman 2026\",\"ordinal\":3}],\"hasMore\":true,\"incomplete\":false,\"meaning\":\"Observed differences, not causal proof. Removal from a partial tree does not prove disappearance. Content-based keys can change when labels change.\",\"nextCursor\":3,\"total\":281}"
+      }
+    ],
+    "isError": false
+  },
+  "diffnext": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"after\":380,\"before\":370,\"changes\":[{\"afterOrdinal\":4,\"change\":\"changed\",\"fields\":[\"screenFrame\"],\"key\":\"w\\/AXWindow[Gameday]#0\\/AXGroup[]#0\\/AXButton[Playbook]#2\",\"label\":\"Playbook\",\"ordinal\":4},{\"afterOrdinal\":5,\"change\":\"changed\",\"fields\":[\"screenFrame\"],\"key\":\"w\\/AXWindow[Gameday]#0\\/AXGroup[]#0\\/AXButton[Formations]#3\",\"label\":\"Formations\",\"ordinal\":5},{\"afterOrdinal\":6,\"change\":\"changed\",\"fields\":[\"screenFrame\"],\"key\":\"w\\/AXWindow[Gameday]#0\\/AXGroup[]#0\\/AXButton[Route library]#4\",\"label\":\"Route library\",\"ordinal\":6}],\"hasMore\":true,\"incomplete\":false,\"meaning\":\"Observed differences, not causal proof. Removal from a partial tree does not prove disappearance. Content-based keys can change when labels change.\",\"nextCursor\":6,\"total\":281}"
+      }
+    ],
+    "isError": false
+  },
+  "immutable": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"coordinateSpace\":\"screen points, top-left origin; visibility is frame-based, not occlusion\",\"hasMore\":false,\"historical\":true,\"items\":[{\"label\":\"Show field\",\"ordinal\":88}],\"liveTargetWarning\":\"Historical indices\\/keys require fresh target validation before input\",\"matched\":1,\"next\":\"ui_to_text with same snapshot and filters, after=nextCursor; leap_asset for references\",\"nextCursor\":88,\"snapshot\":{\"captureEnded\":2307497.2571796253,\"captureLimit\":1500,\"captureStarted\":2307497.1199180419,\"deadlineExceeded\":false,\"generation\":2,\"interaction\":\"218AB690-BF43-44EA-945F-49A5683F879E\",\"nodeCount\":258,\"readFailures\":0,\"screenFrame\":[306,210,1080,748],\"session\":\"DD5F7E9C-3E0E-4B51-8AF5-3489195B96DE\",\"snapshot\":370,\"source\":\"AX snapshot; attributes read over an interval, not atomic\",\"truncated\":false,\"window\":\"Gameday\"}}"
+      }
+    ],
+    "isError": false
+  },
+  "assettext": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Asset s1:n2:value — characters 0..<35 of 16000; nextOffset=35; hasMore=true\nquote\" newline\n🐭quote\" newline\n🐭quo"
+      }
+    ],
+    "isError": false
+  },
+  "assetfile": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"assetId\":\"s1:n2:value\",\"bytes\":19000,\"file\":\"\\/Users\\/ryan\\/src\\/claude-leap\\/artifacts\\/test-runs\\/20260920-integrated\\/fixtures\\/9877B20F-64AF-4273-BAEB-C3AC8C3ADE13\\/.leap\\/sessions\\/8410EBF7-946D-4A15-B206-A7CD3F04C307\\/content\\/7384BA6C-15C3-418F-A9B1-4DA07764419C\\/s1-n2-dmFsdWU=.txt\",\"mediaType\":\"text\\/plain\"}"
+      }
+    ],
+    "isError": false
+  },
+  "reverse": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"actions\":[{\"acknowledgement\":\"returned\",\"actionId\":\"47082775-1764-41EB-B299-C0D68023B198\",\"detail\":\"pressed [280] via accessibility\",\"intentRecord\":\"384\",\"resultRecord\":\"385\",\"tool\":\"click\"}],\"captureGapRecords\":0,\"checks\":[{\"condition\":\"appears\",\"label\":\"Show field\",\"outcome\":\"unknown\",\"phase\":\"before\",\"record\":\"382\"},{\"condition\":\"appears\",\"label\":\"Show field\",\"outcome\":\"met\",\"phase\":\"after\",\"record\":\"394\"}],\"interaction\":\"4C6C4EC1-D516-49E3-A72F-4AAB7ADCCC7C\",\"meaning\":\"Current-state checks do not prove persistence or causation. Preserve API uncertainty; never replay merely because acknowledgement failed.\",\"next\":\"recording_review(view: actions, interaction_id: this interaction) for all records; ui_diff for snapshot changes\",\"omitted\":false,\"outcome\":\"requested current-state checks met\",\"snapshots\":[{\"count\":\"4\",\"first\":\"381\",\"last\":\"395\"}]}\n## Gameday — window \"Gameday\" 1080x748 at screen (306,210) [background] — state #4 (settled)\nIndices are stable; act with element_index or label. Screenshot pixels are window points at scale=1; pass include_frames=true for per-element coordinates.\n## Diff vs state #3 (247 unchanged elements omitted; indices are stable; pass disable_diff=true if you did not see #3)\n+ [79] StaticText value=\"COACHING NOTES\"\n+ [80] TextField value=\"Halftime adjustment: attack the soft flat. Read the flat defender; throw the slant if he widens. Trial play for UI testing.⏎CAM-03 persistence check: 2026-09-20.\" placeholder=\"Add coaching notes\" desc=\"Coaching notes\" [settable] actions=Confirm\n+ [81] StaticText value=\"PLAY INFORMATION\"\n+ [82] ScrollArea actions=ScrollLeftByPage,ScrollRightByPage,ScrollUpByPage,ScrollDownByPage\n+ [83] OpaqueProviderGroup/OpaqueProviderGrid actions=ScrollToTop,ScrollToBottom\n+ [84] StaticText value=\"1\"\n+ [85] StaticText value=\"Two hard steps, win inside; eyes to QB.\"\n+ [86] StaticText value=\"2\"\n+ [87] StaticText value=\"Widen quickly to the flat; be ready on rhythm.\"\n+ [88] Button desc=\"Show field\"\n+ [90] StaticText value=\"1 of 1\" desc=\"Active sequence position\"\nRemoved element indices: 259-281\nFocused element: [1]\n\nRecording: session=DD5F7E9C-3E0E-4B51-8AF5-3489195B96DE snapshot=395 coverage=captured interaction=4C6C4EC1-D516-49E3-A72F-4AAB7ADCCC7C; inspect with ui_to_text(snapshot: 395) or recording_review(interaction_id: 4C6C4EC1-D516-49E3-A72F-4AAB7ADCCC7C)."
+      }
+    ],
+    "isError": false
+  }
+}

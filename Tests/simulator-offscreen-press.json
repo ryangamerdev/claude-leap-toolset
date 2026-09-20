@@ -1,6 +1,6 @@
 [
   {"name": "get_app_state", "arguments": {"app": "Simulator", "window": "iPhone 16", "include_screenshot": false, "disable_diff": true}},
   {"name": "click", "arguments": {"app": "Simulator", "label": "Flashcards", "then_state": false}},
-  {"name": "screenshot", "arguments": {"app": "Simulator", "scale": 0.6, "save_path": "/tmp/leap-docs/iphone-flashcards.jpg"}},
+  {"name": "screenshot", "arguments": {"app": "Simulator", "scale": 0.6, "save_path": "artifacts/test-runs/screenshots/iphone-flashcards.jpg"}},
   {"name": "get_app_state", "arguments": {"app": "Simulator", "include_screenshot": false}}
 ]

@@ -1,6 +1,7 @@
 // Prints the Control Center menu-bar items currently on screen; macOS's screen-recording
 // indicator shows up as "AudioVideoModule" while any process streams a window.
-// Usage: swiftc -O scripts/check-indicator.swift -o /tmp/check-indicator && /tmp/check-indicator
+// First: mkdir -p artifacts/test-runs/bin
+// Usage: swiftc -O scripts/check-indicator.swift -o artifacts/test-runs/bin/check-indicator && artifacts/test-runs/bin/check-indicator
 import CoreGraphics
 import Foundation
 let list = CGWindowListCopyWindowInfo([.optionOnScreenOnly], kCGNullWindowID) as? [[String: Any]] ?? []

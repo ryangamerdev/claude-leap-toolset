@@ -26,6 +26,8 @@ public struct AXNode {
     public let offscreen: Bool
     public let depth: Int
     public let key: String
+    public var capturedValue: String? = nil
+    public var valueLimited: Bool = false
 }
 
 public struct AXWindowSnapshot {
@@ -35,22 +37,61 @@ public struct AXWindowSnapshot {
     public let focusedElement: AXUIElement?
     public let nodes: [AXNode]
     public let truncated: Bool
+    public var readFailures: Int = 0
+    public var deadlineExceeded: Bool = false
+    public var captureStarted: Double = 0
+    public var captureEnded: Double = 0
+}
+
+final class AXReadBudget {
+    let started = ProcessInfo.processInfo.systemUptime
+    let deadline: Double
+    var failures = 0
+    var expired: Bool { ProcessInfo.processInfo.systemUptime >= deadline }
+    init(seconds: Double) { deadline = ProcessInfo.processInfo.systemUptime + max(0.01,seconds) }
 }
 
 enum AX {
+    static func withBudget<T>(_ seconds:Double,_ body:() throws -> T) rethrows -> T {
+        let previous=Thread.current.threadDictionary["leap.readBudget"]
+        Thread.current.threadDictionary["leap.readBudget"]=AXReadBudget(seconds:seconds)
+        defer {Thread.current.threadDictionary["leap.readBudget"]=previous}
+        return try body()
+    }
+    static var budget: AXReadBudget? { Thread.current.threadDictionary["leap.readBudget"] as? AXReadBudget }
+    static func prepare(_ el: AXUIElement) -> Bool {
+        guard let budget else { return true }
+        guard !budget.expired else {return false}
+        AXUIElementSetMessagingTimeout(el,Float(min(0.25,max(0.01,budget.deadline-ProcessInfo.processInfo.systemUptime))))
+        return true
+    }
+    static func note(_ result: AXError) {
+        // Unsupported/missing attributes are legitimate; transport/element failures are not absence.
+        if result != .success && ![-25205,-25212].contains(Int(result.rawValue)) {budget?.failures += 1}
+    }
+
     static func attr<T>(_ el: AXUIElement, _ name: String) -> T? {
+        guard prepare(el) else {return nil}
+        defer {if budget != nil {AXUIElementSetMessagingTimeout(el,AppSession.messagingTimeout)}}
         var v: CFTypeRef?
-        guard AXUIElementCopyAttributeValue(el, name as CFString, &v) == .success, let v else { return nil }
+        let result=AXUIElementCopyAttributeValue(el, name as CFString, &v);note(result)
+        guard result == .success, let v else { return nil }
         return v as? T
     }
 
     static func attrs(_ el: AXUIElement, _ names: [String]) -> [String: CFTypeRef] {
+        guard prepare(el) else {return [:]}
+        defer {if budget != nil {AXUIElementSetMessagingTimeout(el,AppSession.messagingTimeout)}}
         var out: CFArray?
         let status = AXUIElementCopyMultipleAttributeValues(el, names as CFArray, [], &out)
         var dict: [String: CFTypeRef] = [:]
         if status == .success, let values = out as? [CFTypeRef?] {
             for (name, value) in zip(names, values) {
-                guard let value, CFGetTypeID(value) != AXValueGetTypeID() || AXValueGetType(value as! AXValue) != .axError else { continue }
+                guard let value else {continue}
+                if CFGetTypeID(value) == AXValueGetTypeID(), AXValueGetType(value as! AXValue) == .axError {
+                    var error=AXError.success
+                    AXValueGetValue(value as! AXValue,.axError,&error);note(error);continue
+                }
                 dict[name] = value
             }
             return dict
@@ -58,9 +99,12 @@ enum AX {
         // Chromium/Electron (ChatGPT, VS Code, browsers) reject the batched call for many
         // elements while answering single-attribute reads fine; without this fallback their
         // web content walks as an empty group.
+        // A rejected batch can be fully recovered by individual reads. Count their failures, not the recovered batch.
         for name in names {
+            guard prepare(el) else {break}
             var v: CFTypeRef?
-            if AXUIElementCopyAttributeValue(el, name as CFString, &v) == .success, let v { dict[name] = v }
+            let result=AXUIElementCopyAttributeValue(el, name as CFString, &v);note(result)
+            if result == .success, let v { dict[name] = v }
         }
         return dict
     }
@@ -95,6 +139,8 @@ enum AX {
     }
 
     static func actions(_ el: AXUIElement) -> [String] {
+        guard prepare(el) else {return []}
+        defer {if budget != nil {AXUIElementSetMessagingTimeout(el,AppSession.messagingTimeout)}}
         var names: CFArray?
         guard AXUIElementCopyActionNames(el, &names) == .success, let arr = names as? [String] else { return [] }
         return arr
@@ -165,8 +211,11 @@ enum AX {
     }
 
     static func isSettable(_ el: AXUIElement, _ name: String) -> Bool {
+        guard prepare(el) else {return false}
+        defer {if budget != nil {AXUIElementSetMessagingTimeout(el,AppSession.messagingTimeout)}}
         var settable: DarwinBoolean = false
-        return AXUIElementIsAttributeSettable(el, name as CFString, &settable) == .success && settable.boolValue
+        let result=AXUIElementIsAttributeSettable(el,name as CFString,&settable);note(result)
+        return result == .success && settable.boolValue
     }
 
     /// SwiftUI leaks mangled type names into AXIdentifier
@@ -195,35 +244,6 @@ public struct AXWalker {
     public var maxDepth = 60
     /// Only render elements intersecting the window (menus/popovers are captured separately).
     public var clipToWindow = true
-    /// Containers at or above this depth are hit-tested for occlusion (see `isVisible`).
-    public var hitTestDepth = 3
-
-    /// Whether the element at the centre of `frame` (as the app reports it) is `el` or one of
-    /// its descendants — a hidden or covered layer fails this test. Ancestor chain is walked
-    /// by AXParent, so AX object identity quirks don't matter; role/frame equality is the tiebreak.
-    static func isVisible(_ el: AXUIElement, frame: CGRect, window: CGRect) -> Bool {
-        let cx = frame.midX, cy = frame.midY
-        var pidValue: pid_t = 0
-        guard AXUIElementGetPid(el, &pidValue) == .success else { return true }
-        let app = AXUIElementCreateApplication(pidValue)
-        var hit: AXUIElement?
-        guard AXUIElementCopyElementAtPosition(app, Float(cx), Float(cy), &hit) == .success, var cur = hit else {
-            return true // hit-testing unsupported: keep the element rather than drop it
-        }
-        for _ in 0..<40 {
-            if CFEqual(cur, el) { return true }
-            let a = AX.attrs(cur, [kAXRoleAttribute, kAXPositionAttribute, kAXSizeAttribute])
-            if let p = AX.point(a[kAXPositionAttribute]), let sz = AX.size(a[kAXSizeAttribute]),
-               (a[kAXRoleAttribute] as? String) == (AX.attr(el, kAXRoleAttribute) as String?),
-               abs(p.x - frame.minX) < 1, abs(p.y - frame.minY) < 1, abs(sz.width - frame.width) < 1, abs(sz.height - frame.height) < 1 {
-                return true
-            }
-            guard let parent: AXUIElement = AX.attr(cur, kAXParentAttribute) else { break }
-            cur = parent
-        }
-        return false
-    }
-
     public init() {}
 
     /// Container roles that are elided when they carry no information of their own.
@@ -263,7 +283,11 @@ public struct AXWalker {
         return nil
     }
 
-    public func snapshot(window: AXUIElement, app: AXUIElement) -> AXWindowSnapshot? {
+    public func snapshot(window: AXUIElement, app: AXUIElement, timeout: Double = 3) -> AXWindowSnapshot? {
+        let budget=AXReadBudget(seconds:timeout)
+        let previous=Thread.current.threadDictionary["leap.readBudget"]
+        Thread.current.threadDictionary["leap.readBudget"]=budget
+        defer {Thread.current.threadDictionary["leap.readBudget"]=previous}
         guard let frame = AX.frame(window) else { return nil }
         let title: String? = AX.attr(window, kAXTitleAttribute)
         let focused: AXUIElement? = AX.attr(app, kAXFocusedUIElementAttribute)
@@ -276,7 +300,7 @@ public struct AXWalker {
             walkMenuBar(bar, nodes: &nodes, count: &count, truncated: &truncated)
         }
         return AXWindowSnapshot(window: window, title: title, frame: frame, focusedElement: focused,
-                                nodes: nodes, truncated: truncated)
+                                nodes: nodes, truncated: truncated, readFailures:budget.failures, deadlineExceeded:budget.expired, captureStarted:budget.started, captureEnded:ProcessInfo.processInfo.systemUptime)
     }
 
     /// The app's menu bar: its titles always, and the items of any menu that is currently open.
@@ -317,7 +341,7 @@ public struct AXWalker {
 
     private func walk(_ el: AXUIElement, depth: Int, parentKey: String, siblingOrdinal: Int,
                       windowFrame: CGRect, nodes: inout [AXNode], count: inout Int, truncated: inout Bool) {
-        if count >= maxNodes || depth > maxDepth { truncated = true; return }
+        if AX.budget?.expired == true || count >= maxNodes || depth > maxDepth { truncated = true; return }
         count += 1
         let a = AX.attrs(el, AXWalker.batchAttributes)
         let role = (a[kAXRoleAttribute] as? String) ?? "AXUnknown"
@@ -343,14 +367,10 @@ public struct AXWalker {
         if clipToWindow, let f = frame, depth > 0 {
             if f.width <= 0 || f.height <= 0 { return }
             offscreen = !f.intersects(windowFrame.insetBy(dx: -1, dy: -1))
-            // SwiftUI keeps inactive TabView pages (and other hidden layers) in the tree with
-            // real frames, so a Playbook state carried the whole Formations page — ~200 elements
-            // the user could not see. Hit-test the centre of shallow containers: if the element
-            // there is not this one or a descendant, the subtree is occluded/hidden. Skip it.
-            if !offscreen, depth <= hitTestDepth, f.width >= 40, f.height >= 40,
-               AXWalker.containerRoles.contains(role), !AXWalker.isVisible(el, frame: f, window: windowFrame) {
-                return
-            }
+            // Do not prune subtrees based on hit-testing. SwiftUI overlays can
+            // intercept every sampled point while the underlying controls remain
+            // visible and accessible (e.g. Gameday's zoomed Sideline field).
+            // Returning extra inactive-tab nodes is preferable to losing live UI.
         }
 
         let label = identifier ?? title ?? description ?? placeholder ?? ""
@@ -368,7 +388,9 @@ public struct AXWalker {
             nodes.append(AXNode(element: el, role: role, subrole: subrole, title: title, value: value,
                                 description: description, identifier: identifier, placeholder: placeholder,
                                 frame: frame, enabled: enabled, focused: focused, selected: selected,
-                                actions: actions, settable: settable, offscreen: offscreen, depth: depth, key: key))
+                                actions: actions, settable: settable, offscreen: offscreen, depth: depth, key: key,
+                                capturedValue: role == "AXSecureTextField" ? nil : (a[kAXValueAttribute] as? String).map {String($0.prefix(65536))},
+                                valueLimited: role != "AXSecureTextField" && ((a[kAXValueAttribute] as? String)?.count ?? 0)>65536))
             childDepth = depth + 1
         }
 

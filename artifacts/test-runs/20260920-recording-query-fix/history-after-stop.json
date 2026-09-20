@@ -1,0 +1,9 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"hasMore\":true,\"historical\":true,\"nextCursor\":\"35\",\"project\":\"\\/Users\\/ryan\\/src\\/claude-leap\",\"records\":[{\"interaction\":\"88688216-EC42-423B-9520-231CD6D7EAB1\",\"kind\":\"ax_notification\",\"monotonic\":\"2303102.02519783\",\"payload\":{\"elementHash\":\"1852865649\",\"notification\":\"AXWindowCreated\",\"source\":\"AXObserver\",\"valuesCaptured\":false},\"seq\":\"8\",\"session\":\"F32376AA-772C-4A01-97C8-B2679EFD3240\",\"wall\":\"2026-09-20T10:18:37Z\"},{\"interaction\":\"28F4B0FE-3478-42E1-AF03-02A8D469016B\",\"kind\":\"ax_notification\",\"monotonic\":\"2303111.35639875\",\"payload\":{\"elementHash\":\"1852865665\",\"notification\":\"AXLayoutChanged\",\"source\":\"AXObserver\",\"valuesCaptured\":false},\"seq\":\"35\",\"session\":\"F32376AA-772C-4A01-97C8-B2679EFD3240\",\"wall\":\"2026-09-20T10:18:46Z\"}],\"sessions\":[{\"app\":\"Gameday\",\"ended\":\"2026-09-20T10:20:40Z\",\"epoch\":\"564FFEC5-3C72-41ED-9892-6CF3BEF08D84\",\"id\":\"E526DB07-E601-4B14-B917-CC975E2978D1\",\"pid\":\"69522\",\"started\":\"2026-09-20T10:19:17Z\"},{\"app\":\"Gameday\",\"ended\":\"2026-09-20T10:19:17Z\",\"epoch\":\"75FACFB5-B5EC-4F8D-A81F-317C419C2B40\",\"id\":\"F32376AA-772C-4A01-97C8-B2679EFD3240\",\"pid\":\"69522\",\"started\":\"2026-09-20T10:18:35Z\"}]}"
+    }
+  ],
+  "isError": false
+}

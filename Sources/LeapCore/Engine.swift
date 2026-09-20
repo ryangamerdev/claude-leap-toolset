@@ -5,6 +5,12 @@ import Foundation
 /// Coordinates app sessions and executes actions. One instance per server.
 public actor Engine {
     var sessions: [pid_t: AppSession] = [:]
+    var recordings: [pid_t: AXRecording] = [:]
+    var recordingStores: [String: RecordingStore] = [:]
+    var boundProject: String?
+    var recordingSuppressed = Set<pid_t>()
+    var latestEvidence: [pid_t:Int] = [:]
+    var recordingInteraction: String?
     public var walker = AXWalker()
     /// Wait after an input action before the next state capture so the UI can settle.
     public var settleDelay: TimeInterval = 0.6
@@ -37,15 +43,17 @@ public actor Engine {
 
     public func session(for query: String, launch: Bool = true) async throws -> AppSession {
         let app = try await AppResolver.resolve(query, launch: launch)
-        if let s = sessions[app.processIdentifier], !s.app.isTerminated { return s }
+        if let s = sessions[app.processIdentifier], !s.app.isTerminated {try autoRecord(s); return s}
         let identity = app.bundleURL?.path ?? app.bundleIdentifier ?? "pid \(app.processIdentifier)"
         let s = AppSession(app: app)
         if let oldPid = pidByIdentity[identity], oldPid != app.processIdentifier, sessions[oldPid] != nil {
+            recordings.removeValue(forKey: oldPid)?.stop()
             sessions[oldPid] = nil
             s.relaunchedFrom = oldPid
         }
         sessions[app.processIdentifier] = s
         pidByIdentity[identity] = app.processIdentifier
+        try autoRecord(s)
         return s
     }
 
@@ -77,29 +85,32 @@ public actor Engine {
     /// Poll for the target window: the pinned one (by title substring) if set, else the key window.
     /// Apps that were just launched need a moment, hence the polling.
     func waitForWindow(_ s: AppSession, timeout: TimeInterval = 6) async throws -> AXUIElement {
-        let deadline = Date().addingTimeInterval(timeout)
-        while true {
-            if let pin = s.pinnedWindow {
-                let all = windows(s)
-                let hits = all.filter { $0.1.localizedCaseInsensitiveContains(pin) }
-                if hits.count == 1 { return hits[0].0 }
-                if hits.count > 1 {
-                    if let exact = hits.first(where: { $0.1.caseInsensitiveCompare(pin) == .orderedSame }) { return exact.0 }
-                    throw LeapError.unsupported("window \"\(pin)\" is ambiguous in \(s.displayName): " + hits.map { "\"\($0.1)\"" }.joined(separator: ", ") + ". Pass a longer title substring.")
+        let deadline=ProcessInfo.processInfo.systemUptime+max(0.01,timeout)
+        while ProcessInfo.processInfo.systemUptime<deadline {
+            let candidate:AXUIElement? = try AX.withBudget(deadline-ProcessInfo.processInfo.systemUptime) {
+                if let pin=s.pinnedWindow {
+                    let hits=windows(s).filter{$0.1.localizedCaseInsensitiveContains(pin)}
+                    if hits.count==1 {return hits[0].0}
+                    if hits.count>1 {
+                        let exact=hits.filter{$0.1.caseInsensitiveCompare(pin) == .orderedSame}
+                        if exact.count==1 {return exact[0].0}
+                        throw LeapError.unsupported("Window selection is ambiguous; specify a unique title")
+                    }
+                    return nil
                 }
-                if Date() > deadline {
-                    throw LeapError.unsupported("\(s.displayName) has no window matching \"\(pin)\". Windows: " + all.map { "\"\($0.1)\"" }.joined(separator: ", "))
-                }
-            } else if let w = walker.keyWindow(of: s.axApp) { return w }
-            if Date() > deadline { throw LeapError.noWindow(s.displayName) }
-            try await Task.sleep(nanoseconds: 200_000_000)
+                return walker.keyWindow(of:s.axApp)
+            }
+            if let candidate {return candidate}
+            let left=deadline-ProcessInfo.processInfo.systemUptime
+            if left>0 {try await Task.sleep(nanoseconds:UInt64(min(0.2,left)*1_000_000_000))}
         }
+        throw LeapError.unsupported("Observation unknown: selected window unavailable before deadline")
     }
 
     // MARK: - State
 
     public struct StateOptions {
-        public var includeScreenshot = true
+        public var includeScreenshot = false
         public var disableDiff = false
         public var scale: CGFloat = 1.0
         public var jpegQuality: CGFloat? = 0.8
@@ -149,11 +160,11 @@ public actor Engine {
             var stable = false
             while Date() < deadline {
                 try await Task.sleep(nanoseconds: 300_000_000)
-                guard let again = walker.snapshot(window: window, app: s.axApp) else { break }
+                guard let again = walker.snapshot(window: window, app: s.axApp, timeout:max(0.01,deadline.timeIntervalSinceNow)) else { break }
                 let now = Self.fingerprint(again)
                 let busy = again.nodes.contains { $0.role == "AXProgressIndicator" || $0.role == "AXBusyIndicator" }
                 snap = again
-                if now == previous && !busy { stable = true; break }
+                if now == previous && !busy && again.readFailures == 0 && !again.deadlineExceeded && !again.truncated { stable = true; break }
                 previous = now
             }
             s.lastSettleStable = stable
@@ -187,6 +198,15 @@ public actor Engine {
                 text += "\n(screenshot unavailable: window is not on screen — minimized or on another Space)"
             }
         }
+        if snap.readFailures>0 || snap.deadlineExceeded || snap.truncated {
+            text += "\nObservation incomplete: readFailures=\(snap.readFailures), deadline=\(snap.deadlineExceeded), nodeLimit=\(snap.truncated). Missing controls do not prove absence."
+        }
+        do {
+            let footer=try recordSnapshot(snap, session:s)
+            if recordings[s.pid] != nil {text=compactObservation(text)}
+            text += footer
+        }
+        catch { text += "\nRecording failure: \(error). Prior input may have been sent; do not replay. Further recorded actions will be refused." }
         return State(text: text, screenshot: shot, warning: warning)
     }
 
@@ -269,7 +289,7 @@ public actor Engine {
     /// Accessibility actions (press, set value, insert text, menu commands) are preferred over
     /// synthesized events precisely because they always work from the background.
     public struct InputMode {
-        /// Opt in to activating the app and using real HID events. Only needed for apps that
+        /// Opt in to activating the app. Pointer events remain window-targeted; keyboard fallback uses HID. For apps that
         /// ignore posted events (some games, custom GL/Metal canvases).
         public var foreground = false
         public init(foreground: Bool = false) { self.foreground = foreground }
@@ -344,7 +364,10 @@ public actor Engine {
         guard wantsForeground else {
             // Background: events go straight to the process. The user's frontmost app,
             // keyboard focus and real cursor are all untouched.
-            return try body(.app(s.pid))
+            s.refreshWindowFrame()
+            let title: String? = s.lastWindow.flatMap { AX.attr($0, kAXTitleAttribute) }
+            let window = WindowInfo.match(pid: s.pid, frame: s.lastWindowFrame, title: title)
+            return try body(.app(s.pid, window: window))
         }
         if let hold, hold.session.pid == s.pid, hold.delivery != nil {
             return try body(.system) // already activated for this batch
@@ -352,6 +375,26 @@ public actor Engine {
         try await activate(s)
         hold?.delivery = .system
         return try body(.system)
+    }
+
+    /// Native pointer transport is independent of foreground policy. Both modes
+    /// resolve the same window and use the same scoped process-directed delivery.
+    func withPointerInput<T>(_ s: AppSession, _ mode: InputMode,
+                             _ body: (Delivery) throws -> T) async throws -> T {
+        let originalFrame = s.lastWindowFrame
+        let wantsForeground = mode.foreground || (hold?.session.pid == s.pid && hold?.mode.foreground == true)
+        if wantsForeground { try await activate(s) }
+        s.refreshWindowFrame()
+        guard originalFrame.approximatelyEquals(s.lastWindowFrame) else {
+            throw LeapError.unsupported("The target window moved or resized before pointer delivery. No pointer input was sent; read get_app_state and retry.")
+        }
+        let title: String? = s.lastWindow.flatMap { AX.attr($0, kAXTitleAttribute) }
+        guard let window = WindowInfo.match(pid: s.pid, frame: s.lastWindowFrame, title: title),
+              window.bounds.approximatelyEquals(s.lastWindowFrame) else {
+            throw LeapError.unsupported("Could not resolve the selected window for pointer delivery. No pointer input was sent; read get_app_state and retry.")
+        }
+        let delivery = Delivery.app(s.pid, window: window)
+        return try Input.withPointerGesture(delivery) { try body(delivery) }
     }
 
     /// Activate the app and *verify* it became frontmost. Never returns normally while another
@@ -394,7 +437,8 @@ public actor Engine {
                       modifiers: String? = nil, mode: InputMode = .init()) async throws -> String {
         try requireAX()
         let s = try await actionSession(query, needsElements: target.elementIndex != nil)
-        let (p, rec) = try screenPoint(s, target)
+        let (initialPoint, rec) = try screenPoint(s, target)
+        var p = initialPoint
         let flags = try modifierFlags(modifiers)
         defer { s.lastActionAt = Date() }
         // Prefer the AX action: no synthesized events, no focus change, works for background apps.
@@ -415,10 +459,78 @@ public actor Engine {
                 await signal(p, .click)
                 return "pressed [\(rec.index)] via accessibility"
             }
+            // A timeout/error is not proof that AXPress was rejected. A Save
+            // can finish and destroy its button before the AX reply arrives.
+            // Only an explicitly unsupported action permits pointer fallback;
+            // otherwise a second click could repeat an already-applied action.
+            guard err == .actionUnsupported else {
+                throw LeapError.unsupported("Outcome uncertain: accessibility Press was sent to [\(rec.index)] but returned \(err) (code \(err.rawValue)). The action may already have completed. No coordinate fallback was sent. Read get_app_state and verify the result before deciding whether to retry.")
+            }
         }
-        try await withInput(s, mode) { d in Input.click(at: p, button: button, count: count, flags: flags, d) }
+        // Read live geometry, including enclosing scroll viewports: a row can be
+        // inside the window but clipped by its scroll area. AXPress above remains
+        // available for offscreen elements and Simulator coordinate quirks.
+        if let record = rec, !record.node.role.hasPrefix("AXMenu") {
+            if let visible = try visibleClickPoint(s, target) {
+                p = visible
+            } else {
+                let result = AXUIElementPerformAction(record.node.element, "AXScrollToVisible" as CFString)
+                guard result == .success else {
+                    throw LeapError.unsupported("Element [\(record.index)] is outside the visible viewport and the app could not reveal it with AXScrollToVisible (\(result)). No coordinate click was sent. Scroll it into view, read get_app_state, then retry.")
+                }
+                // A successful request may animate or be ignored. Revalidate the
+                // target identity and wait for two matching, visible positions.
+                // Do not retry AXPress here: its earlier failure may be ambiguous.
+                var previous: CGPoint?
+                var revealed: CGPoint?
+                for _ in 0..<12 {
+                    try await Task.sleep(nanoseconds: 150_000_000)
+                    let current = try visibleClickPoint(s, target)
+                    if let current, let previous,
+                       abs(current.x - previous.x) < 0.5, abs(current.y - previous.y) < 0.5 {
+                        revealed = current
+                        break
+                    }
+                    previous = current
+                }
+                guard let finalPoint = try visibleClickPoint(s, target),
+                      let stablePoint = revealed,
+                      abs(finalPoint.x - stablePoint.x) < 0.5, abs(finalPoint.y - stablePoint.y) < 0.5 else {
+                    throw LeapError.unsupported("Reveal was requested for element [\(record.index)], but its position did not become visible and stable. No coordinate click was sent. Read get_app_state before retrying.")
+                }
+                p = finalPoint
+            }
+        }
+        try await withPointerInput(s, mode) { d in Input.click(at: p, button: button, count: count, flags: flags, d) }
         await signal(p, .click)
         return "clicked \(button.rawValue)×\(count) at window (\(Int(p.x - s.lastWindowFrame.minX)),\(Int(p.y - s.lastWindowFrame.minY)))" + (rec.map { " on [\($0.index)]" } ?? "")
+    }
+
+    /// Return a usable point only after validating the original element against
+    /// the live AX tree. Clip against scroll ancestors, not hit-test ancestry:
+    /// decorative overlays may intercept hit tests above valid controls.
+    private func visibleClickPoint(_ s: AppSession, _ target: Target) throws -> CGPoint? {
+        guard let index = target.elementIndex else { return nil }
+        let record = try s.element(index)
+        guard let frame = record.node.frame else { return nil }
+        s.refreshWindowFrame()
+        var visible = frame.intersection(s.lastWindowFrame)
+        var ancestor: AXUIElement? = AX.attr(record.node.element, kAXParentAttribute)
+        for _ in 0..<60 {
+            guard let current = ancestor else { break }
+            let role: String? = AX.attr(current, kAXRoleAttribute)
+            if role == "AXScrollArea", let viewport = AX.frame(current) {
+                visible = visible.intersection(viewport)
+            }
+            if role == "AXWindow" { break }
+            ancestor = AX.attr(current, kAXParentAttribute)
+        }
+        guard !visible.isNull, visible.width >= 1, visible.height >= 1 else { return nil }
+        if let x = target.x, let y = target.y {
+            let point = CGPoint(x: frame.minX + x, y: frame.minY + y)
+            return visible.contains(point) ? point : nil
+        }
+        return CGPoint(x: visible.midX, y: visible.midY)
     }
 
     public func drag(app query: String, from: Target, to: Target, steps: Int = 12, modifiers: String? = nil,
@@ -430,7 +542,7 @@ public actor Engine {
         let flags = try modifierFlags(modifiers)
         let steps = max(1, min(steps, 200))
         defer { s.lastActionAt = Date() }
-        try await withInput(s, mode) { d in Input.drag(from: a, to: b, flags: flags, steps: steps, d) }
+        try await withPointerInput(s, mode) { d in Input.drag(from: a, to: b, flags: flags, steps: steps, d) }
         await MainActor.run { Overlay.shared.signalDrag(from: a, to: b) }
         return "dragged"
     }
@@ -454,9 +566,40 @@ public actor Engine {
         case "left", "l": dx = horizontal
         default: throw LeapError.unsupported("direction must be up/down/left/right")
         }
-        try await withInput(s, mode) { d in Input.scroll(at: p, dx: dx, dy: dy, d) }
+        // macOS page actions describe movement of the content: moving content
+        // up reveals the next page below. Prefer them to background wheel events,
+        // which SwiftUI can accept without moving its scroll view.
+        if pixels == nil, pages >= 1, pages.rounded(.down) == pages,
+           let record = rec {
+            let action: String
+            if dy < 0 { action = "AXScrollUpByPage" }
+            else if dy > 0 { action = "AXScrollDownByPage" }
+            else if dx < 0 { action = "AXScrollLeftByPage" }
+            else { action = "AXScrollRightByPage" }
+            var candidate: AXUIElement? = record.node.element
+            for _ in 0..<60 {
+                guard let element = candidate else { break }
+                if AX.actions(element).contains(action) {
+                    for page in 0..<Int(pages) {
+                        let result = AXUIElementPerformAction(element, action as CFString)
+                        guard result == .success else {
+                            // Never replay the full request using another path after
+                            // some pages have already been applied.
+                            throw LeapError.unsupported("Accessibility scroll failed after \(page) of \(Int(pages)) page requests (\(result)). Read get_app_state before retrying.")
+                        }
+                        try await Task.sleep(nanoseconds: 150_000_000)
+                    }
+                    await signal(p, .scroll)
+                    return "requested scroll \(direction), \(Int(pages)) page(s), via accessibility; verify movement in the returned state"
+                }
+                let role: String? = AX.attr(element, kAXRoleAttribute)
+                if role == "AXWindow" { break }
+                candidate = AX.attr(element, kAXParentAttribute)
+            }
+        }
+        try await withPointerInput(s, mode) { d in Input.scroll(at: p, dx: dx, dy: dy, d) }
         await signal(p, .scroll)
-        return "scrolled \(direction)"
+        return "dispatched scroll \(direction) (wheel events; verify movement in the returned state)"
     }
 
     public func pressKey(app query: String, key: String, mode: InputMode = .init()) async throws -> String {
@@ -788,13 +931,38 @@ public actor Engine {
         try requireAX()
         let s = try await actionSession(query, needsElements: false)
         let timeout = max(0.1, min(timeout, 60))
-        let deadline = Date().addingTimeInterval(timeout)
+        let deadline = ProcessInfo.processInfo.systemUptime + timeout
         let started = Date()
+        let grace=min(max(0,settleDelay-Date().timeIntervalSince(s.lastActionAt)),timeout/2)
+        if grace>0 {try await Task.sleep(nanoseconds:UInt64(grace*1_000_000_000))}
         var lastSeen = "not present"
+        var hadCompleteObservation=false
         while true {
-            let window = try await waitForWindow(s)
-            if let snap = walker.snapshot(window: window, app: s.axApp) { _ = s.render(snap, walker: walker) }
-            let hits = Self.matching(s, label: label)
+            let remaining=deadline-ProcessInfo.processInfo.systemUptime
+            guard remaining>0 else {
+                throw LeapError.unsupported(hadCompleteObservation ? "Expectation unmet by deadline; last observed: \(lastSeen). No input retry." : "Expectation unknown: observation deadline exhausted; input is not retried")
+            }
+            let window = try await waitForWindow(s,timeout:remaining)
+            guard let snap = walker.snapshot(window:window,app:s.axApp,timeout:max(0.01,deadline-ProcessInfo.processInfo.systemUptime)) else {
+                if ProcessInfo.processInfo.systemUptime < deadline {continue}
+                throw LeapError.unsupported("Expectation unknown: accessibility observation unavailable")
+            }
+            _ = try recordSnapshot(snap, session: s)
+            let needle = label.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            guard !needle.isEmpty else { throw LeapError.unsupported("Expectation needs a nonempty label") }
+            func texts(_ n: AXNode) -> [String] { [n.title,n.description,n.value,n.placeholder].compactMap { $0?.lowercased() } }
+            let exact = snap.nodes.filter { texts($0).contains(needle) }
+            let nodes = exact.isEmpty ? snap.nodes.filter { texts($0).contains { $0.contains(needle) } } : exact
+            let hits = nodes.map { ElementRecord(index: s.indexByKey[$0.key] ?? 0, node: $0) }
+            guard hits.count <= 1 else { throw LeapError.unsupported("Expectation unknown: label matches multiple elements; use a more specific label") }
+            let incomplete=snap.truncated || snap.readFailures>0 || snap.deadlineExceeded
+            if incomplete || ProcessInfo.processInfo.systemUptime > deadline {
+                if ProcessInfo.processInfo.systemUptime < deadline {
+                    try await Task.sleep(nanoseconds:UInt64(min(0.3,max(0,deadline-ProcessInfo.processInfo.systemUptime))*1_000_000_000));continue
+                }
+                throw LeapError.unsupported("Expectation unknown: incomplete or late observation; no input retry. Read failures=\(snap.readFailures)")
+            }
+            hadCompleteObservation=true
             let met: Bool
             switch condition {
             case .appears: met = !hits.isEmpty
@@ -806,16 +974,16 @@ public actor Engine {
                 met = hits.contains { ($0.node.value ?? "").lowercased().contains(want) }
             }
             if let h = hits.first {
-                lastSeen = "[\(h.index)] \(h.node.role.dropFirst(2))" + (h.node.enabled ? "" : " [disabled]") + (h.node.value.map { " value=\"\($0.prefix(60))\"" } ?? "")
+                lastSeen = (h.index > 0 ? "[\(h.index)] " : "[new node; use the returned state for its index] ") + "\(h.node.role.dropFirst(2))" + (h.node.enabled ? "" : " [disabled]") + (h.node.value.map { " value=\"\($0.prefix(60))\"" } ?? "")
             } else { lastSeen = "not present" }
             if met {
                 let ms = Int(Date().timeIntervalSince(started) * 1000)
                 return "condition met after \(ms) ms: \"\(label)\" \(condition.rawValue)\(value.map { " \"\($0)\"" } ?? "") (\(lastSeen))"
             }
-            if Date() >= deadline {
-                throw LeapError.unsupported("wait_for timed out after \(Int(timeout)) s: \"\(label)\" did not become \(condition.rawValue)\(value.map { " \"\($0)\"" } ?? ""); last seen: \(lastSeen). Nothing was done.")
+            if ProcessInfo.processInfo.systemUptime >= deadline {
+                throw LeapError.unsupported("wait_for timed out after \(Int(timeout)) s: \"\(label)\" did not become \(condition.rawValue)\(value.map { " \"\($0)\"" } ?? ""); last seen: \(lastSeen). This wait sent no input; earlier actions may already have been applied.")
             }
-            try await Task.sleep(nanoseconds: 300_000_000)
+            try await Task.sleep(nanoseconds: UInt64(min(0.3,max(0,deadline-ProcessInfo.processInfo.systemUptime))*1_000_000_000))
         }
     }
 

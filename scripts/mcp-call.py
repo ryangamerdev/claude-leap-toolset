@@ -13,7 +13,7 @@ Script steps besides tool calls:
   {"name": "@shell", "arguments": {"cmd": "..."}}                                   run a shell command
   a tool call with "expect_error": "regex"  must fail (isError) with matching text
 
-Prints every request/response in full. Image content is written to /tmp/leap-shots/
+Prints every request/response in full. Image content is written to artifacts/test-runs/screenshots/
 and the path is printed. Exits non-zero on transport errors or isError results.
 """
 import base64
@@ -28,7 +28,7 @@ import time
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TOOLCHAIN_ID = "org.swift.640202609131a"
-SHOTS = "/tmp/leap-shots"
+SHOTS = os.path.join(ROOT, "artifacts", "test-runs", "screenshots")
 os.makedirs(SHOTS, exist_ok=True)
 
 
@@ -55,8 +55,11 @@ def binary_path():
 class Client:
     def __init__(self, cmd):
         print(f"$ {' '.join(cmd)}")
+        # Give the AppKit server its own session. With the responsibility-disclaiming
+        # re-exec, inheriting Python's session can prevent didFinishLaunching and
+        # leave initialization waiting indefinitely under an agent's shell runner.
         self.p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                  text=True, bufsize=1)
+                                  text=True, bufsize=1, start_new_session=True, cwd=ROOT)
         assert self.p.stdin and self.p.stdout and self.p.stderr
         self.stdin = self.p.stdin
         self.q = queue.Queue()

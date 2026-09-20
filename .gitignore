@@ -8,3 +8,25 @@ Package.resolved.bak
 *.png
 *.jpg
 !docs/**/*.png
+
+# Keep campaign image evidence; bulky local builds/downloads remain in the repo tree.
+!artifacts/**/*.png
+!artifacts/**/*.jpg
+artifacts/downloads/
+artifacts/backups/
+artifacts/test-runs/bin/
+artifacts/**/*.app/
+
+# Runtime evidence and generated fixtures stay local; retain curated JSON/reports/scripts.
+.leap/
+__pycache__/
+*.py[cod]
+.DS_Store
+artifacts/**/*.db
+artifacts/**/*.db-wal
+artifacts/**/*.db-shm
+artifacts/**/*.log
+artifacts/test-runs/**/fixtures/
+# Recovered scratch history is documented, not a reproducible source distribution.
+artifacts/reference/2026-09-20-recovered/*
+!artifacts/reference/2026-09-20-recovered/README.md

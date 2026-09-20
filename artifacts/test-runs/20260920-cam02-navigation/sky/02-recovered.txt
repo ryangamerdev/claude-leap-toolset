@@ -1,0 +1,28 @@
+The following is a diff from the previous accessibility tree for Window: "Gameday" with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 269-272
+~			20 button PASS
+~		76 text field (settable) Search plays
+~		268 scroll area Secondary Actions: Scroll Up, Scroll Down
++				274 button Select play: 49ERS
++				275 button Select play: ANY CONNOR BRADY · 3-4
++				276 button Select play: ANY CONNOR BRADY · 4-2
++				277 button Select play: ANY CONNOR VICK · 3-4 (BUCK)
++				278 button Select play: ANY CONNOR VICK · 4-2
++				279 button Select play: ANY OMAR BRADY · 3-4
++				280 button Select play: ANY OMAR BRADY · 4-2
++				281 button Select play: ANY OMAR VICK · 3-4
++				282 button Select play: ANY OSCAR BRADY · 3-4
++				283 button Select play: ANY OSCAR BRADY · 4-2
++				284 button Select play: ANY OSCAR VICK · 3-4
++				285 button Select play: ANY OSCAR VICK · 4-2
++				286 button Select play: ANY ZEBRA BRADY · 4-2
++				287 button Select play: ANY ZEBRA BRADY (ODD) · 3-4
++				288 button Select play: ANY ZEBRA BRADY (RONDA) · 3-4
++			289 text 88 matching plays
++			290 scroll bar (settable, float) 0
++				291 value indicator (settable, float) 0
++				292 increment arrow button
++				293 decrement arrow button
++				294 increment page button
++				295 decrement page button
+The focused UI element is 76 text field (settable) Search plays

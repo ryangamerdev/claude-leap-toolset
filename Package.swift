@@ -16,6 +16,7 @@ let package = Package(
             name: "LeapCore",
             path: "Sources/LeapCore",
             linkerSettings: [
+                .linkedLibrary("sqlite3"),
                 .linkedFramework("ApplicationServices"),
                 .linkedFramework("AppKit"),
                 .linkedFramework("ScreenCaptureKit"),

@@ -1,0 +1,40 @@
+$ /Users/ryan/Applications/claude-leap.app/Contents/MacOS/claude-leap
+initialize → {
+  "capabilities": {
+    "tools": {
+      "listChanged": false
+    }
+  },
+  "instructions": "claude-leap: native macOS computer use (accessibility-first, background-first). Full playbook: the `claude-leap` skill (scripts/install.py installs it). Keep this short: Claude Code truncates long server instructions.\n\nLoop: get_app_state(app) reads the accessibility tree as text with NO screenshot by default (the tree IS the observation, like a screen reader; in practice only about 1 read in 4 needs an image). Act by element_index or label (click, set_value, select_text, type_text, press_key, perform_action, scroll, drag, paste); each action returns the updated diff, so read it and continue. Pass include_screenshot=true only when the answer is visual and the tree cannot express it (a zoom level, a drag/pan offset, a canvas/diagram, a rendering glitch). Batch predictable sequences; the state after an action waits for the UI to settle, so never sleep.\n\nThe user keeps their computer: mouse gestures always target the app window and never move the real cursor. foreground=true explicitly activates the app when synthesized input is needed; announce it because it changes focus. Keyboard fallback may use system events. A face pointer + ripple shows where you act.\n\nTree: [42] Button \"Save\" [settable] [selected] actions=\u2026 ; indices are stable for the window's life; MenuBar/MenuBarItem lines are the menu bar (click a title, the diff lists its items; Escape closes). Other windows: g
+- list_apps(include_installed)
+    List running GUI apps (frontmost first, with window counts) and optionally installed apps. Not needed to target an app you already know by name.
+- get_app_state(app, disable_diff, include_frames, include_screenshot, scale, window)
+    Read the target app's key window as an indexed accessibility tree (roles, titles, values, extra actions; coordinates only with include_frames). Text by default — the tree is the observation, like a screen reader; no screenshot unless include_screenshot=true. Indices are stable across calls; by default only the diff since the previous state is returned. Call this before acting on an app and after actions whose result you need to see.
+- screenshot(app, embed, height, save_path, scale, width, window, x, y)
+    Capture a window as an image. With save_path it writes the file (creating parent folders) and, unless embed=true, returns only a text confirmation so bulk documentation capture does not flood context. Without save_path it returns the image inline.
+- click(app, button, click_count, element_index, foreground, label, modifiers, then_state, x, y)
+    Click an element by index (preferred; uses the accessibility Press action when available, which needs no focus) or a window-relative coordinate.
+- drag(app, foreground, from_x, from_y, modifiers, steps, then_state, to_x, to_y)
+    Press at one window-relative point, move, and release at another (e.g. Blender viewport orbit, slider, reorder).
+- scroll(app, direction, element_index, foreground, label, pages, pixels, then_state, x, y)
+    Scroll at an element or point by pages (default 1) or an exact pixel distance.
+- press_key(app, foreground, key, then_state)
+    Press a key or chord using xdotool-style names: "Return", "Tab", "Escape", "Up", "super+s", "ctrl+shift+Tab", "KP_0", "F5". Delivered to the target app only (not a global shortcut).
+- type_text(app, element_index, foreground, label, text, then_state)
+    Type literal text into the current focus (or focus element_index first). Newlines are sent as Return — many forms submit on Return, so prefer set_value/paste for multi-line text.
+- set_value(app, element_index, label, then_state, value)
+    Replace the value of an editable element (text field, slider, checkbox) via accessibility. Falls back to focus + select-all + type.
+- select_text(app, element_index, label, prefix, selection_type, suffix, text, then_state)
+    Select matching text inside an editable element, or place the caret before/after it, via accessibility (no keystrokes). Use prefix/suffix to disambiguate repeated matches. Follow with type_text to replace the selection or insert at the caret.
+- wait_for(app, condition, label, then_state, timeout, value)
+    Wait (bounded) until a labelled element appears, disappears, becomes enabled/disabled, or its value contains text. Use after actions that finish asynchronously (network results, saves that close a dialog) instead of assuming the settled tree is the final one. Fails on timeout so a batch stops.
+- perform_action(action, app, element_index, label, then_state)
+    Invoke a secondary accessibility action listed in the element's actions= field, e.g. ShowMenu, Increment, Decrement, Confirm, Cancel, Expand, Collapse, Raise.
+- paste(app, foreground, html, text, then_state)
+    Insert text (or HTML) via the pasteboard, then restore the user's previous clipboard. Best for multi-line or formatted content.
+- activate(app)
+    Bring the app to the foreground (only when the user should see it, or an app ignores background input).
+- batch(actions, app, include_screenshot, then_state)
+    Run several actions on one app in a single call, then return the updated state. Each action is {"tool": "click"|"drag"|"scroll"|"press_key"|"type_text"|"set_value"|"select_text"|"perform_action"|"paste"|"wait_for"|"wait", ...args}. Stops at the first error and reports which steps were already applied. Use this whenever you can predict a sequence (click field → type → Return → wait_for the result).
+- permissions(prompt)
+    Report whether Accessibility and Screen Recording are granted to this server, optionally triggering the system prompts.

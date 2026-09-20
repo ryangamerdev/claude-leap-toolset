@@ -19,7 +19,9 @@ SWIFTLY_HOME = os.path.join(HOME, ".swiftly")
 SWIFTLY_BIN = os.path.join(SWIFTLY_HOME, "bin")
 SWIFTLY = os.path.join(SWIFTLY_BIN, "swiftly")
 PKG_URL = "https://download.swift.org/swiftly/darwin/swiftly.pkg"
-PKG_PATH = "/tmp/swiftly.pkg"
+DOWNLOADS = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "artifacts", "downloads")
+os.makedirs(DOWNLOADS, exist_ok=True)
+PKG_PATH = os.path.join(DOWNLOADS, "swiftly.pkg")
 STALE_LOCK = "/opt/homebrew/var/homebrew/locks/swiftly.formula.lock"
 
 ENV = dict(os.environ)

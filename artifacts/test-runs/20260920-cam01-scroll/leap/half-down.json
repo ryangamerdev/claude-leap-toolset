@@ -1,0 +1,26 @@
+[
+  {
+    "name": "get_app_state",
+    "arguments": {
+      "app": "local.gameday.mac"
+    }
+  },
+  {
+    "name": "scroll",
+    "arguments": {
+      "app": "local.gameday.mac",
+      "x": 150,
+      "y": 450,
+      "direction": "down",
+      "pages": 0.5
+    }
+  },
+  {
+    "name": "screenshot",
+    "arguments": {
+      "app": "local.gameday.mac",
+      "save_path": "/Users/ryan/src/claude-leap/artifacts/test-runs/20260920-cam01-scroll/leap/02-down-half.png",
+      "embed": false
+    }
+  }
+]

@@ -1,0 +1,35 @@
+The following is a diff from the previous accessibility tree for Window: "Gameday" with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 268, 273, 289-295, 298-312
+~		17 button Select play
++		298 container Football field
++			299 unknown Offense LT
++			300 unknown Offense LG
++			301 unknown Offense C
++			302 unknown Offense RG
++			303 unknown Offense RT
++			304 unknown Offense Z
++			305 unknown Offense Y
++			306 unknown Offense X
++			307 unknown Offense F
++			308 unknown Offense QB
++			309 unknown Offense T
++			310 unknown Defense C
++			311 unknown Defense FS
++			312 unknown Defense SS
++			313 unknown Defense W
++			314 unknown Defense M
++			315 unknown Defense S
++			316 unknown Defense C
++			317 unknown Defense J
++			318 button Description: Zoom to 150 percent, Value: Default view
++			319 text OFFENSE  ↑
++			320 text 11 O  /  8 D
++		321 button Show play information
++		322 button Previous play
++		323 text Description: Active sequence position, Value: 7 of 55
++		324 button New play
++		325 button Edit play
++		326 button Duplicate play
++		327 button Delete play
++		328 button Next play
+The focused UI element is 0 standard window Gameday, Secondary Actions: Raise, ID: SwiftUI.ModifiedContent<SwiftUI.ModifiedContent<SwiftUI.ModifiedContent<SwiftUI.ModifiedContent<SwiftUI.ModifiedContent<SwiftUI.ModifiedContent<GamedayMac.ContentView, SwiftUI._EnvironmentKeyWritingModifier<Swift.Optional<GamedayMac.Store>>>, SwiftUI._PreferenceWritingModifier<SwiftUI.PreferredColorSchemeKey>>, SwiftUI._EnvironmentKeyWritingModifier<Swift.Optional<SwiftUI.Color>>>, SwiftUI._EnvironmentKeyWritingModifier<Swift.Optional<GamedayMac.HudlImportModel>>>, SwiftUI._FlexFrameLayout>, SwiftUI._Appear

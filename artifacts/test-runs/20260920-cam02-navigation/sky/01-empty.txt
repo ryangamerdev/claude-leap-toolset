@@ -1,0 +1,11 @@
+The following is a diff from the previous accessibility tree for Window: "Gameday" with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 78-108
+~		17 button View active play
+~		76 text field (settable) Description: Search plays, Value: LEAP-NO-MATCH-20260920
++		268 scroll area
++			269 text No matching plays
++			270 button Clear filters
++			271 button New play
++			272 text 0 matching plays
++			273 collection Secondary Actions: AXScrollToTop, AXScrollToBottom
+The focused UI element is 76 text field (settable) Description: Search plays, Value: LEAP-NO-MATCH-20260920

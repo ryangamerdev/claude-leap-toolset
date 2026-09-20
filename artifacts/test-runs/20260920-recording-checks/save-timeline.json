@@ -1,0 +1,337 @@
+[
+  {
+    "seq": 176,
+    "kind": "snapshot",
+    "monotonic": 2303425.129631917,
+    "detail": {
+      "nodeCount": 98,
+      "hasEditPlay": false
+    }
+  },
+  {
+    "seq": 177,
+    "kind": "snapshot",
+    "monotonic": 2303425.2906236253,
+    "detail": {
+      "nodeCount": 98,
+      "hasEditPlay": false
+    }
+  },
+  {
+    "seq": 178,
+    "kind": "action_intent",
+    "monotonic": 2303425.2935625003,
+    "detail": {
+      "actionId": "F4E23C32-B5D3-4E08-889B-7D4F5554677C",
+      "dispatch": "not yet attempted",
+      "note": "An unfinished intent after disconnect has unknown dispatch; never replay automatically. Arguments omitted to avoid retaining secure input.",
+      "tool": "click"
+    }
+  },
+  {
+    "seq": 179,
+    "kind": "action_result",
+    "monotonic": 2303426.8033912503,
+    "detail": {
+      "actionId": "F4E23C32-B5D3-4E08-889B-7D4F5554677C",
+      "apiOutcome": "error; inspect evidence",
+      "dispatch": "unknown; may have been sent",
+      "expectation": "not automatically verified by API success",
+      "result": "Outcome uncertain: accessibility Press was sent to [263] but returned AXError(rawValue: -25204) (code -25204). The action may already have completed. No coordinate fallback was sent. Read get_app_state and verify the result before deciding whether to retry.",
+      "tool": "click"
+    }
+  },
+  {
+    "seq": 180,
+    "kind": "ax_notification",
+    "monotonic": 2303441.024431667,
+    "detail": {
+      "elementHash": "1668314545",
+      "notification": "AXLayoutChanged",
+      "source": "AXObserver",
+      "valuesCaptured": false
+    }
+  },
+  {
+    "seq": 181,
+    "kind": "ax_notification",
+    "monotonic": 2303441.024515667,
+    "detail": {
+      "elementHash": "1668314545",
+      "notification": "AXLayoutChanged",
+      "source": "AXObserver",
+      "valuesCaptured": false
+    }
+  },
+  {
+    "seq": 182,
+    "kind": "ax_notification",
+    "monotonic": 2303441.0245382916,
+    "detail": {
+      "elementHash": "1668314545",
+      "notification": "AXLayoutChanged",
+      "source": "AXObserver",
+      "valuesCaptured": false
+    }
+  },
+  {
+    "seq": 183,
+    "kind": "ax_notification",
+    "monotonic": 2303441.0245554587,
+    "detail": {
+      "elementHash": "1668314545",
+      "notification": "AXLayoutChanged",
+      "source": "AXObserver",
+      "valuesCaptured": false
+    }
+  },
+  {
+    "seq": 184,
+    "kind": "ax_notification",
+    "monotonic": 2303441.024576792,
+    "detail": {
+      "elementHash": "1668314545",
+      "notification": "AXLayoutChanged",
+      "source": "AXObserver",
+      "valuesCaptured": false
+    }
+  },
+  {
+    "seq": 185,
+    "kind": "ax_notification",
+    "monotonic": 2303441.0245942916,
+    "detail": {
+      "elementHash": "1668314545",
+      "notification": "AXLayoutChanged",
+      "source": "AXObserver",
+      "valuesCaptured": false
+    }
+  },
+  {
+    "seq": 186,
+    "kind": "ax_notification",
+    "monotonic": 2303441.0246182918,
+    "detail": {
+      "elementHash": "1668314545",
+      "notification": "AXLayoutChanged",
+      "source": "AXObserver",
+      "valuesCaptured": false
+    }
+  },
+  {
+    "seq": 187,
+    "kind": "ax_notification",
+    "monotonic": 2303441.024673542,
+    "detail": {
+      "elementHash": "1668314545",
+      "notification": "AXLayoutChanged",
+      "source": "AXObserver",
+      "valuesCaptured": false
+    }
+  },
+  {
+    "seq": 188,
+    "kind": "ax_notification",
+    "monotonic": 2303441.02471825,
+    "detail": {
+      "elementHash": "1668314545",
+      "notification": "AXLayoutChanged",
+      "source": "AXObserver",
+      "valuesCaptured": false
+    }
+  },
+  {
+    "seq": 189,
+    "kind": "ax_notification",
+    "monotonic": 2303441.0247647916,
+    "detail": {
+      "elementHash": "1668314545",
+      "notification": "AXLayoutChanged",
+      "source": "AXObserver",
+      "valuesCaptured": false
+    }
+  },
+  {
+    "seq": 190,
+    "kind": "ax_notification",
+    "monotonic": 2303441.0248104166,
+    "detail": {
+      "elementHash": "1668314545",
+      "notification": "AXLayoutChanged",
+      "source": "AXObserver",
+      "valuesCaptured": false
+    }
+  },
+  {
+    "seq": 191,
+    "kind": "ax_notification",
+    "monotonic": 2303441.024855875,
+    "detail": {
+      "elementHash": "1668314545",
+      "notification": "AXLayoutChanged",
+      "source": "AXObserver",
+      "valuesCaptured": false
+    }
+  },
+  {
+    "seq": 192,
+    "kind": "ax_notification",
+    "monotonic": 2303441.02490225,
+    "detail": {
+      "elementHash": "1668314545",
+      "notification": "AXLayoutChanged",
+      "source": "AXObserver",
+      "valuesCaptured": false
+    }
+  },
+  {
+    "seq": 193,
+    "kind": "ax_notification",
+    "monotonic": 2303441.0249672085,
+    "detail": {
+      "elementHash": "1701868529",
+      "notification": "AXLayoutChanged",
+      "source": "AXObserver",
+      "valuesCaptured": false
+    }
+  },
+  {
+    "seq": 194,
+    "kind": "ax_notification",
+    "monotonic": 2303441.2071870416,
+    "detail": {
+      "elementHash": "1701868529",
+      "notification": "AXLayoutChanged",
+      "source": "AXObserver",
+      "valuesCaptured": false
+    }
+  },
+  {
+    "seq": 195,
+    "kind": "snapshot",
+    "monotonic": 2303441.220215417,
+    "detail": {
+      "nodeCount": 9,
+      "hasEditPlay": false
+    }
+  },
+  {
+    "seq": 196,
+    "kind": "subscription",
+    "monotonic": 2303441.2203045003,
+    "detail": {
+      "elementHash": "1852866177",
+      "notification": "AXUIElementDestroyed",
+      "result": 0
+    }
+  },
+  {
+    "seq": 197,
+    "kind": "subscription",
+    "monotonic": 2303441.2203895417,
+    "detail": {
+      "elementHash": "1852866177",
+      "notification": "AXWindowMoved",
+      "result": 0
+    }
+  },
+  {
+    "seq": 198,
+    "kind": "subscription",
+    "monotonic": 2303441.2204502085,
+    "detail": {
+      "elementHash": "1852866177",
+      "notification": "AXWindowResized",
+      "result": 0
+    }
+  },
+  {
+    "seq": 199,
+    "kind": "subscription",
+    "monotonic": 2303441.2205115836,
+    "detail": {
+      "elementHash": "1852866177",
+      "notification": "AXLayoutChanged",
+      "result": 0
+    }
+  },
+  {
+    "seq": 200,
+    "kind": "subscription",
+    "monotonic": 2303441.220576792,
+    "detail": {
+      "elementHash": "1852866177",
+      "notification": "AXTitleChanged",
+      "result": 0
+    }
+  },
+  {
+    "seq": 201,
+    "kind": "snapshot",
+    "monotonic": 2303441.996379917,
+    "detail": {
+      "nodeCount": 258,
+      "hasEditPlay": true
+    }
+  },
+  {
+    "seq": 202,
+    "kind": "subscription",
+    "monotonic": 2303441.9979706253,
+    "detail": {
+      "elementHash": "1869640721",
+      "notification": "AXValueChanged",
+      "result": 0
+    }
+  },
+  {
+    "seq": 203,
+    "kind": "subscription",
+    "monotonic": 2303442.0013292083,
+    "detail": {
+      "elementHash": "1869640721",
+      "notification": "AXSelectedChildrenChanged",
+      "result": 0
+    }
+  },
+  {
+    "seq": 204,
+    "kind": "subscription",
+    "monotonic": 2303442.0114702084,
+    "detail": {
+      "elementHash": "1869640737",
+      "notification": "AXValueChanged",
+      "result": 0
+    }
+  },
+  {
+    "seq": 205,
+    "kind": "subscription",
+    "monotonic": 2303442.0124150002,
+    "detail": {
+      "elementHash": "1869640737",
+      "notification": "AXSelectedChildrenChanged",
+      "result": 0
+    }
+  },
+  {
+    "seq": 206,
+    "kind": "subscription",
+    "monotonic": 2303442.012618125,
+    "detail": {
+      "elementHash": "1869640753",
+      "notification": "AXValueChanged",
+      "result": 0
+    }
+  },
+  {
+    "seq": 207,
+    "kind": "subscription",
+    "monotonic": 2303442.0128680835,
+    "detail": {
+      "elementHash": "1869640753",
+      "notification": "AXSelectedChildrenChanged",
+      "result": 0
+    }
+  }
+]

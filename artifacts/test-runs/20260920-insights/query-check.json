@@ -1,0 +1,19 @@
+{
+  "through": 341,
+  "eventGroups": 6,
+  "events": 7,
+  "paginationMatches": true,
+  "nativeVerdicts": [
+    [
+      "after",
+      "met",
+      2
+    ],
+    [
+      "before",
+      "not_established",
+      2
+    ]
+  ],
+  "scope": "SQL support check; new tool native validation pending"
+}

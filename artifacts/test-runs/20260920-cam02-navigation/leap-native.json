@@ -1,0 +1,119 @@
+[
+  {
+    "content": [
+      {
+        "type": "text",
+        "text": "## Gameday — window \"Gameday\" 1080x748 at screen (306,210) [frontmost] — state #14\nIndices are stable; act with element_index or label. Screenshot pixels are window points at scale=1; pass include_frames=true for per-element coordinates.\n## Diff vs state #13 (268 unchanged elements omitted; indices are stable; pass disable_diff=true if you did not see #13)\n~ [1] Window/StandardWindow \"Gameday\" [focused]\n+ [272] StaticText value=\"13 more selected filters below\"\n+ [273] Image desc=\"13 more selected filters below\"\n~ [78] Group desc=\"Football field\"\n+ [274] StaticText value=\"7 of 55\" desc=\"Active sequence position\"\nRemoved element indices: 103\nFocused element: [1]\n"
+      }
+    ],
+    "isError": false
+  },
+  {
+    "content": [
+      {
+        "type": "text",
+        "text": "replaced text of [76] via accessibility selection (verified)\n\n## Gameday — window \"Gameday\" 1080x748 at screen (306,210) [frontmost] — state #15 (settled)\nIndices are stable; act with element_index or label. Screenshot pixels are window points at scale=1; pass include_frames=true for per-element coordinates.\n## Diff vs state #14 (237 unchanged elements omitted; indices are stable; pass disable_diff=true if you did not see #14)\n~ [1] Window/StandardWindow \"Gameday\"\n+ [275] Button desc=\"View active play\"\n~ [76] TextField value=\"LEAP-NO-MATCH-20260920\" placeholder=\"Search plays\" desc=\"Search plays\" [settable] [focused] actions=Confirm\n+ [276] ScrollArea actions=ScrollLeftByPage,ScrollRightByPage,ScrollUpByPage,ScrollDownByPage\n+ [277] StaticText value=\"No matching plays\"\n+ [278] Button desc=\"Clear filters\"\n+ [279] Button desc=\"New play\"\n+ [280] StaticText value=\"0 matching plays\"\nRemoved element indices: 19, 78-102, 104-108, 272-274\nFocused element: [76]\n"
+      }
+    ],
+    "isError": false
+  },
+  {
+    "content": [
+      {
+        "type": "text",
+        "text": "pressed [278] via accessibility\n\n## Gameday — window \"Gameday\" 1080x748 at screen (306,210) [frontmost] — state #16 (settled)\nIndices are stable; act with element_index or label. Screenshot pixels are window points at scale=1; pass include_frames=true for per-element coordinates.\n## Diff vs state #15 (239 unchanged elements omitted; indices are stable; pass disable_diff=true if you did not see #15)\n~ [22] Button desc=\"PASS\"\n+ [272] StaticText value=\"2 more selected filters below\"\n+ [281] Image desc=\"2 more selected filters below\"\n~ [76] TextField placeholder=\"Search plays\" desc=\"Search plays\" [settable] [focused] actions=Confirm\n+ [282] OpaqueProviderGroup/OpaqueProviderGrid actions=ScrollToTop,ScrollToBottom\n+ [283] Button desc=\"Select play: 49ERS\"\n+ [284] Button desc=\"Select play: ANY CONNOR BRADY · 3-4\"\n+ [285] Button desc=\"Select play: ANY CONNOR BRADY · 4-2\"\n+ [286] Button desc=\"Select play: ANY CONNOR VICK · 3-4 (BUCK)\"\n+ [287] Button desc=\"Select play: ANY CONNOR VICK · 4-2\"\n+ [288] Button desc=\"Select play: ANY OMAR BRADY · 3-4\"\n+ [289] Button desc=\"Select play: ANY OMAR BRADY · 4-2\"\n+ [290] Button desc=\"Select play: ANY OMAR VICK · 3-4\"\n+ [291] Button desc=\"Select play: ANY OSCAR BRADY · 3-4\"\n+ [292] Button desc=\"Select play: ANY OSCAR BRADY · 4-2\" [offscreen: coords unreliable, use element_index/label]\n+ [293] Button desc=\"Select play: ANY OSCAR VICK · 3-4\" [offscreen: coords unreliable, use element_index/label]\n+ [294] Button desc=\"Select play: ANY OSCAR VICK · 4-2\" [offscreen: coords unreliable, use element_index/label]\n+ [295] Button desc=\"Select play: ANY ZEBRA BRADY · 4-2\" [offscreen: coords unreliable, use element_index/label]\n+ [296] Button desc=\"Select play: ANY ZEBRA BRADY (ODD) · 3-4\" [offscreen: coords unreliable, use element_index/label]\n+ [297] Button desc=\"Select play: ANY ZEBRA BRADY (RONDA) · 3-4\" [offscreen: coords unreliable, use element_index/label]\n~ [277] StaticText value=\"88 matching plays\" [offscreen: coords unreliable, use element_index/label]\n+ [298] ScrollBar value=\"0\" [settable]\n+ [299] ValueIndicator value=\"0\" [settable]\n+ [300] Button/IncrementPage\n+ [301] Button/DecrementPage\nRemoved element indices: 278-280\nFocused element: [76]\n"
+      }
+    ],
+    "isError": false
+  },
+  {
+    "content": [
+      {
+        "type": "text",
+        "text": "replaced text of [76] via accessibility selection (verified)\n\n## Gameday — window \"Gameday\" 1080x748 at screen (306,210) [frontmost] — state #17 (settled)\nIndices are stable; act with element_index or label. Screenshot pixels are window points at scale=1; pass include_frames=true for per-element coordinates.\n## Diff vs state #16 (243 unchanged elements omitted; indices are stable; pass disable_diff=true if you did not see #16)\n~ [76] TextField value=\"OSCAR\" placeholder=\"Search plays\" desc=\"Search plays\" [settable] [focused] actions=Confirm\n+ [302] Button desc=\"Select play: ANY OSCAR BRADY · 3-4\"\n+ [303] Button desc=\"Select play: ANY OSCAR BRADY · 4-2\"\n+ [304] Button desc=\"Select play: ANY OSCAR VICK · 3-4\"\n+ [305] Button desc=\"Select play: ANY OSCAR VICK · 4-2\"\n~ [277] StaticText value=\"4 matching plays\"\nRemoved element indices: 283-301\nFocused element: [76]\n"
+      }
+    ],
+    "isError": false
+  },
+  {
+    "content": [
+      {
+        "type": "text",
+        "text": "pressed [302] via accessibility\n\n## Gameday — window \"Gameday\" 1080x748 at screen (306,210) [frontmost] — state #18 (settled)\nIndices are stable; act with element_index or label. Screenshot pixels are window points at scale=1; pass include_frames=true for per-element coordinates.\n## Diff vs state #17 (237 unchanged elements omitted; indices are stable; pass disable_diff=true if you did not see #17)\n~ [1] Window/StandardWindow \"Gameday\" [focused]\n~ [10] StaticText value=\"ANY OSCAR BRADY · 3-4\"\n~ [11] StaticText value=\"ANY  /  3-4 · Custom coverage · Base rush\"\n+ [19] Button desc=\"Select play\"\n~ [76] TextField value=\"OSCAR\" placeholder=\"Search plays\" desc=\"Search plays\" [settable] actions=Confirm\n+ [78] Group desc=\"Football field\"\n+ [79] Unknown desc=\"Offense LT\"\n+ [80] Unknown desc=\"Offense LG\"\n+ [81] Unknown desc=\"Offense C\"\n+ [82] Unknown desc=\"Offense RG\"\n+ [83] Unknown desc=\"Offense RT\"\n+ [306] Unknown desc=\"Offense QB\"\n+ [307] Unknown desc=\"Offense T\"\n+ [308] Unknown desc=\"Defense T\"\n+ [309] Unknown desc=\"Defense N\"\n+ [310] Unknown desc=\"Defense T\"\n+ [311] Unknown desc=\"Defense W\"\n+ [312] Unknown desc=\"Defense M\"\n+ [313] Unknown desc=\"Defense J\"\n+ [314] Unknown desc=\"Defense S\"\n+ [98] Button value=\"Default view\" desc=\"Zoom to 150 percent\"\n+ [99] StaticText value=\"OFFENSE  ↑\"\n+ [100] StaticText value=\"7 O  /  7 D\"\n+ [101] Button desc=\"Show play information\"\n+ [102] Button desc=\"Previous play\"\n+ [274] StaticText value=\"1 of 4\" desc=\"Active sequence position\"\n+ [104] Button desc=\"New play\"\n+ [105] Button desc=\"Edit play\"\n+ [106] Button desc=\"Duplicate play\"\n+ [107] Button desc=\"Delete play\"\n+ [108] Button desc=\"Next play\"\nRemoved element indices: 275-277, 282, 302-305\nFocused element: [1]\n"
+      }
+    ],
+    "isError": false
+  },
+  {
+    "content": [
+      {
+        "type": "text",
+        "text": "pressed [101] via accessibility\n\n## Gameday — window \"Gameday\" 1080x748 at screen (306,210) [frontmost] — state #19 (settled)\nIndices are stable; act with element_index or label. Screenshot pixels are window points at scale=1; pass include_frames=true for per-element coordinates.\n## Diff vs state #18 (249 unchanged elements omitted; indices are stable; pass disable_diff=true if you did not see #18)\n+ [315] StaticText value=\"COACHING NOTES\"\n+ [316] TextField placeholder=\"Add coaching notes\" desc=\"Coaching notes\" [settable] actions=Confirm\n+ [317] StaticText value=\"PLAY INFORMATION\"\n+ [276] ScrollArea actions=ScrollLeftByPage,ScrollRightByPage,ScrollUpByPage,ScrollDownByPage\n+ [277] StaticText value=\"OSCAR \"\n+ [282] OpaqueProviderGroup/OpaqueProviderGrid actions=ScrollToTop,ScrollToBottom\n+ [318] StaticText value=\"LT\"\n+ [319] StaticText value=\"Block BS B gap\"\n+ [320] StaticText value=\"LG\"\n+ [321] StaticText value=\"ACE to PSILB\"\n+ [322] StaticText value=\"C\"\n+ [323] StaticText value=\"ACE to PSILB\"\n+ [324] StaticText value=\"RG\"\n+ [325] StaticText value=\"DEUCE to PSOLB\"\n+ [326] StaticText value=\"RT\"\n+ [327] StaticText value=\"DEUCE to PSOLB\"\n+ [328] StaticText value=\"T\"\n+ [329] StaticText value=\"T path 12\"\n+ [330] Button desc=\"Show field\"\n+ [331] StaticText value=\"1 of 4\" desc=\"Active sequence position\"\nRemoved element indices: 79-83, 98-101, 274, 306-314\nFocused element: [1]\n"
+      }
+    ],
+    "isError": false
+  },
+  {
+    "content": [
+      {
+        "type": "text",
+        "text": "pressed [330] via accessibility\n\n## Gameday — window \"Gameday\" 1080x748 at screen (306,210) [frontmost] — state #20 (settled)\nIndices are stable; act with element_index or label. Screenshot pixels are window points at scale=1; pass include_frames=true for per-element coordinates.\n## Diff vs state #19 (249 unchanged elements omitted; indices are stable; pass disable_diff=true if you did not see #19)\n+ [79] Unknown desc=\"Offense LT\"\n+ [80] Unknown desc=\"Offense LG\"\n+ [81] Unknown desc=\"Offense C\"\n+ [82] Unknown desc=\"Offense RG\"\n+ [83] Unknown desc=\"Offense RT\"\n+ [306] Unknown desc=\"Offense QB\"\n+ [307] Unknown desc=\"Offense T\"\n+ [308] Unknown desc=\"Defense T\"\n+ [309] Unknown desc=\"Defense N\"\n+ [310] Unknown desc=\"Defense T\"\n+ [311] Unknown desc=\"Defense W\"\n+ [312] Unknown desc=\"Defense M\"\n+ [313] Unknown desc=\"Defense J\"\n+ [314] Unknown desc=\"Defense S\"\n+ [98] Button value=\"Default view\" desc=\"Zoom to 150 percent\"\n+ [99] StaticText value=\"OFFENSE  ↑\"\n+ [100] StaticText value=\"7 O  /  7 D\"\n+ [101] Button desc=\"Show play information\"\n+ [274] StaticText value=\"1 of 4\" desc=\"Active sequence position\"\nRemoved element indices: 276-277, 282, 315-331\nFocused element: [1]\n"
+      }
+    ],
+    "isError": false
+  },
+  {
+    "content": [
+      {
+        "type": "text",
+        "text": "pressed [108] via accessibility\n\n## Gameday — window \"Gameday\" 1080x748 at screen (306,210) [frontmost] — state #21 (settled)\nIndices are stable; act with element_index or label. Screenshot pixels are window points at scale=1; pass include_frames=true for per-element coordinates.\n## Diff vs state #20 (255 unchanged elements omitted; indices are stable; pass disable_diff=true if you did not see #20)\n~ [10] StaticText value=\"ANY OSCAR BRADY · 4-2\"\n~ [11] StaticText value=\"ANY  /  4-2 · Custom coverage · Base rush\"\n+ [332] Unknown desc=\"Offense RT\"\n+ [333] Unknown desc=\"Offense RG\"\n+ [334] Unknown desc=\"Offense LG\"\n+ [335] Unknown desc=\"Offense LT\"\n+ [336] Unknown desc=\"Defense E\"\n+ [337] Unknown desc=\"Defense T\"\n+ [338] Unknown desc=\"Defense E\"\n+ [339] Unknown desc=\"Defense W\"\n~ [100] StaticText value=\"7 O  /  6 D\"\n~ [274] StaticText value=\"2 of 4\" desc=\"Active sequence position\"\nRemoved element indices: 79-80, 82-83, 308-309, 311, 313-314\nFocused element: [1]\n"
+      }
+    ],
+    "isError": false
+  },
+  {
+    "content": [
+      {
+        "type": "text",
+        "text": "pressed [102] via accessibility\n\n## Gameday — window \"Gameday\" 1080x748 at screen (306,210) [frontmost] — state #22 (settled)\nIndices are stable; act with element_index or label. Screenshot pixels are window points at scale=1; pass include_frames=true for per-element coordinates.\n## Diff vs state #21 (255 unchanged elements omitted; indices are stable; pass disable_diff=true if you did not see #21)\n~ [10] StaticText value=\"ANY OSCAR BRADY · 3-4\"\n~ [11] StaticText value=\"ANY  /  3-4 · Custom coverage · Base rush\"\n+ [79] Unknown desc=\"Offense LT\"\n+ [80] Unknown desc=\"Offense LG\"\n+ [82] Unknown desc=\"Offense RG\"\n+ [83] Unknown desc=\"Offense RT\"\n+ [308] Unknown desc=\"Defense T\"\n+ [309] Unknown desc=\"Defense N\"\n+ [311] Unknown desc=\"Defense W\"\n+ [313] Unknown desc=\"Defense J\"\n+ [314] Unknown desc=\"Defense S\"\n~ [100] StaticText value=\"7 O  /  7 D\"\n~ [274] StaticText value=\"1 of 4\" desc=\"Active sequence position\"\nRemoved element indices: 332-339\nFocused element: [1]\n"
+      }
+    ],
+    "isError": false
+  },
+  {
+    "content": [
+      {
+        "type": "text",
+        "text": "pressed [14] via accessibility\n\n## Gameday — window \"Gameday\" 1080x748 at screen (306,210) [frontmost] — state #23 (settled)\nIndices are stable; act with element_index or label. Screenshot pixels are window points at scale=1; pass include_frames=true for per-element coordinates.\n## Diff vs state #22 (256 unchanged elements omitted; indices are stable; pass disable_diff=true if you did not see #22)\n~ [9] StaticText value=\"SIDELINE\"\n+ [340] Button desc=\"Playbook\" [selected]\n+ [341] Button desc=\"Select play\"\n+ [342] Button desc=\"Labels\"\n+ [343] Button desc=\"Show play information\"\n+ [344] Button desc=\"Previous play\"\n+ [345] Button desc=\"1st down\"\n+ [346] Button desc=\"2nd down\"\n+ [347] Button desc=\"3rd down\"\n+ [348] Button desc=\"4th down\"\n+ [349] Button desc=\"Next play\"\nRemoved element indices: 14, 18-19, 77, 101-102, 104-108\nFocused element: [1]\n"
+      }
+    ],
+    "isError": false
+  },
+  {
+    "content": [
+      {
+        "type": "text",
+        "text": "pressed [347] via accessibility\n\n## Gameday — window \"Gameday\" 1080x748 at screen (306,210) [frontmost] — state #24 (settled)\nIndices are stable; act with element_index or label. Screenshot pixels are window points at scale=1; pass include_frames=true for per-element coordinates.\n## Diff vs state #23 (238 unchanged elements omitted; indices are stable; pass disable_diff=true if you did not see #23)\n+ [350] Button desc=\"View active play\"\n+ [276] ScrollArea actions=ScrollLeftByPage,ScrollRightByPage,ScrollUpByPage,ScrollDownByPage\n+ [277] StaticText value=\"No matching plays\"\n+ [278] Button desc=\"Clear filters\"\n+ [280] StaticText value=\"0 matching plays\"\nRemoved element indices: 78-83, 98-100, 272, 274, 281, 306-314, 341, 343-349\nFocused element: [1]\n"
+      }
+    ],
+    "isError": false
+  },
+  {
+    "content": [
+      {
+        "type": "text",
+        "text": "pressed [278] via accessibility\n\n## Gameday — window \"Gameday\" 1080x748 at screen (306,210) [frontmost] — state #25 (settled)\nIndices are stable; act with element_index or label. Screenshot pixels are window points at scale=1; pass include_frames=true for per-element coordinates.\n## Diff vs state #24 (239 unchanged elements omitted; indices are stable; pass disable_diff=true if you did not see #24)\n+ [272] StaticText value=\"2 more selected filters below\"\n+ [281] Image desc=\"2 more selected filters below\"\n~ [76] TextField placeholder=\"Search plays\" desc=\"Search plays\" [settable] actions=Confirm\n+ [282] OpaqueProviderGroup/OpaqueProviderGrid actions=ScrollToTop,ScrollToBottom\n+ [283] Button desc=\"Select play: 49ERS\"\n+ [284] Button desc=\"Select play: ANY CONNOR BRADY · 3-4\"\n+ [285] Button desc=\"Select play: ANY CONNOR BRADY · 4-2\"\n+ [286] Button desc=\"Select play: ANY CONNOR VICK · 3-4 (BUCK)\"\n+ [287] Button desc=\"Select play: ANY CONNOR VICK · 4-2\"\n+ [288] Button desc=\"Select play: ANY OMAR BRADY · 3-4\"\n+ [289] Button desc=\"Select play: ANY OMAR BRADY · 4-2\"\n+ [290] Button desc=\"Select play: ANY OMAR VICK · 3-4\"\n+ [291] Button desc=\"Select play: ANY OSCAR BRADY · 3-4\" [selected]\n+ [292] Button desc=\"Select play: ANY OSCAR BRADY · 4-2\" [offscreen: coords unreliable, use element_index/label]\n+ [293] Button desc=\"Select play: ANY OSCAR VICK · 3-4\" [offscreen: coords unreliable, use element_index/label]\n+ [294] Button desc=\"Select play: ANY OSCAR VICK · 4-2\" [offscreen: coords unreliable, use element_index/label]\n+ [295] Button desc=\"Select play: ANY ZEBRA BRADY · 4-2\" [offscreen: coords unreliable, use element_index/label]\n+ [296] Button desc=\"Select play: ANY ZEBRA BRADY (ODD) · 3-4\" [offscreen: coords unreliable, use element_index/label]\n+ [297] Button desc=\"Select play: ANY ZEBRA BRADY (RONDA) · 3-4\" [offscreen: coords unreliable, use element_index/label]\n~ [277] StaticText value=\"88 matching plays\" [offscreen: coords unreliable, use element_index/label]\n+ [298] ScrollBar value=\"0\" [settable]\n+ [299] ValueIndicator value=\"0\" [settable]\n+ [300] Button/IncrementPage\n+ [301] Button/DecrementPage\nRemoved element indices: 278, 280\nFocused element: [1]\n"
+      }
+    ],
+    "isError": false
+  },
+  {
+    "content": [
+      {
+        "type": "text",
+        "text": "pressed [340] via accessibility\n\n## Gameday — window \"Gameday\" 1080x748 at screen (306,210) [frontmost] — state #26 (settled)\nIndices are stable; act with element_index or label. Screenshot pixels are window points at scale=1; pass include_frames=true for per-element coordinates.\n## Diff vs state #25 (259 unchanged elements omitted; indices are stable; pass disable_diff=true if you did not see #25)\n~ [9] StaticText value=\"PLAYBOOK\"\n+ [14] Button desc=\"Sideline\"\n+ [18] Button desc=\"Edit filters\"\n+ [275] Button desc=\"View active play\"\n+ [77] Button desc=\"Labels\"\nRemoved element indices: 340, 342, 350\nFocused element: [1]\n"
+      }
+    ],
+    "isError": false
+  }
+]

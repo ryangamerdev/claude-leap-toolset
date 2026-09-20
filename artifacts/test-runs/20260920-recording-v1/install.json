@@ -1,0 +1,7 @@
+{
+  "installed": "/Users/ryan/Applications/claude-leap.app",
+  "backup": "/Users/ryan/src/claude-leap/artifacts/backups/leap-recording-20260920-031528/claude-leap.app",
+  "sha256": "d6b28927cb83f7c76c1f314afaa5a6dd5ac4fb832e1da2155f8de4ef1ffcb45d",
+  "verification": "build and signature passed; native MCP verification pending restart",
+  "installedAt": "2026-09-20T03:15:28.148358-07:00"
+}

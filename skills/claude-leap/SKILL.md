@@ -9,6 +9,33 @@ Accessibility-first, background-first. The user keeps their mouse, keyboard and 
 window the whole time; a coloured arrowhead-wedge pointer and a sonar ripple show where you act, and macOS
 lights its screen-recording indicator for the window you are working in.
 
+## Action and evidence workflow
+
+Bind the working project once with `bind_project(project: absolute_path)`. App observations/actions
+then retain evidence automatically for this MCP session; query tools can omit project. Binding
+is explicit after a server restart. `recording_stop(app)` pauses capture for that app until
+`recording_start` resumes it.
+
+Use `verified_action` when you know an observable outcome. It dispatches once and reports the
+acknowledgement separately from the check. A successful check is not proof of disk persistence:
+reopen the saved object when persistence matters. An ambiguous acknowledgement must not cause
+an automatic repeat. Read the returned evidence; `interaction_result(interaction_id)` gives a
+compact historical explanation.
+
+- `ui_to_text(app)` obtains structured current controls; `snapshot` instead retrieves immutable
+  historical evidence. Filter `types`, `ids` (snapshot keys or ordinals), labels via `contains`,
+  enabled/selected/frame-visible state, `root`, `depth`, and `fields`. `index` is the live-action
+  index when captured; `ordinal` is only a query cursor, not a click target.
+- Large values become `leapAsset` references. `leap_asset(asset_id, mode: info|text|file|auto)`
+  returns metadata, bounded raw text or a file. Text offsets count characters. It retrieves what
+  was captured, not a newer live value. Capture caps and inaccessible app data cannot be recovered.
+- `ui_diff(before, after_snapshot)` compares observations without consuming the live diff baseline.
+  `recording_review` provides overview, actions, issues and grouped notifications. Keep `through`
+  fixed while following `after` pages. Missing from partial observations does not establish absence.
+- Compact action responses can omit disabled controls and overflow lines. Follow the returned
+  snapshot with `ui_to_text` when those controls matter. Coordinates in JSON are screen points;
+  action coordinates remain window-relative. Visibility is not an occlusion test.
+
 ## Loop
 
 1. `get_app_state(app)` — the indexed accessibility tree of the key window, as **text, no
@@ -87,8 +114,7 @@ assumptions; take a screenshot only for layout/rendering questions or when acces
 - `No state has been read for <App> in this session` — call `get_app_state` before using indices.
 - `"Label" is ambiguous (N matches): …` — use the listed `element_index`.
 - `Ambiguous app "…": several copies share it` — pass the full `.app` path.
-- `cannotComplete (app busy or not responding)` — accessibility timed out (5 s); retry once, then
-  screenshot to see whether the app is hung.
+- `cannotComplete` — acknowledgement is uncertain. Inspect returned state/check evidence; never repeat input solely because this error occurred.
 - `Outcome uncertain: …` — a write changed the field but not into the expected text. Not retried.
 - `Batch stopped at step N … Completed steps (already applied)` — resume after the listed steps.
 - `wait_for timed out …` — the condition never held; the last observed element state is included.
@@ -115,8 +141,11 @@ each screen (click the tab, read the text state to confirm you are there), then 
   no children. Coordinate clicks/drags are posted to the app's process in the background; they are
   **dispatched, not verified** — most apps honour them, some canvases do not, so check the diff or
   a screenshot. Coordinates are re-based on the window's current position at action time.
-- `foreground=true` activates the app and uses real HID events. It interrupts the user: only when
-  an app demonstrably ignores background input, and say so.
+- `foreground=true` explicitly activates the app when synthesized input is needed. Mouse
+  gestures retain the same window-targeted delivery in either mode and never move the real
+  cursor. Click, drag, and wheel delivery share scoped synthetic-focus preparation/cleanup.
+  Keyboard fallback may still use system HID events. Announce explicit activation because it
+  changes the user’s frontmost app.
 
 ## Simulator specifics
 

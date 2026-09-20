@@ -1,0 +1,13 @@
+{
+  "old": [],
+  "fixed": [
+    [
+      79
+    ],
+    [
+      80
+    ]
+  ],
+  "exclusiveCursorPassed": true,
+  "evidence": "SQL regression only; native rebuilt MCP verification pending"
+}

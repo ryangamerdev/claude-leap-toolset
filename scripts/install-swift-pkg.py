@@ -17,7 +17,9 @@ import urllib.request
 VERSION = sys.argv[1] if len(sys.argv) > 1 else "6.4.0"
 TAG = f"swift-{VERSION}-RELEASE"
 URL = f"https://download.swift.org/swift-{VERSION}-release/xcode/{TAG}/{TAG}-osx.pkg"
-PKG = f"/tmp/{TAG}-osx.pkg"
+DOWNLOADS = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "artifacts", "downloads")
+os.makedirs(DOWNLOADS, exist_ok=True)
+PKG = os.path.join(DOWNLOADS, f"{TAG}-osx.pkg")
 TOOLCHAIN = os.path.expanduser(f"~/Library/Developer/Toolchains/{TAG}.xctoolchain")
 SWIFT = os.path.join(TOOLCHAIN, "usr/bin/swift")
 

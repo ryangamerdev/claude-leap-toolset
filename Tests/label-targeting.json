@@ -19,7 +19,7 @@
     "arguments": {
       "app": "Gameday",
       "scale": 0.5,
-      "save_path": "/tmp/leap-docs/flashcards-after.jpg"
+      "save_path": "artifacts/test-runs/screenshots/flashcards-after.jpg"
     }
   },
   {

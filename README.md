@@ -1,5 +1,10 @@
 # claude-leap
 
+## Development status
+
+Acceptance and known gaps: [FEATURES](docs/FEATURES.md). Current execution order: [PLAN](docs/PLAN.md). Resume checkpoint: [SESSION-CONTINUATION](docs/SESSION-CONTINUATION.md). Durable recording, structured UI queries, text assets, snapshot comparisons and joined action outcomes are implemented. Native verification is scoped by the checklist; Gameday passes do not establish Simulator or Blender parity. Development rationale is recorded in [the iteration history](docs/iterations/README.md).
+
+
 Native macOS computer use for AI agents, built accessibility-first. A stdio MCP server
 written in Swift that lets an agent read and operate any Mac app the way a screen reader
 does — through the accessibility tree — with screenshots as the fallback, not the default.
@@ -149,6 +154,26 @@ or in `~/.claude.json` / a project `.mcp.json`:
 
 For development against the debug build, `LEAP_BIN=…/.build/out/Products/Debug/claude-leap`
 makes `scripts/mcp-call.py` use that binary instead.
+
+### Codex
+
+Register the same installed binary without changing the Claude Code registration:
+
+```bash
+codex mcp add leap -- "$HOME/Applications/claude-leap.app/Contents/MacOS/claude-leap"
+```
+
+Restart the Codex session after registration or a server update. If startup reports
+`-32603` and “The data couldn’t be read because it isn’t in the correct format”,
+rebuild and install the current server. The Swift SDK's string-only decoding of
+experimental client capabilities rejects object-valued extensions sent by Codex;
+`CompatibleTransport` ignores experimental values Leap does not support during
+initialization. This is a handshake failure, separate from stale tool descriptions.
+Run the protocol regression against the installed binary with:
+
+```bash
+LEAP_BIN="$HOME/Applications/claude-leap.app/Contents/MacOS/claude-leap" python3 -B scripts/test-mcp-handshake.py
+```
 
 ## Tools
 

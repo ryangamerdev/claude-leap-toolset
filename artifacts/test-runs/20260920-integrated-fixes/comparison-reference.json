@@ -1,0 +1,9 @@
+{
+  "before": 370,
+  "after": 380,
+  "commonNodes": 247,
+  "frameChanges": 0,
+  "added": 23,
+  "removed": 11,
+  "kind": "independent JSON comparison supporting native regression"
+}

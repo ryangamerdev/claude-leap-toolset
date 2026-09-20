@@ -1,0 +1,273 @@
+Window: "Gameday", App: Gameday.
+0 standard window Gameday, Secondary Actions: Raise, ID: SwiftUI.ModifiedContent<SwiftUI.ModifiedContent<SwiftUI.ModifiedContent<SwiftUI.ModifiedContent<SwiftUI.ModifiedContent<SwiftUI.ModifiedContent<GamedayMac.ContentView, SwiftUI._EnvironmentKeyWritingModifier<Swift.Optional<GamedayMac.Store>>>, SwiftUI._PreferenceWritingModifier<SwiftUI.PreferredColorSchemeKey>>, SwiftUI._EnvironmentKeyWritingModifier<Swift.Optional<SwiftUI.Color>>>, SwiftUI._EnvironmentKeyWritingModifier<Swift.Optional<GamedayMac.HudlImportModel>>>, SwiftUI._FlexFrameLayout>, SwiftUI._Appear
+	1 container
+		2 button Team library: Higley High School Knights · Freshman
+		3 button Playbook: Freshman 2026
+		4 button Playbook
+		5 button Formations
+		6 button Route library
+		7 button Flashcards
+		8 button Import
+		9 text PLAYBOOK DART 62 DEVILS T-BAT DART  /  Scout alignment · Custom coverage · Base rush
+		10 button (selected) Offense
+		11 button Defense
+		12 button Sideline
+		13 text FILTER PLAYS
+		14 button Reset filters
+		15 button (selected) Include Base Plays
+		16 button Edit filters
+		17 button Select play
+		18 scroll area Secondary Actions: Scroll Up, Scroll Down
+			19 button RUN
+			20 button (selected) PASS
+			21 button ZEBRA
+			22 button OSCAR
+			23 button CONNOR
+			24 button ZUES (11)
+			25 button ZELDA (11)
+			26 button OMAR (11)
+			27 button TEMPO
+			28 text OFFENSE FORMATIONS
+			29 button 2X2 SLOTS
+			30 button 49ERS
+			31 button ANY
+			32 button ANY
+			33 button ARIZONA
+			34 button BULLY
+			35 button CARDINALS
+			36 button DART
+			37 button DART BUNCH
+			38 button DUAL
+			39 button EARLY
+			40 button FIELD
+			41 button FRISCO
+			42 button LA
+			43 button LATE
+			44 button LAZOR
+			45 button LEX
+			46 button RAMS
+			47 button REX
+			48 button TURBO
+			49 button Unnamed formation
+			50 button ZOMBIE
+			51 text DEFENSE FRONTS
+			52 button 3–4
+			53 button 3–4 Tite
+			54 button 4–2–5 Nickel
+			55 button Unspecified front
+			56 text DEFENSE ALIGNMENTS
+			57 button 3-4
+			58 button 3-4
+			59 button 3-4 (BUCK)
+			60 button 3-4 (TITE)
+			61 button 4-2
+			62 button 4-2
+			63 button 4-2
+			64 button Scout alignment
+			65 button Scout alignment
+			66 button Scout alignment
+			67 button Scout alignment
+			68 button Scout alignment
+			69 button Scout alignment
+			70 scroll bar (settable, float) 0
+				71 value indicator (settable, float) 0
+				72 increment arrow button
+				73 decrement arrow button
+				74 increment page button
+				75 decrement page button
+		76 text 13 more selected filters below
+		77 image 13 more selected filters below
+		78 text field (settable) Search plays
+		79 button Labels
+		80 container Football field
+			81 unknown Offense LT
+			82 unknown Offense LG
+			83 unknown Offense C
+			84 unknown Offense RG
+			85 unknown Offense RT
+			86 unknown Offense Z
+			87 unknown Offense Y
+			88 unknown Offense X
+			89 unknown Offense F
+			90 unknown Offense QB
+			91 unknown Offense T
+			92 unknown Defense C
+			93 unknown Defense FS
+			94 unknown Defense SS
+			95 unknown Defense W
+			96 unknown Defense M
+			97 unknown Defense S
+			98 unknown Defense C
+			99 unknown Defense J
+			100 button Description: Zoom to 150 percent, Value: Default view
+			101 text OFFENSE  ↑
+			102 text 11 O  /  8 D
+		103 button Show play information
+		104 button Previous play
+		105 text Description: Active sequence position, Value: 7 of 55
+		106 button New play
+		107 button Edit play
+		108 button Duplicate play
+		109 button Delete play
+		110 button Next play
+		111 scroll area
+			112 text GIVE EVERY PLAYER A PURPOSE Route library
+			113 button (disabled) New route
+			114 text Receiver routes, backfield routes for quarterbacks and backs, motion, and blocking.
+			115 image (disabled) Search
+			116 text field (disabled) Search routes
+			117 button (disabled) Clear route search
+			118 collection (disabled) Secondary Actions: AXScrollToTop, AXScrollToBottom
+				119 button (selected, disabled) Show Receiver routes
+				120 button (selected, disabled) Show Backfield routes
+				121 button (selected, disabled) Show Pre-snap motion routes
+				122 button (selected, disabled) Show Blocking / pulling routes
+				123 button (selected, disabled) Show Defensive assignment routes
+			124 text RECEIVER
+			125 collection (disabled) Secondary Actions: AXScrollToTop, AXScrollToBottom
+				126 button (disabled) 2 Step Slant
+				127 button (disabled) 2 Step Slant (Quick)
+				128 button (disabled) 3 Step Slant
+				129 button (disabled) 3 Step Slant (Flat)
+				130 button (disabled) 4yd Mesh
+				131 button (disabled) 5 Speed out
+				132 button (disabled) 5 yard Drive
+				133 button (disabled) 5 Yard drive spot
+				134 button (disabled) 5 Yard Snag
+				135 button (disabled) 5yd Drive
+				136 button (disabled) 5yd Drive Spot
+				137 button (disabled) 5yd In
+				138 button (disabled) 5yd Mesh
+				139 button (disabled) 5yd Option Route
+				140 button (disabled) 5yd OTB
+				141 button (disabled) 5yd Snag
+				142 button (disabled) 5yd Snag, Replace the WLB
+				143 button (disabled) 5yd Spot Drive
+				144 button (disabled) 6 Full Step Speed Out Route
+				145 button (disabled) 8yd Angle Curl (Turn Inside)
+				146 button (disabled) 8yd Angle Route (Turn Inside)
+				147 button (disabled) 10yd Dig
+				148 button (disabled) 12 back to 10 Comeback
+				149 button (disabled) 12 Yard backside Dig
+				150 button (disabled) 12 Yard Dig
+				151 button (disabled) 12 Yd Dig
+				152 button (disabled) 12-10 Comeback
+				153 button (disabled) 12yd Dig
+				154 button (disabled) 12yd Speed Dig
+				155 button (disabled) Back-Line Dig
+			156 text BACKFIELD BLOCKING / PULLING DEFENSIVE ASSIGNMENT
+		157 scroll area
+			158 text START WITH ALIGNMENT Formations
+			159 button (disabled) New formation
+			160 text Your offensive sets and defensive calls, ready to customize.
+			161 button (disabled) Offense
+			162 button (disabled) Defense
+			163 text 31 OFFENSIVE FORMATIONS
+			164 collection (disabled) Secondary Actions: AXScrollToTop, AXScrollToBottom
+				165 container Football field
+					166 unknown (disabled) Offense LT
+					167 unknown (disabled) Offense LG
+					168 unknown (disabled) Offense C
+					169 unknown (disabled) Offense RG
+					170 unknown (disabled) Offense RT
+					171 unknown (disabled) Offense 1
+					172 unknown (disabled) Offense 2
+					173 unknown (disabled) Offense 2
+					174 unknown (disabled) Offense 1
+					175 unknown (disabled) Offense Q
+					176 unknown (disabled) Offense RB
+					177 button (disabled) Description: Zoom to 150 percent, Value: Default view
+				178 text 2X2 SLOTS
+				179 button (disabled) Edit
+				180 button (disabled) Duplicate
+				181 button (disabled) Delete 2X2 SLOTS
+				182 container Football field
+					183 unknown (disabled) Offense RT
+					184 unknown (disabled) Offense RG
+					185 unknown (disabled) Offense C
+					186 unknown (disabled) Offense LG
+					187 unknown (disabled) Offense LT
+					188 unknown (disabled) Offense F
+					189 unknown (disabled) Offense QB
+					190 unknown (disabled) Offense T
+					191 unknown (disabled) Offense Y
+					192 unknown (disabled) Offense X
+					193 unknown (disabled) Offense Z
+					194 button (disabled) Description: Zoom to 150 percent, Value: Default view
+				195 text 49ERS
+				196 button (disabled) Edit
+				197 button (disabled) Duplicate
+				198 button (disabled) Delete 49ERS
+				199 container Football field
+					200 unknown (disabled) Offense LT
+					201 unknown (disabled) Offense LG
+					202 unknown (disabled) Offense C
+					203 unknown (disabled) Offense RG
+					204 unknown (disabled) Offense RT
+					205 unknown (disabled) Offense QB
+					206 unknown (disabled) Offense T
+					207 unknown (disabled) Offense Y
+					208 button (disabled) Description: Zoom to 150 percent, Value: Default view
+				209 text ANY
+				210 button (disabled) Edit
+				211 button (disabled) Duplicate
+				212 button (disabled) Delete ANY
+				213 container Football field
+					214 unknown (disabled) Offense LT
+					215 unknown (disabled) Offense LG
+					216 unknown (disabled) Offense C
+					217 unknown (disabled) Offense RG
+					218 unknown (disabled) Offense RT
+					219 unknown (disabled) Offense QB
+					220 unknown (disabled) Offense T
+					221 button (disabled) Description: Zoom to 150 percent, Value: Default view
+				222 text ANY
+				223 button (disabled) Edit
+				224 button (disabled) Duplicate
+				225 button (disabled) Delete ANY
+				226 container Football field
+					227 unknown (disabled) Offense LT
+					228 unknown (disabled) Offense LG
+					229 unknown (disabled) Offense C
+					230 unknown (disabled) Offense RG
+					231 unknown (disabled) Offense RT
+					232 unknown (disabled) Offense Y
+					233 unknown (disabled) Offense QB
+					234 unknown (disabled) Offense T
+					235 unknown (disabled) Offense F
+					236 unknown (disabled) Offense X
+					237 unknown (disabled) Offense Z
+					238 button (disabled) Description: Zoom to 150 percent, Value: Default view
+				239 text ARIZONA
+				240 button (disabled) Edit
+				241 button (disabled) Duplicate
+				242 button (disabled) Delete ARIZONA
+				243 container Football field
+					244 unknown (disabled) Offense RT
+					245 unknown (disabled) Offense LT
+					246 unknown (disabled) Offense C
+					247 unknown (disabled) Offense RG
+					248 unknown (disabled) Offense LG
+					249 unknown (disabled) Offense QB
+					250 unknown (disabled) Offense T
+					251 unknown (disabled) Offense F
+					252 unknown (disabled) Offense X
+					253 unknown (disabled) Offense Y
+					254 unknown (disabled) Offense Z
+					255 button (disabled) Description: Zoom to 150 percent, Value: Default view
+				256 text BULLY
+				257 button (disabled) Edit
+				258 button (disabled) Duplicate
+				259 button (disabled) Delete BULLY
+	260 close button
+	261 full screen button Help: this button also has an action to zoom the window, Secondary Actions: zoom the window
+	262 minimize button
+263 menu bar
+	264 GamedayMac
+	265 File
+	266 Edit
+	267 View
+	268 Window
+	269 Help
+
+The focused UI element is 80 container Football field

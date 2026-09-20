@@ -5,7 +5,8 @@
 // overlay exists, spans the screens, and floats above normal windows.
 //
 // Must be compiled, not run through `swift file.swift` — the JIT cannot link CoreGraphics:
-//   swiftc -O -o /tmp/check-overlay scripts/check-overlay.swift && /tmp/check-overlay
+//   mkdir -p artifacts/test-runs/bin
+//   swiftc -O -o artifacts/test-runs/bin/check-overlay scripts/check-overlay.swift && artifacts/test-runs/bin/check-overlay
 import CoreGraphics
 import Foundation
 

@@ -1,0 +1,1 @@
+scroll([150,450], "down", {pixels:240}) rejected: macOS scroll accepts pages, not pixels.

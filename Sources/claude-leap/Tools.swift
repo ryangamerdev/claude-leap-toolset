@@ -20,7 +20,7 @@ private func schema(_ props: [String: Value], required: [String] = []) -> Value 
 }
 
 private let appProp = prop("string", "Target app: display name (\"Blender\"), bundle id (\"org.blenderfoundation.blender\"), or .app path. Launched in the background if not running.")
-private let foregroundProp = prop("boolean", "Default false — the app is NEVER activated and the user keeps their frontmost window, keyboard focus and mouse. Set true only for apps that ignore posted events (some games, custom GL/Metal canvases); this steals focus, so ask the user first.")
+private let foregroundProp = prop("boolean", "Default false: keep the user’s frontmost app. True explicitly brings the target app forward when synthesized input is needed. Mouse gestures use the same window-targeted delivery in both modes and do not move the real cursor. Keyboard fallback may use system events.")
 private let thenStateProp = prop("boolean", "Default true: append the app's updated accessibility state (diff) to the result so you don't need a separate get_app_state call.")
 
 private let labelProp = prop("string", "Alternative to element_index: the element's visible title/description/value, e.g. \"Save notes\". Case-insensitive; exact match wins, else a unique substring match. Errors list candidates if ambiguous.")
@@ -36,6 +36,18 @@ private let targetProps: [String: Value] = [
 
 enum LeapTools {
     static let all: [Tool] = [
+        Tool(name:"interaction_result",description:"Explain one recorded interaction: joined input intent/acknowledgement, before/after check outcomes, observation references and uncertainty. Does not imply a persisted save from a current-state check. Details remain available through recording_review.",inputSchema:schema(["project":prop("string","Optional bound-project override."),"interaction_id":prop("string","Interaction ID returned by an action.")],required:["interaction_id"]),annotations:.init(readOnlyHint:true)),
+        Tool(name:"bind_project",description:"Bind the evidence project once. Subsequent app actions and observations automatically retain history; evidence tools can omit project. No UI input.",inputSchema:schema(["project":prop("string","Absolute project directory.")],required:["project"])),
+        Tool(name:"ui_to_text",description:"Inspect a UI as compact structured JSON: fresh app observation or immutable snapshot. Filter roles, IDs, labels, states, subtree/depth and fields. Long strings become leapAsset references. Historical IDs require fresh validation before input. Bind a project first.",inputSchema:schema(["app":appProp,"window":prop("string","Optional window title for fresh observation."),"project":prop("string","Optional bound-project override for historical reads."),"snapshot":prop("integer","Historical snapshot; omit and supply app for a fresh observation."),"types":.object(["type":.string("array"),"items":.object(["type":.string("string")])]),"ids":.object(["type":.string("array"),"items":.object(["type":.string("string")])]),"fields":.object(["type":.string("array"),"items":.object(["type":.string("string")])]),"contains":prop("string","Label/value substring."),"root":prop("string","Subtree key from this snapshot."),"depth":prop("integer","Maximum rendered depth relative to root."),"enabled":prop("boolean","Filter enabled state."),"selected":prop("boolean","Filter selected state."),"visible":prop("boolean","Frame intersects window; not occlusion."),"after":prop("integer","Exclusive ordinal cursor."),"limit":prop("integer","Maximum 100 nodes; default 20."),"max_bytes":prop("integer","Item budget, 2048–32000; default 8000.")]),annotations:.init(readOnlyHint:true)),
+        Tool(name:"leap_asset",description:"Retrieve retained content without escaped JSON blobs. info returns metadata; text returns a bounded plain-text chunk; file materializes exact captured text; auto chooses small text or file. References never fetch newer live values. Capture limits remain explicit.",inputSchema:schema(["project":prop("string","Optional bound-project override."),"asset_id":prop("string","leapAsset.assetId from UI query."),"mode":prop("string","Default auto.",enumValues:["auto","info","text","file"]),"offset":prop("integer","Character offset for text chunks."),"limit":prop("integer","Characters, max 4000; default 2000.")],required:["asset_id"])),
+        Tool(name:"ui_diff",description:"Compare two retained snapshots from the same app session/window title. Bounded added/changed/removed controls and changed field names; independent cursor, no live baseline consumption. Partial observations cannot prove disappearance.",inputSchema:schema(["project":prop("string","Optional bound-project override."),"before":prop("integer","Earlier snapshot."),"after_snapshot":prop("integer","Later snapshot."),"after":prop("integer","Exclusive result cursor."),"limit":prop("integer","Default 20, maximum 100."),"max_bytes":prop("integer","Default 8000.")],required:["before","after_snapshot"]),annotations:.init(readOnlyHint:true)),
+        Tool(name: "recording_review", description: "Explain recorded activity without dumping trees: overview highlights issues and counts; actions lists input attempts and checks; issues lists errors, unmet postchecks and capture limitations; events groups repeated notifications. Historical evidence, not a fresh app read. Bounded excerpts, evidence references and stable pagination. Project can be omitted while recording one project.", inputSchema:schema(["project":prop("string","Optional project; defaults to the sole active recording project."),"session_id":prop("string","Optional session filter."),"interaction_id":prop("string","Optional interaction: what happened during this action?"),"view":prop("string","Default overview.",enumValues:["overview","actions","issues","events"]),"after":prop("integer","Exclusive page cursor; default 0."),"through":prop("integer","Return this value from the first page to keep subsequent pages consistent."),"limit":prop("integer","Page size 1–50, default 10.")]),annotations:.init(readOnlyHint:true)),
+        Tool(name: "recording_start", description: "Attach durable AX event recording to an app before acting. Explicit absolute project path required; creates project-local .leap SQLite journal and Git local exclusion. Records supported notifications between calls while this server runs. Not a complete app event log. Returns session ID and initial state.", inputSchema: schema(["app":appProp,"project":prop("string","Absolute caller project directory, never the target app bundle."),"window":prop("string","Optional exact window title substring to pin.")],required:["app","project"])),
+        Tool(name: "recording_stop", description: "Stop this app's recording; retain historical evidence. No app input is sent.", inputSchema:schema(["app":appProp],required:["app"])),
+        Tool(name: "recording_query", description: "Read retained session events/actions/snapshots without replaying app input. Historical read-only; does not create a missing store. after is a global record cursor; bounded output. Large snapshot payloads require recording_nodes. Notifications are receipt envelopes, not guaranteed prior values or causal proof.", inputSchema:schema(["project":prop("string","Absolute recorded project root."),"session_id":prop("string","Filter session."),"interaction_id":prop("string","Filter interaction."),"kind":prop("string","Exact kind: ax_notification, subscription, snapshot, action_intent, action_result, capture_gap, session_start, expectation_result."),"contains":prop("string","Case-insensitive substring in retained JSON payload."),"after":prop("integer","Exclusive record cursor, default 0."),"limit":prop("integer","Maximum records, 1–100, default 20.")],required:["project"]),annotations:.init(readOnlyHint:true)),
+        Tool(name: "recording_nodes", description: "Read a retained snapshot's nodes with optional label/value text filter and pagination. Does not refresh the app. Stored acquisition can be partial; missing nodes do not prove absence.", inputSchema:schema(["project":prop("string","Absolute recorded project root."),"snapshot":prop("integer","Snapshot sequence ID from state footer or query."),"outline":prop("boolean","Tree structure/labels only; omit values, geometry and actions. Default false."),"contains":prop("string","Optional case-insensitive node JSON text filter."),"after":prop("integer","Exclusive node ordinal cursor, default 0."),"limit":prop("integer","Maximum nodes, 1–100, default 20.")],required:["project","snapshot"]),annotations:.init(readOnlyHint:true)),
+        Tool(name: "verified_action", description: "Execute one existing action once, then observe and check a bounded current-state expectation. Never retries ambiguous input. API outcome and expectation are reported separately. This checks current state, not durable saving or event history. To prove persistence, reopen and compare. Supports the wait_for conditions.", inputSchema:schema(["app":appProp,"action":prop("object","Existing action arguments plus tool, e.g. {tool:click,label:Save}. No app required inside."),"expect_label":prop("string","Unique expected element label."),"condition":prop("string","Expected current state.",enumValues:["appears","disappears","enabled","disabled","value_contains"]),"value":prop("string","Expected substring for value_contains."),"timeout":prop("number","Bounded seconds, default 5.")],required:["app","action","expect_label","condition"])),
+
         Tool(name: "list_apps",
              description: "List running GUI apps (frontmost first, with window counts) and optionally installed apps. Not needed to target an app you already know by name.",
              inputSchema: schema(["include_installed": prop("boolean", "Also list apps in /Applications that are not running (default false).")]),
@@ -200,7 +212,21 @@ enum LeapTools {
             // One tool call — action plus its follow-up state, or a whole batch — runs to
             // completion before the next starts, even if the client issues calls in parallel.
             let name = params.name
-            return try await engine.serialized { try await dispatch(name, args, engine) }
+            return try await engine.serialized {
+                let interaction = await engine.beginInteraction()
+                let result: CallTool.Result
+                do { result = try await dispatch(name, args, engine) }
+                catch {
+                    var message = "Error: \(error)\ninteraction=\(interaction)"
+                    if let app = args.string("app"), Self.actionTools.contains(name) || name == "batch" || name == "verified_action" {
+                        do { let state = try await engine.state(app:app); message += "\nFresh evidence (does not imply action failed):\n" + state.text }
+                        catch { message += "\nPost-error observation unavailable: \(error). Do not blindly repeat prior input." }
+                    }
+                    result = .init(content:[.text(text:message,annotations:nil,_meta:nil)],isError:true)
+                }
+                await engine.endInteraction()
+                return result
+            }
         } catch {
             return .init(content: [.text(text: "Error: \(error)", annotations: nil, _meta: nil)], isError: true)
         }
@@ -208,6 +234,55 @@ enum LeapTools {
 
     static func dispatch(_ name: String, _ a: Args, _ engine: Engine) async throws -> CallTool.Result {
         switch name {
+        case "interaction_result":
+            guard let id=a.string("interaction_id") else {throw LeapError.unsupported("interaction_id required")}
+            return try Evidence(project:await engine.recordingProject(a.string("project"))).interaction(id).result
+        case "bind_project":
+            guard let project=a.string("project") else {throw LeapError.unsupported("project required")}
+            return try await engine.bindProject(project).result
+        case "ui_to_text":
+            let project=try await engine.recordingProject(a.string("project"))
+            let snapshot:Int
+            if let id=a.int("snapshot") {snapshot=id} else {
+                let bound=try await engine.recordingProject(nil)
+                guard project==bound else {throw LeapError.unsupported("Fresh UI evidence must use the bound project")}
+                snapshot=try await engine.observeSnapshot(app:try a.app(),window:a.string("window"))
+            }
+            return try Evidence(project:project).ui(snapshot:snapshot,types:a.strings("types"),ids:a.strings("ids"),fields:a.strings("fields"),contains:a.string("contains"),rootKey:a.string("root"),depth:a.int("depth"),enabled:a.bool("enabled"),selected:a.bool("selected"),visible:a.bool("visible"),after:a.int("after") ?? 0,limit:a.int("limit") ?? 20,maxBytes:a.int("max_bytes") ?? 8000).result
+        case "leap_asset":
+            guard let id=a.string("asset_id") else {throw LeapError.unsupported("asset_id required")}
+            return try Evidence(project:await engine.recordingProject(a.string("project"))).asset(id:id,mode:a.string("mode") ?? "auto",offset:a.int("offset") ?? 0,limit:a.int("limit") ?? 2000).result
+        case "ui_diff":
+            guard let before=a.int("before"),let after=a.int("after_snapshot") else {throw LeapError.unsupported("before and after_snapshot required")}
+            return try Evidence(project:await engine.recordingProject(a.string("project"))).diff(before:before,after:after,cursor:a.int("after") ?? 0,limit:a.int("limit") ?? 20,maxBytes:a.int("max_bytes") ?? 8000).result
+        case "recording_review":
+            let project = try await engine.recordingProject(a.string("project"))
+            return try RecordingStore.query(project:project,session:a.string("session_id"),interaction:a.string("interaction_id"),kind:nil,contains:nil,after:a.int("after") ?? 0,limit:a.int("limit") ?? 10,review:a.string("view") ?? "overview",through:a.int("through")).result
+        case "recording_start":
+            guard let project=a.string("project") else {throw LeapError.unsupported("project required")}
+            return try await engine.startRecording(app:try a.app(),project:project,window:a.string("window")).result
+        case "recording_stop": return try await engine.stopRecording(app:try a.app()).result
+        case "recording_query", "recording_nodes":
+            if name == "recording_nodes", a.int("snapshot") == nil {throw LeapError.unsupported("snapshot sequence ID required")}
+            guard let project=a.string("project") else {throw LeapError.unsupported("project required")}
+            return try RecordingStore.query(project:project,session:a.string("session_id"),interaction:a.string("interaction_id"),kind:a.string("kind"),contains:a.string("contains"),after:a.int("after") ?? 0,limit:a.int("limit") ?? 20,snapshot:name == "recording_nodes" ? a.int("snapshot") : nil,outline:a.bool("outline") ?? false).result
+        case "verified_action":
+            guard var obj=a.raw["action"]?.objectValue, let tool=obj["tool"]?.stringValue, Self.actionTools.contains(tool), tool != "wait_for" else {throw LeapError.unsupported("action must name a supported input tool")}
+            obj["app"] = .string(try a.app())
+            guard let label=a.string("expect_label"), let condition=a.string("condition"), let parsed=Engine.WaitCondition(rawValue:condition) else {throw LeapError.unsupported("expect_label and valid condition required")}
+            guard !label.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty else {throw LeapError.unsupported("Expectation label must be nonempty; no input sent")}
+            if parsed == .valueContains && (a.string("value") ?? "").isEmpty {throw LeapError.unsupported("value_contains requires a nonempty value; no input sent")}
+            var before="unknown", beforeMet=false
+            do { before = try await engine.waitFor(app:try a.app(),label:label,condition:parsed,value:a.string("value"),timeout:0.1);beforeMet=true } catch { before="not established: \(error)" }
+            try await engine.recordCheck(app:try a.app(),phase:"before",label:label,condition:condition,met:beforeMet,detail:before)
+            var actionResult="", actionError=false
+            do { actionResult=try await performAction(tool,Args(obj),engine) } catch {actionResult="Action outcome uncertain/rejected: \(error)";actionError=true}
+            var check="", checkFailed=false
+            do {check=try await engine.waitFor(app:try a.app(),label:label,condition:parsed,value:a.string("value"),timeout:a.double("timeout") ?? 5)} catch {check="Expectation not established: \(error)";checkFailed=true}
+            try await engine.recordCheck(app:try a.app(),phase:"after",label:label,condition:condition,met:!checkFailed,detail:check)
+            let state=try await engine.state(app:try a.app())
+            let summary=try await engine.interactionResult() ?? "Before: \(before)\nAction: \(actionResult)\nCurrent-state check: \(check)\nNo input retry occurred."
+            return .init(content:[.text(text:summary+"\n"+state.text,annotations:nil,_meta:nil)],isError:actionError || checkFailed)
         case "list_apps":
             let apps = AppResolver.listApps(includeInstalled: a.bool("include_installed") ?? false)
             var text = "## Apps (\(apps.filter { $0.isRunning }.count) running)\n"
@@ -336,6 +411,22 @@ enum LeapTools {
 
     /// Executes one input action and returns a one-line description of what happened.
     static func performAction(_ name: String, _ argsIn: Args, _ engine: Engine) async throws -> String {
+        let app=try argsIn.app()
+        let action=try await engine.beginRecordedAction(app:app,tool:name)
+        let result:String
+        do { result=try await dispatchAction(name,argsIn,engine) }
+        catch {
+            let original=error
+            do {try await engine.endRecordedAction(app:app,action:action,tool:name,message:String(describing:original),error:true)}
+            catch {throw LeapError.unsupported("Input may already have been sent. Original: \(original). Recording failure: \(error). Do not replay.")}
+            throw original
+        }
+        do {try await engine.endRecordedAction(app:app,action:action,tool:name,message:result,error:false)}
+        catch {throw LeapError.unsupported("Operation returned: \(result). Recording failed after operation: \(error). Do not replay.")}
+        return result + (action.map { " [action=\($0)]" } ?? "")
+    }
+
+    static func dispatchAction(_ name: String, _ argsIn: Args, _ engine: Engine) async throws -> String {
         let app = try argsIn.app()
         // `label` is sugar for element_index: resolve it once here so every action supports it.
         var a = argsIn
@@ -419,6 +510,7 @@ struct Args {
     let raw: [String: Value]
     init(_ raw: [String: Value]) { self.raw = raw }
 
+    func strings(_ k:String)->[String] {raw[k]?.arrayValue?.compactMap{$0.stringValue} ?? []}
     func string(_ k: String) -> String? { raw[k]?.stringValue }
     func bool(_ k: String) -> Bool? { raw[k]?.boolValue }
     /// Numbers are bounded and finite before conversion: `Int(Double.nan)` and oversized

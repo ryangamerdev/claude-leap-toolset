@@ -1,0 +1,285 @@
+$ /Users/ryan/Applications/claude-leap.app/Contents/MacOS/claude-leap
+initialize → {
+  "capabilities": {
+    "tools": {
+      "listChanged": false
+    }
+  },
+  "instructions": "claude-leap: native macOS computer use (accessibility-first, background-first). Full playbook: the `claude-leap` skill (scripts/install.py installs it). Keep this short: Claude Code truncates long server instructions.\n\nLoop: get_app_state(app) reads the accessibility tree as text with NO screenshot by default (the tree IS the observation, like a screen reader; in practice only about 1 read in 4 needs an image). Act by element_index or label (click, set_value, select_text, type_text, press_key, perform_action, scroll, drag, paste); each action returns the updated diff, so read it and continue. Pass include_screenshot=true only when the answer is visual and the tree cannot express it (a zoom level, a drag/pan offset, a canvas/diagram, a rendering glitch). Batch predictable sequences; the state after an action waits for the UI to settle, so never sleep.\n\nThe user keeps their computer: mouse gestures always target the app window and never move the real cursor. foreground=true explicitly activates the app when synthesized input is needed; announce it because it changes focus. Keyboard fallback may use system events. A face pointer + ripple shows where you act.\n\nTree: [42] Button \"Save\" [settable] [selected] actions=\u2026 ; indices are stable for the window's life; MenuBar/MenuBarItem lines are the menu bar (click a title, the diff lists its items; Escape closes). Other windows: g
+get_app_state → ok
+## Gameday — window "Gameday" 1080x748 at screen (306,210) [background] — state #1
+Indices are stable; act with element_index or label. Screenshot pixels are window points at scale=1; pass include_frames=true for per-element coordinates.
+[1] Window/StandardWindow "Gameday" @0,0 1080x748
+[2] Button desc="Team library: Higley High School Knights · Freshman" @0,0 366x74
+[3] Button desc="Playbook: Freshman 2026" @372,28 366x45
+[4] Button desc="Playbook" @745,28 63x45
+[5] Button desc="Formations" @813,28 63x45
+[6] Button desc="Route library" @881,28 63x45
+[7] Button desc="Flashcards" @949,28 63x45
+[8] Button desc="Import" @1017,28 63x45
+[9] StaticText value="PLAYBOOK" @16,101 118x21
+[10] StaticText value="DART 62 DEVILS T-BAT" @292,91 241x26
+[11] StaticText value="DART  /  Scout alignment · Custom coverage · Base rush" @292,120 270x13
+[12] Button desc="Offense" @756,89 91x45 [selected]
+[13] Button desc="Defense" @862,89 91x45
+[14] Button desc="Sideline" @968,89 96x45
+[15] StaticText value="FILTER PLAYS" @28,173 68x13
+[16] Button desc="Reset filters" @219,157 45x45
+[17] Button desc="Include Base Plays" @27,209 137x45 [selected]
+[18] Button desc="Edit filters" @169,209 45x45
+[19] Button desc="Select play" @219,209 45x45
+[20] ScrollArea @16,262 260x470 actions=ScrollLeftByPage,ScrollRightByPage,ScrollUpByPage,ScrollDownByPage
+  [21] Button desc="RUN" @27,273 115x45
+  [22] Button desc="PASS" @149,273 115x45 [selected]
+  [23] Button desc="ZEBRA" @27,331 115x45
+  [24] Button desc="OSCAR " @149,331 115x45
+  [25] Button desc="CONNOR " @27,383 115x45
+  [26] Button desc="ZUES (11)" @149,383 115x45
+  [27] Button desc="ZELDA (11)" @27,435 115x45
+  [28] Button desc="OMAR (11)" @149,435 115x45
+  [29] Button desc="TEMPO" @27,487 116x46
+  [30] StaticText value="OFFENSE FORMATIONS" @28,554 117x13
+  [31] Button desc="2X2 SLOTS" @27,574 116x46
+  [32] Button desc="49ERS" @149,574 115x45
+  [33] Button desc="ANY" @27,626 115x45
+  [34] Button desc="ANY" @149,626 115x45
+  [35] Button desc="ARIZONA" @27,678 115x45
+  [36] Button desc="BULLY" @149,678 116x46
+  [37] Button desc="CARDINALS" @27,730 115x45
+  [38] Button desc="DART" @149,730 116x46
+  [39] Button desc="DART BUNCH" @27,782 116x46 [offscreen: coords unreliable, use element_index/label]
+  [40] Button desc="DUAL" @149,782 116x46 [offscreen: coords unreliable, use element_index/label]
+  [41] Button desc="EARLY" @27,834 116x46 [offscreen: coords unreliable, use element_index/label]
+  [42] Button desc="FIELD" @149,834 116x46 [offscreen: coords unreliable, use element_index/label]
+  [43] Button desc="FRISCO" @27,886 115x45 [offscreen: coords unreliable, use element_index/label]
+  [44] Button desc="LA" @149,886 115x45 [offscreen: coords unreliable, use element_index/label]
+  [45] Button desc="LATE" @27,938 116x46 [offscreen: coords unreliable, use element_index/label]
+  [46] Button desc="LAZOR" @149,938 116x46 [offscreen: coords unreliable, use element_index/label]
+  [47] Button desc="LEX" @27,990 116x46 [offscreen: coords unreliable, use element_index/label]
+  [48] Button desc="RAMS" @149,990 115x45 [offscreen: coords unreliable, use element_index/label]
+  [49] Button desc="REX" @27,1042 116x46 [offscreen: coords unreliable, use element_index/label]
+  [50] Button desc="TURBO" @149,1042 115x45 [offscreen: coords unreliable, use element_index/label]
+  [51] Button desc="Unnamed formation" @27,1094 116x46 [offscreen: coords unreliable, use element_index/label]
+  [52] Button desc="ZOMBIE" @149,1094 115x45 [offscreen: coords unreliable, use element_index/label]
+  [53] StaticText value="DEFENSE FRONTS" @28,1161 90x13 [offscreen: coords unreliable, use element_index/label]
+  [54] Button desc="3–4" @27,1181 115x45 [offscreen: coords unreliable, use element_index/label]
+  [55] Button desc="3–4 Tite" @149,1181 115x45 [offscreen: coords unreliable, use element_index/label]
+  [56] Button desc="4–2–5 Nickel" @27,1233 115x45 [offscreen: coords unreliable, use element_index/label]
+  [57] Button desc="Unspecified front" @149,1233 116x46 [offscreen: coords unreliable, use element_index/label]
+  [58] StaticText value="DEFENSE ALIGNMENTS" @28,1300 116x13 [offscreen: coords unreliable, use element_index/label]
+  [59] Button desc="3-4" @27,1320 115x45 [offscreen: coords unreliable, use element_index/label]
+  [60] Button desc="3-4" @149,1320 115x45 [offscreen: coords unreliable, use element_index/label]
+  [61] Button desc="3-4 (BUCK)" @27,1372 115x45 [offscreen: coords unreliable, use element_index/label]
+  [62] Button desc="3-4 (TITE)" @149,1372 115x45 [offscreen: coords unreliable, use element_index/label]
+  [63] Button desc="4-2" @27,1424 115x45 [offscreen: coords unreliable, use element_index/label]
+  [64] Button desc="4-2" @149,1424 115x45 [offscreen: coords unreliable, use element_index/label]
+  [65] Button desc="4-2" @27,1476 115x45 [offscreen: coords unreliable, use element_index/label]
+  [66] Button desc="Scout alignment" @149,1476 116x46 [offscreen: coords unreliable, use element_index/label]
+  [67] Button desc="Scout alignment" @27,1528 115x45 [offscreen: coords unreliable, use element_index/label]
+  [68] Button desc="Scout alignment" @149,1528 116x46 [offscreen: coords unreliable, use element_index/label]
+  [69] Button desc="Scout alignment" @27,1580 115x45 [offscreen: coords unreliable, use element_index/label]
+  [70] Button desc="Scout alignment" @149,1580 115x45 [offscreen: coords unreliable, use element_index/label]
+  [71] Button desc="Scout alignment" @27,1632 116x46 [offscreen: coords unreliable, use element_index/label]
+  [72] ScrollBar value="0" @260,262 16x470 [settable]
+    [73] ValueIndicator value="0" @264,263 12x154 [settable]
+    [74] Button/IncrementPage @264,417 12x314
+    [75] Button/DecrementPage @264,262 12x1
+[76] TextField placeholder="Search plays" desc="Search plays" @292,148 675x40 [settable] actions=Confirm
+[77] Button desc="Labels" @978,145 86x45
+[78] Group desc="Football field" @292,202 772x474 [focused]
+  [79] Unknown desc="Offense LT" @674,552 44x44
+  [80] Unknown desc="Offense LG" @708,552 44x44
+  [81] Unknown desc="Offense C" @743,552 44x44
+  [82] Unknown desc="Offense RG" @778,552 44x44
+  [83] Unknown desc="Offense RT" @813,552 44x44
+  [84] Unknown desc="Offense Z" @958,552 44x44
+  [85] Unknown desc="Offense Y" @868,574 44x44
+  [86] Unknown desc="Offense X" @336,552 44x44
+  [87] Unknown desc="Offense F" @516,572 44x44
+  [88] Unknown desc="Offense QB" @743,622 44x44
+  [89] Unknown desc="Offense T" @803,621 44x44
+  [90] Unknown desc="Defense C" @989,389 44x44
+  [91] Unknown desc="Defense FS" @821,333 44x44
+  [92] Unknown desc="Defense SS" @582,326 44x44
+  [93] Unknown desc="Defense W" @850,462 44x44
+  [94] Unknown desc="Defense M" @695,465 44x44
+  [95] Unknown desc="Defense S" @574,463 44x44
+  [96] Unknown desc="Defense C" @322,442 44x44
+  [97] Unknown desc="Defense J" @779,466 44x44
+  [98] Button value="Default view" desc="Zoom to 150 percent" @298,626 44x44
+  [99] StaticText value="OFFENSE  ↑" @311,220 98x13
+  [100] StaticText value="11 O  /  8 D" @969,220 77x13
+[101] Button desc="Show play information" @1022,634 15x15
+[102] Button desc="Previous play" @291,687 99x45
+[103] StaticText value="7 of 55" desc="Active sequence position" @398,703 28x13
+[104] Button desc="New play" @533,687 45x45
+[105] Button desc="Edit play" @585,687 74x45
+[106] Button desc="Duplicate play" @667,687 116x45
+[107] Button desc="Delete play" @790,687 93x45
+[108] Button desc="Next play" @989,687 75x45
+[109] ScrollArea @0,74 1080x674 actions=ScrollLeftByPage,ScrollRightByPage,ScrollUpByPage,ScrollDownByPage
+  [110] StaticText value="GIVE EVERY PLAYER A PURPOSE" @28,102 221x13 [disabled]
+  [111] StaticText value="Route library" @28,122 178x35 [disabled]
+  [112] Button desc="New route" @981,132 62x16 [disabled]
+  [113] StaticText value="Receiver routes, backfield routes for quarterbacks and backs, motion, and blocking." @28,164 506x16 [disabled]
+  [114] Image desc="Search" @29,245 12x13 [disabled]
+  [115] TextField placeholder="Search routes" desc="Search routes" @51,241 204x22 [disabled] actions=Confirm
+  [116] Button desc="Clear route search" @263,229 45x45 [disabled]
+  [117] OpaqueProviderGroup/OpaqueProviderGrid @323,203 729x97 [disabled] actions=ScrollToTop,ScrollToBottom
+    [118] Button desc="Show Receiver routes" @323,203 177x45 [disabled] [selected]
+    [119] Button desc="Show Backfield routes" @507,203 177x45 [disabled] [selected]
+    [120] Button desc="Show Pre-snap motion routes" @691,203 177x45 [disabled] [selected]
+    [121] Button desc="Show Blocking / pulling routes" @875,203 177x45 [disabled] [selected]
+    [122] Button desc="Show Defensive assignment routes" @323,255 177x45 [disabled] [selected]
+  [123] StaticText value="RECEIVER" @28,324 69x14 [disabled]
+  [124] OpaqueProviderGroup/OpaqueProviderGrid @27,361 1025x1149 [disabled] actions=ScrollToTop,ScrollToBottom
+    [125] Button desc="2 Step Slant" @27,361 194x175 [disabled]
+    [126] Button desc="2 Step Slant (Quick)" @235,361 194x175 [disabled]
+    [127] Button desc="3 Step Slant" @442,361 195x175 [disabled]
+    [128] Button desc="3 Step Slant (Flat)" @650,361 194x175 [disabled]
+    [129] Button desc="4yd Mesh" @858,361 194x175 [disabled]
+    [130] Button desc="5 Speed out" @27,549 194x175 [disabled]
+    [131] Button desc="5 yard Drive" @235,549 194x175 [disabled]
+    [132] Button desc="5 Yard drive spot" @442,549 195x175 [disabled]
+    [133] Button desc="5 Yard Snag" @650,549 194x175 [disabled]
+    [134] Button desc="5yd Drive" @858,549 194x175 [disabled]
+    [135] Button desc="5yd Drive Spot" @27,737 194x175 [disabled]
+    [136] Button desc="5yd In" @235,737 194x175 [disabled]
+    [137] Button desc="5yd Mesh" @442,737 195x175 [disabled]
+    [138] Button desc="5yd Option Route" @650,737 194x175 [disabled]
+    [139] Button desc="5yd OTB" @858,737 194x175 [disabled]
+    [140] Button desc="5yd Snag" @27,934 194x175 [offscreen: coords unreliable, use element_index/label] [disabled]
+    [141] Button desc="5yd Snag, Replace the WLB" @235,925 194x192 [offscreen: coords unreliable, use element_index/label] [disabled]
+    [142] Button desc="5yd Spot Drive" @442,934 195x175 [offscreen: coords unreliable, use element_index/label] [disabled]
+    [143] Button desc="6 Full Step Speed Out Route" @650,925 194x192 [offscreen: coords unreliable, use element_index/label] [disabled]
+    [144] Button desc="8yd Angle Curl (Turn Inside)" @858,925 194x192 [offscreen: coords unreliable, use element_index/label] [disabled]
+    [145] Button desc="8yd Angle Route (Turn Inside)" @27,1130 194x192 [offscreen: coords unreliable, use element_index/label] [disabled]
+    [146] Button desc="10yd Dig" @235,1139 194x175 [offscreen: coords unreliable, use element_index/label] [disabled]
+    [147] Button desc="12 back to 10 Comeback" @442,1130 195x192 [offscreen: coords unreliable, use element_index/label] [disabled]
+    [148] Button desc="12 Yard backside Dig" @650,1139 194x175 [offscreen: coords unreliable, use element_index/label] [disabled]
+    [149] Button desc="12 Yard Dig" @858,1139 194x175 [offscreen: coords unreliable, use element_index/label] [disabled]
+    [150] Button desc="12 Yd Dig" @27,1335 194x175 [offscreen: coords unreliable, use element_index/label] [disabled]
+    [151] Button desc="12-10 Comeback" @235,1335 194x175 [offscreen: coords unreliable, use element_index/label] [disabled]
+    [152] Button desc="12yd Dig" @442,1335 195x175 [offscreen: coords unreliable, use element_index/label] [disabled]
+    [153] Button desc="12yd Speed Dig" @650,1335 194x175 [offscreen: coords unreliable, use element_index/label] [disabled]
+    [154] Button desc="Back-Line Dig" @858,1335 194x175 [offscreen: coords unreliable, use element_index/label] [disabled]
+  [155] StaticText value="BACKFIELD" @28,3858 78x14 [offscreen: coords unreliable, use element_index/label] [disabled]
+  [156] StaticText value="BLOCKING / PULLING" @28,5068 147x14 [offscreen: coords unreliable, use element_index/label] [disabled]
+  [157] StaticText value="DEFENSIVE ASSIGNMENT" @28,6432 174x14 [offscreen: coords unreliable, use element_index/label] [disabled]
+[158] ScrollArea @0,74 1080x674 actions=ScrollLeftByPage,ScrollRightByPage,ScrollUpByPage,ScrollDownByPage
+  [159] StaticText value="START WITH ALIGNMENT" @28,102 170x13 [disabled]
+  [160] StaticText value="Formations" @28,122 158x35 [disabled]
+  [161] Button desc="New formation" @955,132 89x16 [disabled]
+  [162] StaticText value="Your offensive sets and defensive calls, ready to customize." @28,164 361x16 [disabled]
+  [163] Button desc="Offense" @27,203 141x45 [disabled]
+  [164] Button desc="Defense" @179,203 141x45 [disabled]
+  [165] StaticText value="31 OFFENSIVE FORMATIONS" @28,272 193x14 [disabled]
+  [166] OpaqueProviderGroup/OpaqueProviderGrid @41,324 997x1113 [disabled] actions=ScrollToTop,ScrollToBottom
+    [167] Group desc="Football field" @42,324 474x255 [disabled]
+      [168] Unknown desc="Offense LT" @215,445 44x44 [disabled]
+      [169] Unknown desc="Offense LG" @235,445 44x44 [disabled]
+      [170] Unknown desc="Offense C" @255,445 44x44 [disabled]
+      [171] Unknown desc="Offense RG" @279,445 44x44 [disabled]
+      [172] Unknown desc="Offense RT" @296,445 44x44 [disabled]
+      [173] Unknown desc="Offense 1" @52,445 44x44 [disabled]
+      [174] Unknown desc="Offense 2" @163,435 44x44 [disabled]
+      [175] Unknown desc="Offense 2" @349,434 44x44 [disabled]
+      [176] Unknown desc="Offense 1" @462,445 44x44 [disabled]
+      [177] Unknown desc="Offense Q" @255,414 44x44 [disabled]
+      [178] Unknown desc="Offense RB" @232,414 44x44 [disabled]
+      [179] Button value="Default view" desc="Zoom to 150 percent" @48,529 44x44 [disabled]
+    [180] StaticText value="2X2 SLOTS" @42,591 72x16 [disabled]
+    [181] Button desc="Edit" @41,618 53x45 [disabled]
+    [182] Button desc="Duplicate" @101,618 86x45 [disabled]
+    [183] Button desc="Delete 2X2 SLOTS" @437,618 79x45 [disabled]
+    [184] Group desc="Football field" @564,324 474x255 [disabled]
+      [185] Unknown desc="Offense RT" @901,410 44x44 [disabled]
+      [186] Unknown desc="Offense RG" @867,400 44x44 [disabled]
+      [187] Unknown desc="Offense C" @843,400 44x44 [disabled]
+      [188] Unknown desc="Offense LG" @820,400 44x44 [disabled]
+      [189] Unknown desc="Offense LT" @796,400 44x44 [disabled]
+      [190] Unknown desc="Offense F" @877,459 44x44 [disabled]
+      [191] Unknown desc="Offense QB" @843,447 44x44 [disabled]
+      [192] Unknown desc="Offense T" @814,455 44x44 [disabled]
+      [193] Unknown desc="Offense Y" @638,400 44x44 [disabled]
+      [194] Unknown desc="Offense X" @984,400 44x44 [disabled]
+      [195] Unknown desc="Offense Z" @574,414 44x44 [disabled]
+      [196] Button value="Default view" desc="Zoom to 150 percent" @570,529 44x44 [disabled]
+    [197] StaticText value="49ERS" @564,591 43x16 [disabled]
+    [198] Button desc="Edit" @563,618 53x45 [disabled]
+    [199] Button desc="Duplicate" @623,618 86x45 [disabled]
+    [200] Button desc="Delete 49ERS" @959,618 79x45 [disabled]
+    [201] Group desc="Football field" @42,711 474x255 [disabled]
+      [202] Unknown desc="Offense LT" @178,751 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [203] Unknown desc="Offense LG" @226,751 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [204] Unknown desc="Offense C" @274,751 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [205] Unknown desc="Offense RG" @322,751 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [206] Unknown desc="Offense RT" @369,751 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [207] Unknown desc="Offense QB" @274,858 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [208] Unknown desc="Offense T" @232,881 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [209] Unknown desc="Offense Y" @144,785 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [210] Button value="Default view" desc="Zoom to 150 percent" @48,916 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+    [211] StaticText value="ANY" @42,978 28x16 [offscreen: coords unreliable, use element_index/label] [disabled]
+    [212] Button desc="Edit" @41,1005 53x45 [offscreen: coords unreliable, use element_index/label] [disabled]
+    [213] Button desc="Duplicate" @101,1005 86x45 [offscreen: coords unreliable, use element_index/label] [disabled]
+    [214] Button desc="Delete ANY" @437,1005 79x45 [offscreen: coords unreliable, use element_index/label] [disabled]
+    [215] Group desc="Football field" @564,711 474x255 [disabled]
+      [216] Unknown desc="Offense LT" @683,751 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [217] Unknown desc="Offense LG" @731,751 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [218] Unknown desc="Offense C" @779,751 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [219] Unknown desc="Offense RG" @827,751 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [220] Unknown desc="Offense RT" @874,751 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [221] Unknown desc="Offense QB" @779,858 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [222] Unknown desc="Offense T" @737,881 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [223] Button value="Default view" desc="Zoom to 150 percent" @570,916 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+    [224] StaticText value="ANY" @564,978 28x16 [offscreen: coords unreliable, use element_index/label] [disabled]
+    [225] Button desc="Edit" @563,1005 53x45 [offscreen: coords unreliable, use element_index/label] [disabled]
+    [226] Button desc="Duplicate" @623,1005 86x45 [offscreen: coords unreliable, use element_index/label] [disabled]
+    [227] Button desc="Delete ANY" @959,1005 79x45 [offscreen: coords unreliable, use element_index/label] [disabled]
+    [228] Group desc="Football field" @42,1098 474x255 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [229] Unknown desc="Offense LT" @116,1173 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [230] Unknown desc="Offense LG" @140,1173 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [231] Unknown desc="Offense C" @165,1173 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [232] Unknown desc="Offense RG" @189,1173 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [233] Unknown desc="Offense RT" @214,1173 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [234] Unknown desc="Offense Y" @334,1190 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [235] Unknown desc="Offense QB" @165,1229 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [236] Unknown desc="Offense T" @196,1233 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [237] Unknown desc="Offense F" @403,1173 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [238] Unknown desc="Offense X" @52,1173 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [239] Unknown desc="Offense Z" @462,1192 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [240] Button value="Default view" desc="Zoom to 150 percent" @48,1303 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+    [241] StaticText value="ARIZONA" @42,1365 60x16 [offscreen: coords unreliable, use element_index/label] [disabled]
+    [242] Button desc="Edit" @41,1392 53x45 [offscreen: coords unreliable, use element_index/label] [disabled]
+    [243] Button desc="Duplicate" @101,1392 86x45 [offscreen: coords unreliable, use element_index/label] [disabled]
+    [244] Button desc="Delete ARIZONA" @437,1392 79x45 [offscreen: coords unreliable, use element_index/label] [disabled]
+    [245] Group desc="Football field" @564,1098 474x255 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [246] Unknown desc="Offense RT" @781,1174 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [247] Unknown desc="Offense LT" @684,1174 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [248] Unknown desc="Offense C" @732,1174 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [249] Unknown desc="Offense RG" @757,1174 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [250] Unknown desc="Offense LG" @707,1174 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [251] Unknown desc="Offense QB" @732,1224 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [252] Unknown desc="Offense T" @764,1233 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [253] Unknown desc="Offense F" @631,1187 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [254] Unknown desc="Offense X" @574,1174 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [255] Unknown desc="Offense Y" @854,1174 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [256] Unknown desc="Offense Z" @984,1187 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+      [257] Button value="Default view" desc="Zoom to 150 percent" @570,1303 44x44 [offscreen: coords unreliable, use element_index/label] [disabled]
+    [258] StaticText value="BULLY" @564,1365 42x16 [offscreen: coords unreliable, use element_index/label] [disabled]
+    [259] Button desc="Edit" @563,1392 53x45 [offscreen: coords unreliable, use element_index/label] [disabled]
+    [260] Button desc="Duplicate" @623,1392 86x45 [offscreen: coords unreliable, use element_index/label] [disabled]
+    [261] Button desc="Delete BULLY" @959,1392 79x45 [offscreen: coords unreliable, use element_index/label] [disabled]
+[262] Button/CloseButton @7,6 14x16
+[263] Button/FullScreenButton @47,6 14x16 actions=ZoomWindow
+[264] Button/MinimizeButton @27,6 14x16
+[265] MenuBar @-306,-210 1728x37
+[266] MenuBarItem "GamedayMac" @-262,-210 108x37 actions=Cancel
+[267] MenuBarItem "File" @-154,-210 42x37 actions=Cancel
+[268] MenuBarItem "Edit" @-112,-210 44x37 actions=Cancel
+[269] MenuBarItem "View" @-68,-210 50x37 actions=Cancel
+[270] MenuBarItem "Window" @-18,-210 69x37 actions=Cancel
+[271] MenuBarItem "Help" @51,-210 48x37 actions=Cancel
+Focused element: [78]
+
+Capabilities of Gameday: accessibility actions and value/selection edits: yes (verified by read-back); coordinate clicks/drags/scrolls: posted to the process, not verified; background keystrokes: delivered to the key window once an element is focused; ⌘-chords go through menu items.
