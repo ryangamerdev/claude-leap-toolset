@@ -70,3 +70,5 @@ Foreground-first acceptance is the current development baseline. Config `~/.conf
 Text input prebuilds/routs the whole event sequence and freezes restoration flags before any dispatch. This avoids sampling its own in-flight modifier events between characters. Native validation is pending. Insights-off testing still reproduced missing text, so disabling insights is not an established fix for input reliability.
 
 App keyboard routing is independent of foreground policy: foreground=true activates first, then keys/text/paste use the selected app PID and validate window ownership. No system-wide fallback. This does not establish full hosted-process or same-app responder isolation; inspect actual outcome. Native acceptance pending.
+
+Current development campaign scope: insights restored to enabled (host restart required after config changes). Simulator typing acceptance is deferred at user request; use Simulator clicks/navigation and desktop Gameday editing for the next gates. Do not repeat unresolved Simulator typing trials. This scope decision does not imply typing parity.

@@ -77,3 +77,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-20 — Insights-off native result and whole-text preparation](2026-09-20-insights-off-native.md)
 
 - [2026-09-20 — Full keyboard-controller trace and process-directed delivery](2026-09-20-keyboard-target.md)
+
+- [2026-09-20 — Restore insights and narrow Simulator acceptance](2026-09-20-restore-insights.md): user stops Simulator typing; desktop workflows and Simulator clicks continue after insights restart.

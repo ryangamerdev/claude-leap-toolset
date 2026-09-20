@@ -108,3 +108,7 @@ User steering supersedes pending whole-text candidate: **insights-off experiment
 ### App keyboard target correction
 
 Full [controller trace](research/sky-keyboard-controller-trace.md) confirms Sky app text/chords resolve a PID and post to it. Prior inference from global sender was incomplete. Leap foreground app keyboard now process-directed, never .system: **IMPLEMENTED / native RECHECK**. User observed a in ChatGPT on prior build; full-text preparation did not resolve Read→Red. Hosted target/focus state-machine parity remains **RESEARCH**.9 routing/text tests passed.
+
+## Current user direction — 2026-09-20, supersedes prior typing gates
+
+User explicitly stopped Simulator typing tests. Focus on desktop Gameday workflows and Simulator clicks/navigation, then paired Blender. Simulator typing remains unresolved/deferred, not a required next acceptance gate or a certified capability. Insights configuration is restored to true; restart required because the loaded MCP reads configuration at startup. No rebuild needed. See [iteration](iterations/2026-09-20-restore-insights.md). Only iPad booted after relaunch. Latest native session2BC880F8-550E-4ABC-9438-C8E7980152C5: rotation, exact search and opening saved play passed scoped checks; interrupted coaching edit outcome unknown. Fresh observation before any action; no typing replay.
