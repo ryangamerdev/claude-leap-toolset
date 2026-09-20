@@ -1,0 +1,10 @@
+{
+  "sha256": "b3c359b5c8d86319897ef0b1b5cc285d3b18947a0e1df592629cb45910be779f",
+  "installed": "/Users/ryan/Applications/claude-leap.app",
+  "backup": "/Users/ryan/src/claude-leap/artifacts/backups/leap-diagnostics-20260920-053910/claude-leap.app",
+  "installedAt": "2026-09-20T05:39:10.217683-07:00",
+  "verification": "5 initial focused tests plus 3 final diagnostic/config tests passed; release signature verified; skills synchronized; native verification pending restart",
+  "configuration": "~/.config/leap/leap.json",
+  "diagnostics": "~/.leap/logs/diagnostics.db",
+  "registration": "leap unchanged"
+}

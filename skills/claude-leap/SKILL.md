@@ -44,6 +44,18 @@ those development documents for unrelated app tasks.
   flag means the final scan failed and an earlier capture was returned; reobserve before input.
   Batch retry/recovery counters describe read recovery, not input retries.
 
+## Diagnostics
+
+- Unexpected recovery, capture warnings and suppressed indicators return diagnostic references.
+  Use diagnostic_query(interaction_id, level:issues) to audit warnings/errors; filter kind or
+  session_id and follow after=nextCursor. Logs persist independently of project recordings,
+  including before binding. Configuration: ~/.config/leap/leap.json, logging.level; logs: ~/.leap/logs/.
+  Levels debug/info/warning/error filter persistence; excluded warnings still appear in responses.
+  Restart after config changes. Input attempts, API returns and expectation checks are distinct.
+- Missing diagnostics never prove success. A logging failure before input prevents dispatch;
+  afterward it reports evidence loss without replay. Raw arguments/trees are omitted, but error
+  excerpts may contain application text. Details are capped; this is not a full trace of every AX read.
+
 ## Retained evidence without replay
 
 - ui_to_text(snapshot) reads immutable history; filter types, ids, contains, state, fields,

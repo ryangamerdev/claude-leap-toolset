@@ -322,8 +322,10 @@ final class AXRecording: @unchecked Sendable {
         if pending>=2048 {dropped += 1;stateLock.unlock();return}; pending += 1
         let loss=dropped;dropped=0;let context=interaction;stateLock.unlock()
         queue.async { [self] in
-            if loss>0 { try? store.append(session:id,kind:"capture_gap",payload:["droppedNotifications":loss]) }
-            try? store.append(session:id,interaction:context,kind:kind,payload:payload,wall:wall,mono:mono)
+            do {
+                if loss>0 {try store.append(session:id,kind:"capture_gap",payload:["droppedNotifications":loss])}
+                try store.append(session:id,interaction:context,kind:kind,payload:payload,wall:wall,mono:mono)
+            } catch {Diagnostics.shared.record(level:"error",kind:"observer_recording_failed",detail:String(describing:error),fields:["session":id,"interaction":context ?? "","tool":"observer"])}
             stateLock.lock();pending -= 1;stateLock.unlock()
         }
     }
@@ -351,13 +353,13 @@ final class AXRecording: @unchecked Sendable {
     func flush() {
         queue.sync {}
         stateLock.lock(); let loss=dropped; dropped=0; stateLock.unlock()
-        if loss>0 {try? store.append(session:id,kind:"capture_gap",payload:["droppedNotifications":loss])}
+        if loss>0 {do {try store.append(session:id,kind:"capture_gap",payload:["droppedNotifications":loss])} catch {Diagnostics.shared.record(level:"error",kind:"gap_recording_failed",detail:String(describing:error),fields:["session":id])}}
     }
     func stop() {
         stateLock.lock();active=false;let loop=loop;stateLock.unlock()
         if let loop {CFRunLoopStop(loop);CFRunLoopWakeUp(loop)}
         _ = stopped.wait(timeout: .now() + 2)
         flush()
-        try? store.finish(id)
+        do {try store.finish(id)} catch {Diagnostics.shared.record(level:"error",kind:"recording_close_failed",detail:String(describing:error),fields:["session":id])}
     }
 }

@@ -50,6 +50,7 @@ final class LeapAppDelegate: NSObject, NSApplicationDelegate {
             do {
                 try await runServer()
             } catch {
+                Diagnostics.shared.record(level:"error",kind:"server_failed",detail:String(describing:error))
                 FileHandle.standardError.write(Data("claude-leap: \(error)\n".utf8))
             }
             await MainActor.run { NSApplication.shared.terminate(nil) }

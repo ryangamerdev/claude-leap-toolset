@@ -17,6 +17,7 @@ or deleted and the install keeps working. Re-run to update to a newer build.
 Claude Code loads MCP servers and skills at session start: restart the session afterwards.
 """
 import argparse
+import json
 import os
 import shutil
 import subprocess
@@ -89,6 +90,21 @@ def install_skills():
         print(f"skill: {dst}")
 
 
+def install_config():
+    """Create defaults once; never overwrite the user's settings."""
+    directory = os.path.expanduser("~/.config/leap")
+    os.makedirs(directory, mode=0o700, exist_ok=True)
+    path = os.path.join(directory, "leap.json")
+    try:
+        with open(path, "x") as stream:
+            json.dump({"logging": {"level": "info"}}, stream, indent=2)
+            stream.write("\n")
+        os.chmod(path, 0o600)
+        print(f"config: {path}")
+    except FileExistsError:
+        print(f"config preserved: {path}")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     mode = parser.add_mutually_exclusive_group()
@@ -121,6 +137,7 @@ def main():
 
     install_app()
     install_skills()
+    install_config()
     # Register the MCP server at the INSTALLED path (user scope, all projects).
     run(["claude", "mcp", "remove", "leap", "-s", "user"], check=False)
     run(["claude", "mcp", "add", "--scope", "user", "leap", "--", INSTALLED_SERVER])

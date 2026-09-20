@@ -202,6 +202,7 @@ public actor Engine {
                     shot = try await Capture.window(info, scale: opts.scale, jpegQuality: opts.jpegQuality)
                     text += "\n(screenshot: \(shot!.pixelWidth)x\(shot!.pixelHeight) px, \(String(format: "%.2f", shot!.pointsPerPixel)) points/px)"
                 } catch {
+                    Diagnostics.shared.record(level:"warning",kind:"screenshot_unavailable",detail:String(describing:error))
                     warning = "\(error)"
                     text += "\n(screenshot unavailable: \(error))"
                 }
@@ -220,7 +221,7 @@ public actor Engine {
             if recordings[s.pid] != nil {text=compactObservation(text)}
             text += footer
         }
-        catch { text += "\nRecording failure: \(error). Prior input may have been sent; do not replay. Further recorded actions will be refused." }
+        catch { Diagnostics.shared.record(level:"error",kind:"snapshot_recording_failed",detail:String(describing:error)); text += "\nRecording failure: \(error). Prior input may have been sent; do not replay. Further recorded actions will be refused." }
         return State(text: text, screenshot: shot, warning: warning)
     }
 
@@ -428,7 +429,9 @@ public actor Engine {
             // LaunchServices fallback (works for apps that ignore AX frontmost).
             let config = NSWorkspace.OpenConfiguration()
             config.activates = true
-            _ = try? await NSWorkspace.shared.openApplication(at: url, configuration: config)
+            Diagnostics.shared.record(level:"warning",kind:"activation_fallback",detail:"AX foreground activation did not establish frontmost; trying LaunchServices")
+            do {_ = try await NSWorkspace.shared.openApplication(at:url,configuration:config)}
+            catch {Diagnostics.shared.record(level:"error",kind:"activation_fallback_failed",detail:String(describing:error))}
             deadline = Date().addingTimeInterval(1.5)
             while !s.app.isActive && Date() < deadline {
                 try await Task.sleep(nanoseconds: 30_000_000)
@@ -477,6 +480,9 @@ public actor Engine {
                 if !open { err = AXUIElementPerformAction(rec.node.element, kAXPressAction as CFString) }
             }
             if err == .success {
+                if marker == nil {
+                    Diagnostics.shared.record(level:"warning",kind:"indicator_suppressed",detail:"AXPress acknowledged; invalid/offscreen marker geometry. element=\(rec.index) frame=\(String(describing:rec.node.frame)) window=\(s.lastWindowFrame) offscreen=\(rec.node.offscreen). No pointer event sent.",fields:["session":recordings[s.pid]?.id ?? "","app":s.displayName])
+                }
                 await signal(marker, .click)
                 return "pressed [\(rec.index)] via accessibility" + (marker == nil ? "; location indicator hidden: accessibility coordinates are unreliable" : "")
             }
@@ -488,6 +494,9 @@ public actor Engine {
                 throw LeapError.unsupported("Outcome uncertain: accessibility Press was sent to [\(rec.index)] but returned \(err) (code \(err.rawValue)). The action may already have completed. No coordinate fallback was sent. Read get_app_state and verify the result before deciding whether to retry.")
             }
         }
+        if rec != nil {
+            Diagnostics.shared.record(level:"warning",kind:"pointer_route",detail:"Using coordinate input instead of semantic press (unsupported AX action or requested input requires pointer delivery). Target geometry will be validated.",fields:["session":recordings[s.pid]?.id ?? "","app":s.displayName])
+        }
         // Read live geometry, including enclosing scroll viewports: a row can be
         // inside the window but clipped by its scroll area. AXPress above remains
         // available for offscreen elements and Simulator coordinate quirks.
@@ -495,6 +504,7 @@ public actor Engine {
             if let visible = try visibleClickPoint(s, target) {
                 p = visible
             } else {
+                Diagnostics.shared.record(level:"warning",kind:"reveal_fallback",detail:"Target not visible; requesting AXScrollToVisible before revalidating. No coordinate click sent yet.")
                 let result = AXUIElementPerformAction(record.node.element, "AXScrollToVisible" as CFString)
                 guard result == .success else {
                     throw LeapError.unsupported("Element [\(record.index)] is outside the visible viewport and the app could not reveal it with AXScrollToVisible (\(result)). No coordinate click was sent. Scroll it into view, read get_app_state, then retry.")
@@ -618,6 +628,7 @@ public actor Engine {
                 candidate = AX.attr(element, kAXParentAttribute)
             }
         }
+        Diagnostics.shared.record(level:"warning",kind:"scroll_pointer_route",detail:"Using wheel events; semantic page scrolling unavailable or unsuitable for requested scroll. Movement requires verification.")
         try await withPointerInput(s, mode) { d in Input.scroll(at: p, dx: dx, dy: dy, d) }
         await signal(p, .scroll)
         return "dispatched scroll \(direction) (wheel events; verify movement in the returned state)"
@@ -636,6 +647,7 @@ public actor Engine {
             return done
         }
         try ensureKeyWindow(s)
+        Diagnostics.shared.record(level:"warning",kind:"keyboard_route",detail:"Using synthesized key input; semantic route unavailable or foreground mode requested. foreground=\(mode.foreground)")
         try await withInput(s, mode) { d in Input.press(chord, d) }
         await signal(indicatorPoint(s, nil), .edit)
         return "pressed \(key) (synthesized keystroke)"
@@ -779,6 +791,7 @@ public actor Engine {
                 case .uncertain(let why):
                     throw LeapError.unsupported("Outcome uncertain: the insert into [\(i)] changed the field but \(why). Not retried, to avoid duplicating text; read the state and decide.")
                 case .unchanged, .notText:
+                    Diagnostics.shared.record(level:"warning",kind:"text_value_fallback",detail:"AX text insertion unavailable or unchanged; attempting supported value edit before keystrokes. Text omitted.")
                     break
                 }
             }
@@ -794,6 +807,7 @@ public actor Engine {
             usleep(80_000)
         }
         try ensureKeyWindow(s)
+        Diagnostics.shared.record(level:"warning",kind:"text_keyboard_route",detail:"Using synthesized text input; not verified. foreground=\(mode.foreground). Text omitted.")
         try await withInput(s, mode) { d in Input.type(text, d) }
         await signal(indicatorPoint(s, elementIndex), .edit)
         return "typed \(text.count) characters (keystrokes dispatched; not verified)"
@@ -815,6 +829,7 @@ public actor Engine {
         case .unchanged, .notText:
             break
         }
+        Diagnostics.shared.record(level:"warning",kind:"set_value_fallback",detail:"Selection-based value replacement unavailable or unchanged; attempting direct AX value. Value omitted.")
         // 2. Generic settable value (sliders, checkboxes, steppers, non-text fields). Numeric
         //    controls want a number, not a string.
         let current: CFTypeRef? = AX.attr(rec.node.element, kAXValueAttribute)

@@ -39,6 +39,7 @@ enum LeapTools {
         Tool(name:"interaction_timeline",description:"List timestamped recorded interactions with snapshot references and input counts. Bounded pages; freeze through while paging. Read-only discovery, not full UI dumps.",inputSchema:schema(["project":prop("string","Optional bound-project override."),"session_id":prop("string","Optional recorded session."),"group_id":prop("string","Optional logical group across app captures."),"after":prop("integer","Exclusive interaction ordinal cursor."),"through":prop("integer","Frozen record boundary returned by first page."),"limit":prop("integer","Default 10, maximum 20.")]),annotations:.init(readOnlyHint:true)),
         Tool(name:"interaction_delta",description:"Compare snapshots immediately before the first retained input and after the last input in one interaction. Returns bounded changes, quality and baseline IDs. Missing/incompatible observations remain unavailable; no input replay. ui_diff paginates or compares any compatible snapshots.",inputSchema:schema(["project":prop("string","Optional bound-project override."),"interaction_id":prop("string","Recorded interaction ID.")],required:["interaction_id"]),annotations:.init(readOnlyHint:true)),
         Tool(name:"interaction_result",description:"Explain one recorded interaction: joined input intent/acknowledgement, before/after check outcomes, observation references and uncertainty. Does not imply a persisted save from a current-state check. Details remain available through recording_review.",inputSchema:schema(["project":prop("string","Optional bound-project override."),"interaction_id":prop("string","Interaction ID returned by an action.")],required:["interaction_id"]),annotations:.init(readOnlyHint:true)),
+        Tool(name:"diagnostic_query",description:"Audit durable MCP errors, warnings, fallbacks and outcomes, including before project binding. Bounded pages; raw arguments/UI trees omitted. Logging health is explicit. Returned success is not proof of app effect.",inputSchema:schema(["interaction_id":prop("string","Optional interaction filter."),"session_id":prop("string","Optional capture session filter."),"level":prop("string","Level: info, warning, error; issues includes warnings and errors."),"kind":prop("string","Exact diagnostic event kind."),"after":prop("integer","Exclusive sequence cursor."),"limit":prop("integer","Default 10, maximum 20.")]),annotations:.init(readOnlyHint:true)),
         Tool(name:"recording_group",description:"Start or explicitly resume a named logical task across applications and server restarts, or end its current grouping. Preserves history; closes existing capture epochs so new observations receive the selected group. No UI input. Requires bind_project.",inputSchema:schema(["action":prop("string","Operation.",enumValues:["start","resume","end"]),"name":prop("string","Required for start, maximum 200 UTF-8 bytes."),"group_id":prop("string","Required for resume; historical group UUID.")],required:["action"])),
         Tool(name:"recording_sessions",description:"Discover retained named groups or application capture sessions with counts, timestamps and storage explanation. Read-only, bounded pagination; does not initialize or clear history.",inputSchema:schema(["project":prop("string","Optional bound project override."),"view":prop("string","Default recordings.",enumValues:["recordings","groups"]),"group_id":prop("string","Filter capture sessions by logical group."),"after":prop("integer","Exclusive ordinal cursor, default 0."),"limit":prop("integer","Default 10, maximum 20.")]),annotations:.init(readOnlyHint:true)),
         Tool(name:"bind_project",description:"Bind the evidence project once. Subsequent app actions and observations automatically retain history; evidence tools can omit project. No UI input.",inputSchema:schema(["project":prop("string","Absolute project directory.")],required:["project"])),
@@ -218,13 +219,21 @@ enum LeapTools {
             let name = params.name
             return try await engine.serialized {
                 let interaction = await engine.beginInteraction()
+                Diagnostics.shared.setContext(["interaction":interaction,"tool":name,"app":args.string("app") ?? ""])
+                defer { Diagnostics.shared.setContext([:]) }
+                guard Diagnostics.shared.record(level:"info",kind:"tool_started",detail:"Dispatch requested; not evidence of input delivery") != nil else {
+                    await engine.endInteraction()
+                    return .init(content:[.text(text:"Error: Diagnostic logging unavailable; tool was not dispatched. Check diagnostic store permissions/free space.",annotations:nil,_meta:nil)],isError:true)
+                }
+                Diagnostics.shared.record(level:"debug",kind:"dispatch_context",detail:"Argument names only: \((params.arguments ?? [:]).keys.sorted().joined(separator:", ")). Values omitted.")
                 var result: CallTool.Result
                 do { result = try await dispatch(name, args, engine) }
                 catch {
+                    Diagnostics.shared.record(level:"error",kind:"tool_error",detail:String(describing:error))
                     var message = "Error: \(error)\ninteraction=\(interaction)"
                     if let app = args.string("app"), Self.actionTools.contains(name) || name == "batch" || name == "verified_action" {
                         do { let state = try await engine.state(app:app); message += "\nFresh evidence (does not imply action failed):\n" + state.text }
-                        catch { message += "\nPost-error observation unavailable: \(error). Do not blindly repeat prior input." }
+                        catch { Diagnostics.shared.record(level:"error",kind:"post_error_observation_failed",detail:String(describing:error)); message += "\nPost-error observation unavailable: \(error). Do not blindly repeat prior input." }
                     }
                     result = .init(content:[.text(text:message,annotations:nil,_meta:nil)],isError:true)
                 }
@@ -232,11 +241,15 @@ enum LeapTools {
                 // than duplicating the entire rendered tree. Preserve full errors and batches.
                 if result.isError != true && (Self.actionTools.contains(name) || name == "verified_action"),
                    args.bool("then_state") != false {
-                    if let summary = try? await engine.interactionResult() {
-                        result = summary.result
-                    }
+                    do { if let summary = try await engine.interactionResult() {result = summary.result} }
+                    catch { Diagnostics.shared.record(level:"warning",kind:"summary_fallback",detail:"Returning original response; summary failed: \(error). Input not replayed.") }
                 }
                 await engine.endInteraction()
+                Diagnostics.shared.record(level:result.isError == true ? "error":"info",kind:"tool_completed",detail:result.isError == true ? "Returned error; input may already have been sent. Inspect action evidence." : "Returned without tool error; does not establish expected app state.")
+                if name != "diagnostic_query", let warning=Diagnostics.shared.warningSummary(interaction:interaction) {
+                    result = .init(content:result.content + [.text(text:warning,annotations:nil,_meta:nil)],isError:result.isError)
+                }
+                if let failure=Diagnostics.shared.health() {result = .init(content:result.content + [.text(text:failure,annotations:nil,_meta:nil)],isError:result.isError)}
                 return result
             }
         } catch {
@@ -246,6 +259,8 @@ enum LeapTools {
 
     static func dispatch(_ name: String, _ a: Args, _ engine: Engine) async throws -> CallTool.Result {
         switch name {
+        case "diagnostic_query":
+            return try Diagnostics.shared.query(interaction:a.string("interaction_id"),session:a.string("session_id"),level:a.string("level"),kind:a.string("kind"),after:a.int("after") ?? 0,limit:a.int("limit") ?? 10).result
         case "interaction_timeline":
             return try Evidence(project:await engine.recordingProject(a.string("project"))).timeline(session:a.string("session_id"),after:a.int("after") ?? 0,through:a.int("through"),limit:a.int("limit") ?? 10,group:a.string("group_id")).result
         case "interaction_delta":
@@ -435,14 +450,17 @@ enum LeapTools {
     static func performAction(_ name: String, _ argsIn: Args, _ engine: Engine) async throws -> String {
         let app=try argsIn.app()
         let action=try await engine.beginRecordedAction(app:app,tool:name)
+        guard Diagnostics.shared.record(level:"info",kind:"input_attempt",detail:"Invoking \(name); actionId=\(action ?? "unrecorded"). Not proof of delivery.",fields:["app":app]) != nil else {throw LeapError.unsupported("Diagnostics unavailable before input; not dispatched")}
         let result:String
         do { result=try await dispatchAction(name,argsIn,engine) }
         catch {
             let original=error
+            Diagnostics.shared.record(level:"error",kind:"input_error",detail:"\(name): \(error). Dispatch may have occurred; do not replay.",fields:["app":app])
             do {try await engine.endRecordedAction(app:app,action:action,tool:name,message:String(describing:original),error:true)}
             catch {throw LeapError.unsupported("Input may already have been sent. Original: \(original). Recording failure: \(error). Do not replay.")}
             throw original
         }
+        Diagnostics.shared.record(level:"info",kind:"input_returned",detail:"\(name) API returned; expected application effect requires separate check. actionId=\(action ?? "unrecorded")",fields:["app":app])
         do {try await engine.endRecordedAction(app:app,action:action,tool:name,message:result,error:false)}
         catch {throw LeapError.unsupported("Operation returned: \(result). Recording failed after operation: \(error). Do not replay.")}
         return result + (action.map { " [action=\($0)]" } ?? "")

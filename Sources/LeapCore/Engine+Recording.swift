@@ -28,6 +28,9 @@ extension Engine {
     }
     func recordSnapshot(_ snap:AXWindowSnapshot,session s:AppSession) throws -> String {
         guard let r=recordings[s.pid] else{return ""}
+        if snap.readFailures > 0 || snap.deadlineExceeded || snap.truncated || snap.retainedEarlierObservation {
+            Diagnostics.shared.record(level:"warning",kind:"capture_quality",detail:"snapshot window=\(snap.title ?? "") failures=\(snap.readFailures) blocking=\(snap.blockingReadFailures) advisory=\(snap.advisoryReadFailures) deadline=\(snap.deadlineExceeded) truncated=\(snap.truncated) retainedEarlier=\(snap.retainedEarlierObservation); per-attribute details remain in retained snapshot",fields:["session":r.id,"app":s.displayName])
+        }
         r.subscribe(snap)
         var ancestors:[(Int,String)]=[]
         let nodes:[[String:Any]]=snap.nodes.map { n in
@@ -64,6 +67,7 @@ extension Engine {
     public func recordCheck(app:String, phase:String, label:String, condition:String,
                             met:Bool, detail:String) async throws {
         let s=try await session(for:app,launch:false)
+        Diagnostics.shared.record(level:met ? "info":"warning",kind:"expectation_"+phase,detail:"condition=\(condition) met=\(met); \(detail)",fields:["session":recordings[s.pid]?.id ?? "","app":s.displayName])
         guard let r=recordings[s.pid] else{return}
         do {
             try r.store.append(session:r.id,interaction:recordingInteraction,kind:"expectation_result",payload:[

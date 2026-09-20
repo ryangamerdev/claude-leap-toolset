@@ -29,3 +29,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-20 — Native grouped evidence acceptance](2026-09-20-group-native.md): retention/migration, historical brackets, automatic action deltas and same-process grouping passed; cross-process resume pending.
 
 - [2026-09-20 — Semantic action marker geometry](2026-09-20-indicator-geometry.md): suppress unreliable locations without changing AX input dispatch.
+
+- [2026-09-20 — Durable diagnostics](2026-09-20-diagnostics.md): independent journal, bounded audit queries and explicit recovery/error reporting.

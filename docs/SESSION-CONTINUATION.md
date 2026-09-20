@@ -10,6 +10,8 @@ Sky-or-better native app operation, demonstrated with Gameday, iPhone/iPad Simul
 
 ## Resume checkpoint
 
+Newest candidate: durable diagnostics; identity at artifacts/test-runs/20260920-diagnostics/install.json. Native acceptance pending. Query diagnostic_query before binding, then resume group E02D3027-C127-4760-A280-7E2FC74244C4 and run iPad toggle/restore. Audit capture_quality, indicator_suppressed geometry, input_returned and expectation_after by interaction. Invalid read-only tool request should persist tool_error. Preserve distinction: indicator suppression does not solve geometry. User corrected storage design: ~/.config/leap/leap.json controls logging.level (debug/info/warning/error, default info); durable log at ~/.leap/logs/diagnostics.db. No embedded development paths. Config changes need MCP restart. These user-requested paths supersede repo-only runtime storage for diagnostics; fixtures/reports remain repo-local. [Rationale](iterations/2026-09-20-diagnostics.md).
+
 Latest candidate: semantic-action marker geometry guard; identity in artifacts/test-runs/20260920-indicator/install.json. User observed ripple below Simulator; AXPress and view checks succeeded but AX frame was outside window. Guard now hides unreliable marker and reports suppression without changing dispatch. After restart combine cross-process group resume below with two reversible iPad toggles; verify suppression message and actual visible behavior, restore field. Valid-marker native coverage also pending. [Iteration](iterations/2026-09-20-indicator-geometry.md).
 
 - Installed build remains `444130a908e54dff63cb2a618a60bde37c75121fc33713da4334e98ecf8521db`. Native tools now loaded and tested. No binary changes this iteration.
