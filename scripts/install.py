@@ -6,7 +6,7 @@ Usage:
   install.py --no-build # skip the bundle step
   install.py --uninstall
 
-The skill is symlinked (not copied) into ~/.claude/skills/claude-leap so a `git pull` updates it.
+Each skill under skills/ is symlinked (not copied) into ~/.claude/skills/ so a `git pull` updates it.
 Claude Code loads new MCP tools and skills at session start: restart the session afterwards.
 """
 import os
@@ -16,8 +16,34 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SERVER = os.path.join(ROOT, "dist", "claude-leap.app", "Contents", "MacOS", "claude-leap")
-SKILL_SRC = os.path.join(ROOT, "skills", "claude-leap")
-SKILL_DST = os.path.expanduser("~/.claude/skills/claude-leap")
+SKILLS_DIR = os.path.join(ROOT, "skills")
+SKILLS_DST_ROOT = os.path.expanduser("~/.claude/skills")
+
+
+def _unlink(dst):
+    if os.path.islink(dst):
+        os.unlink(dst)
+    elif os.path.isdir(dst):
+        shutil.rmtree(dst)
+    elif os.path.exists(dst):
+        os.remove(dst)
+
+
+def each_skill():
+    for name in sorted(os.listdir(SKILLS_DIR)):
+        src = os.path.join(SKILLS_DIR, name)
+        if os.path.isdir(src) and os.path.exists(os.path.join(src, "SKILL.md")):
+            yield name, src, os.path.join(SKILLS_DST_ROOT, name)
+
+
+def link_skills():
+    os.makedirs(SKILLS_DST_ROOT, exist_ok=True)
+    for name, src, dst in each_skill():
+        _unlink(dst)
+        os.symlink(src, dst)
+        with open(os.path.join(src, "SKILL.md")) as f:
+            assert f.read(64).startswith("---\nname: " + name), f"{name}/SKILL.md frontmatter name mismatch"
+        print(f"skill: {dst} -> {src}")
 
 
 def run(cmd, check=True):
@@ -36,12 +62,10 @@ def main():
     args = set(sys.argv[1:])
     if "--uninstall" in args:
         run(["claude", "mcp", "remove", "leap", "-s", "user"], check=False)
-        if os.path.islink(SKILL_DST) or os.path.isdir(SKILL_DST):
-            if os.path.islink(SKILL_DST):
-                os.unlink(SKILL_DST)
-            else:
-                shutil.rmtree(SKILL_DST)
-            print(f"removed {SKILL_DST}")
+        for name, _src, dst in each_skill():
+            if os.path.islink(dst) or os.path.exists(dst):
+                _unlink(dst)
+                print(f"removed {dst}")
         print("Uninstalled. Restart the Claude Code session.")
         return
     if "--no-build" not in args and not os.path.exists(SERVER):
@@ -52,19 +76,9 @@ def main():
     # MCP server, user scope (all projects). Re-adding is how you repoint it.
     run(["claude", "mcp", "remove", "leap", "-s", "user"], check=False)
     run(["claude", "mcp", "add", "--scope", "user", "leap", "--", SERVER])
-    # Skill.
-    os.makedirs(os.path.dirname(SKILL_DST), exist_ok=True)
-    if os.path.islink(SKILL_DST) or os.path.exists(SKILL_DST):
-        if os.path.islink(SKILL_DST):
-            os.unlink(SKILL_DST)
-        else:
-            shutil.rmtree(SKILL_DST)
-    os.symlink(SKILL_SRC, SKILL_DST)
-    print(f"skill: {SKILL_DST} -> {SKILL_SRC}")
-    with open(os.path.join(SKILL_SRC, "SKILL.md")) as f:
-        head = f.read(400)
-    assert head.startswith("---\nname: claude-leap"), "SKILL.md frontmatter missing"
-    print("\nInstalled. Restart the Claude Code session so it loads the `leap` tools and the claude-leap skill.")
+    # Skills: symlink every skills/<name>/ so a git pull updates them.
+    link_skills()
+    print("\nInstalled. Restart the Claude Code session so it loads the `leap` tools and the skills.")
     print("Permissions: on first use macOS lists \"claude-leap\" under Privacy & Security › Accessibility and › Screen Recording.")
 
 
