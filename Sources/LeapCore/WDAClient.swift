@@ -46,9 +46,30 @@ final class WDAClient {
     func call(_ method:String,_ path:String,_ body:[String:Any]? = nil) async throws -> Any {
         try await request(method,"/session/"+sessionID+path,body)
     }
+    static func orientationValue(_ value:String) throws -> String {
+        switch value {
+        case "PORTRAIT", "LANDSCAPE": return value
+        case "LANDSCAPE_RIGHT": return "UIA_DEVICE_ORIENTATION_LANDSCAPERIGHT"
+        case "PORTRAIT_UPSIDEDOWN": return "UIA_DEVICE_ORIENTATION_PORTRAIT_UPSIDEDOWN"
+        default: throw AutomationModel.fail("Unsupported device orientation")
+        }
+    }
+    // /orientation deliberately collapses opposite directions in WDA. Retain both
+    // interface rotation and physical device orientation for coordinate provenance.
+    func orientationIdentity() async throws -> String {
+        guard let rotation=try await call("GET","/rotation") as? [String:Any],
+              let x=rotation["x"] as? Int,let y=rotation["y"] as? Int,let z=rotation["z"] as? Int,
+              [0,90,180,270].contains(x),[0,90,180,270].contains(y),[0,90,180,270].contains(z),
+              let device=try await call("GET","/wda/deviceOrientation") as? String,
+              !device.isEmpty,device != "UIDeviceOrientationUnknown" else {
+            throw AutomationModel.fail("WDA exact orientation unavailable; observation not safe for targeting")
+        }
+        return "interface:\(x),\(y),\(z);device:\(device)"
+    }
     func observe() async throws -> [String:Any] {
         try await verifyTarget()
         let orientation=try await call("GET","/orientation")
+        let orientationBefore=try await orientationIdentity()
         let tree=try await call("GET","/source?format=json")
         guard let root=tree as? [String:Any] else {throw AutomationModel.fail("WDA JSON source missing root")}
         var nodes:[[String:Any]]=[];var truncated=false
@@ -67,7 +88,8 @@ final class WDAClient {
             for (i,child) in (raw["children"] as? [[String:Any]] ?? []).enumerated() {walk(child,path+".\(i)",ancestors+[path])}
         }
         walk(root,"0",[])
-        return ["deviceIdentity":deviceIdentity,"app":appID,"orientation":orientation,"nodes":nodes,"complete":!truncated,"coordinateSpace":"device_points","bounds":nodes.first?["frame"] ?? [],"limitations":["XCTest accessibility projection; custom canvas content may be absent","selected may be unavailable; backend nodes are not durable handles"]]
+        let orientationAfter=try await orientationIdentity()
+        return ["deviceIdentity":deviceIdentity,"app":appID,"orientation":orientation,"orientationIdentity":orientationAfter,"orientationStable":orientationBefore == orientationAfter,"nodes":nodes,"complete":!truncated && orientationBefore == orientationAfter,"coordinateSpace":"device_points","bounds":nodes.first?["frame"] ?? [],"limitations":["XCTest accessibility projection; custom canvas content may be absent","selected may be unavailable; backend nodes are not durable handles"]]
     }
     func element(_ node:[String:Any]) async throws -> String {
         func quoted(_ s:String) -> String {"'"+s.replacingOccurrences(of:"\\",with:"\\\\").replacingOccurrences(of:"'",with:"\\'")+"'"}
@@ -100,7 +122,7 @@ final class WDAClient {
             let id=try await element(node)
             _ = try await call("POST","/wda/element/\(id)/scroll",["direction":args["direction"] ?? "down"])
         case "rotate":
-            _ = try await call("POST","/orientation",["orientation":args["orientation"] ?? "PORTRAIT"])
+            _ = try await call("POST","/orientation",["orientation":try Self.orientationValue(args["orientation"] as? String ?? "")])
         case "press_key":
             let keys=["Return":"\n","Enter":"\n","Backspace":"\u{8}","Tab":"\t"]
             guard let key=keys[args["key"] as? String ?? ""] else {throw AutomationModel.fail("WDA supports Return, Enter, Backspace, Tab; other keys unsupported")}

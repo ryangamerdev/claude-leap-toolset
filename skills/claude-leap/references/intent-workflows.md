@@ -33,7 +33,7 @@ Action arguments:
 - scroll: selector for control/container plus direction up/down/left/right; Mac pages optional.
 - drag: arguments.from_x/from_y/to_x/to_y, snapshot, space; Mac modifiers optional.
 - activate: selected application. Mac foreground:true may be supplied to input actions.
-- rotate: device backend only; arguments.orientation PORTRAIT, PORTRAIT_UPSIDEDOWN, LANDSCAPE, LANDSCAPE_RIGHT.
+- rotate: device backend only; arguments.orientation PORTRAIT, PORTRAIT_UPSIDEDOWN, LANDSCAPE, LANDSCAPE_RIGHT. These select physical device direction, not a guarantee of an upright host Simulator display. Respect app orientation support. WDA observations retain orientationIdentity and orientationStable because the coarse orientation string merges opposite directions.
 
 Read each step's execution, dispatch, acknowledgement and verification separately. Attempted input is not proof of effect. Uncertain input is never automatically replayed. A failed API acknowledgement may coexist with a satisfied postcondition. The workflow stops either way; inspect retained evidence. Unknown means insufficient observation, not a failed app assertion. Workflow scheduling deadlines do not promise hard cancellation of blocking OS calls.
 
@@ -45,4 +45,4 @@ Development regression scenarios: scripts/run-scenario.py executes {session,step
 
 `evidence_read(session_id,record,path?,offset?,max_bytes?,project?)` retrieves raw retained JSON or a nested value. path is an array of object keys/array indices, e.g. ["nodes","2","value"]. offset is in characters; max_bytes bounds chunk size. Follow nextOffset; reads never reacquire UI.
 
-Native development checkpoint (2026-09-20): WDA iPad observation/history/raw retrieval worked, but the information-button tap returned without the expected UI change both before and after verified host foregrounding. Do not infer effect from acknowledgement. Numeric bounds comparison now fixes false stale-coordinate rejection; native coordinate acceptance awaits restart.
+Native development checkpoint (2026-09-20): use the explicit mac_ax Simulator session for the Sky-equivalent acceptance path. Information/field toggle and Previous play passed native postconditions. Host AX geometry can remain invalid despite working semantic actions; do not infer valid pointer coordinates from semantic success. WDA observation/history/navigation passed, but the information-toggle touch still had no effect. Neither backend silently substitutes for the other. Gameday is landscape-only; use its existing orientation. Exact WDA rotation tracking and protocol translation are installed candidates awaiting restart acceptance. See the development handoff for next cases rather than repeating failed taps.

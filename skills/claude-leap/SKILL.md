@@ -9,7 +9,7 @@ Use session_open → ui_observe → ui_perform → session_history/session_close
 [intent workflows](references/intent-workflows.md) for selectors, action/check syntax,
 coordinate provenance and backend setup. The MCP handles fresh resolution, preconditions,
 polling, deltas and failure evidence. Capabilities are not certification; the new v2
-Mac/WDA adapters are installed candidates awaiting native acceptance.
+Mac/WDA adapters have scoped native passes; full acceptance remains open.
 
 Use mac_ax for Mac applications. WDA targets the guest app on a specific Simulator runner;
 its coordinates are device points, not host-window points. No silent backend fallback.

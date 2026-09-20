@@ -29,6 +29,8 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path.endswith('/wda/device/info'):value={'uuid':'fixture-device'}
         elif self.path.endswith('/wda/activeAppInfo'):value={'bundleId':'fixture.app'}
         elif self.path.endswith('/orientation'):value='PORTRAIT'
+        elif self.path.endswith('/rotation'):value={'x':0,'y':0,'z':0}
+        elif self.path.endswith('/wda/deviceOrientation'):value='UIDeviceOrientationPortrait'
         elif self.path.endswith('/source?format=json'):
             value={'type':'Application','rect':{'x':0,'y':0,'width':800,'height':600},'children':[{'type':'Button','rawIdentifier':'save','label':state['label'],'isEnabled':'1','rect':{'x':100,'y':100,'width':50,'height':30}}]}
         elif self.path.endswith('/elements'):value=[{'ELEMENT':'save'}]

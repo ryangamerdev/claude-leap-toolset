@@ -278,7 +278,7 @@ extension Engine {
                         guard let baseline=a["snapshot"] as? Int,let prior=try automationStoredSnapshot(s,seq:baseline),
                               prior["coordinateSpace"] as? String == a["space"] as? String,
                               prior["coordinateSpace"] as? String == pre["coordinateSpace"] as? String,
-                              prior["orientation"] as? String == pre["orientation"] as? String,
+                              AutomationModel.sameOrientation(prior,pre),
                               AutomationModel.sameBounds(prior["bounds"],pre["bounds"]),
                               try RecordingStore.json(prior["nodes"] ?? []) == RecordingStore.json(pre["nodes"] ?? []),
                               prior["window"] as? String == pre["window"] as? String else {throw AutomationModel.fail("Coordinates require snapshot and space with unchanged target bounds; no input sent")}

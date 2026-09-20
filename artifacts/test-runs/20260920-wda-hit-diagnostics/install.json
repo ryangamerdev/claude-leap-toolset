@@ -1,0 +1,10 @@
+{
+  "installed_at": "2026-09-20T14:00:15.263365+00:00",
+  "sha256": "88c424d98e1bdbb6388e6b7c4b6c5bc0a12e412e2116809f64279b9191d48149",
+  "rollback": "/Users/ryan/src/claude-leap/artifacts/backups/20260920-wda-orientation/previous.app",
+  "rollback_local_only": true,
+  "skills_synced": true,
+  "native_acceptance": "pending restart",
+  "focused_model_tests": 10,
+  "registration": "leap unchanged"
+}

@@ -4,11 +4,11 @@ Updated 2026-09-20. Read [SPECIFICATION.md](SPECIFICATION.md), [PLAN.md](PLAN.md
 
 User authorized aggressive replacement with a complete spec and implementation, not preserving existing architecture. Spec and new orchestration are implemented; full release acceptance remains open. No new subagents used. Preserve name leap and user history; commit/push after each install.
 
-## Latest native checkpoint after restart
+## Latest orientation fix and backend decision
 
-Installed SHA256 `6df9b4060129ea9fb5f49758bc2114ef24f454e4582570436298514366f1d7a9` was tested through native MCP. Session `3ADD85CE-E190-4536-BA94-D9E99F4865AA` remains open; latest snapshot799, Playbook restored. Numeric-bounds guard now permits the current-snapshot device-point tap. Information toggle still did not change, but role-qualified Route library and Playbook clicks both passed expectations. Do not describe this as general guest input failure. Gameday is intentionally landscape-only; portrait refusal is outside its acceptance scope.
+See [orientation iteration](iterations/2026-09-20-wda-orientation.md) and [install identity](../artifacts/test-runs/20260920-wda-hit-diagnostics/install.json). WDA protocol translation and exact rotation provenance corrected; install requires restart/native acceptance. Prior loaded binary6df9b406 had native Mac successes: information toggle interaction55CD79A1-DAC5-4B0E-9554-C7D6214BEAF1 and Previous play C35F72A5-4A26-4C4A-97C3-97C825EE8681. Sky semantic and coordinate toggles also passed. WDA Next play passed; information touch remains failed. App restored upright, field visible, original5 of11 play. Both live sessions closed; history remains.
 
-[Checkpoint and interaction IDs](iterations/2026-09-20-wda-landscape.md). NEXT: inspect information-control hit handling and compare with the successful navigation path. Source read-only: `/Users/ryan/src/gameday/Sources/Gameday/TabletPlayBrowser.swift`, fieldInformationButton in a bottom-trailing ZStack, minimum44-point label frame. This is not proof of a hit-testing defect. Do not repeat portrait testing. Continue landscape scroll/drag and the fixed release gate. No new binary or restart needed for this checkpoint.
+NEXT: open WDA only to verify exact orientationIdentity/orientationStable on the installed build without rotation. Then open mac_ax Simulator/iPad session and pair Sky then Leap landscape filter scroll and field double-click/drag, using fresh screenshots when host AX geometry is invalid. The user challenged spending time on a different backend despite having Sky reference; prioritize behavioral parity through the same host accessibility route. WDA is optional additional capability, not a prerequisite. No repeat portrait or speculative orientation experiments. Scope-limited source inspection found no proven Gameday defect; no Gameday edits made.
 
 ## Previous candidate and initial action
 

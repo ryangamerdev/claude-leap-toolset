@@ -8,7 +8,7 @@ Reliable native app operation at least as effective as Sky, demonstrated by desk
 
 ## Execution
 
-1. Numeric-bounds correction now passed native dispatch after restart. WDA Route library and Playbook button workflows passed their postconditions. The information-button coordinate tap dispatched but had no observed effect; diagnose this specific control without assuming all guest input fails. Gameday is intentionally landscape-only (user clarification); exclude portrait rotation from its acceptance cases.
+1. After restart, validate exact WDA orientation metadata without rotating Gameday, then prioritize the explicit mac_ax Simulator path that matches Sky's successful accessibility operation. Native Mac information toggle and Previous play passed. Pair Sky then Leap filter scroll and field double-click/drag with fresh screenshots; do not make XCTest parity a prerequisite for Sky-equivalent operation. WDA information taps remain an isolated failed case; no silent backend fallback. Gameday is landscape-only.
 2. Correct any shared orchestration/backend defects together; build/install, update skills, commit/push, then restart once for the consolidated candidate. Do not declare success from the runner health check or protocol fixture.
 3. Complete both Simulator landscape scroll/tap/drag scenarios and Mac Gameday coach/create/save/reopen through the preferred intent API. Fix unsupported operations only when needed for the fixed gate. Use old primitives diagnostically, labeling bypasses as such.
 4. Finish the paired Blender modeling/save/reopen trial without bypassing UI modeling through a construction script. Keep the simple object and equivalent operations; compare outcome and intervention requirements.

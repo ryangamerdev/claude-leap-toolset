@@ -2,6 +2,24 @@ import XCTest
 @testable import LeapCore
 
 final class AutomationModelTests:XCTestCase {
+    func testWDAOrientationProtocolTranslation() throws {
+        XCTAssertEqual(try WDAClient.orientationValue("LANDSCAPE_RIGHT"),"UIA_DEVICE_ORIENTATION_LANDSCAPERIGHT")
+        XCTAssertEqual(try WDAClient.orientationValue("PORTRAIT_UPSIDEDOWN"),"UIA_DEVICE_ORIENTATION_PORTRAIT_UPSIDEDOWN")
+        XCTAssertEqual(try WDAClient.orientationValue("LANDSCAPE"),"LANDSCAPE")
+        XCTAssertThrowsError(try WDAClient.orientationValue("unknown"))
+    }
+    func testOppositeLandscapeAndUnstableReadRejectCoordinates() {
+        let before:[String:Any] = ["backend":"wda","orientation":"LANDSCAPE","orientationIdentity":"interface:0,0,90;device:left","orientationStable":true]
+        var after=before
+        XCTAssertTrue(AutomationModel.sameOrientation(before,after))
+        after["orientationIdentity"]="interface:0,0,270;device:right"
+        XCTAssertFalse(AutomationModel.sameOrientation(before,after))
+        after=before;after["orientationStable"]=false
+        XCTAssertFalse(AutomationModel.sameOrientation(before,after))
+        after=before;after.removeValue(forKey:"orientationIdentity")
+        XCTAssertFalse(AutomationModel.sameOrientation(before,after))
+        XCTAssertTrue(AutomationModel.sameOrientation(["backend":"mac_ax"],["backend":"mac_ax"]))
+    }
     func testBoundsSurviveJSONRoundTrip() throws {
         let live:[Double]=[0,0,1180,820]
         let stored=try JSONSerialization.jsonObject(with:JSONSerialization.data(withJSONObject:live))

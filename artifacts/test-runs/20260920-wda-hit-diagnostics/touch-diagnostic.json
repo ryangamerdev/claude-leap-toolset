@@ -1,0 +1,40 @@
+{
+  "timestamp": "2026-09-20T13:54:53.657981+00:00",
+  "request": {
+    "actions": [
+      {
+        "type": "pointer",
+        "id": "diagnostic-finger",
+        "parameters": {
+          "pointerType": "touch"
+        },
+        "actions": [
+          {
+            "type": "pointerMove",
+            "duration": 0,
+            "origin": "viewport",
+            "x": 1130,
+            "y": 689
+          },
+          {
+            "type": "pointerDown",
+            "button": 0
+          },
+          {
+            "type": "pause",
+            "duration": 100
+          },
+          {
+            "type": "pointerUp",
+            "button": 0
+          }
+        ]
+      }
+    ]
+  },
+  "response": {
+    "value": null,
+    "sessionId": "5CAAB9B3-68C1-4A62-A634-BAAB3799A215"
+  },
+  "evidenceKind": "direct backend diagnostic, not native MCP acceptance"
+}

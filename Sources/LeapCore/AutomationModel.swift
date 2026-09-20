@@ -4,6 +4,16 @@ import ApplicationServices
 /// Shared intent contract. JSON stays at the adapter boundary; selectors and verdicts are
 /// evaluated identically for Mac AX and XCTest observations.
 public enum AutomationModel {
+    static func sameOrientation(_ before:[String:Any],_ after:[String:Any]) -> Bool {
+        guard before["orientation"] as? String == after["orientation"] as? String else {return false}
+        if before["backend"] as? String == "wda" || after["backend"] as? String == "wda" {
+            guard before["orientationStable"] as? Bool == true, after["orientationStable"] as? Bool == true,
+                  let a=before["orientationIdentity"] as? String,!a.isEmpty,
+                  let b=after["orientationIdentity"] as? String else {return false}
+            return a == b
+        }
+        return true
+    }
     static func fail(_ message: String) -> LeapError { .unsupported(message) }
     static func object(_ value: Any?) -> [String:Any] { value as? [String:Any] ?? [:] }
     static func role(_ value: String) -> String {

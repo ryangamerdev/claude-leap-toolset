@@ -43,3 +43,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-20 — First native WDA trial](2026-09-20-wda-native.md): observation/history passed, taps had no observed effect; fixed numeric bounds false rejection and installed for restart.
 
 - [2026-09-20 — Landscape native checkpoint](2026-09-20-wda-landscape.md): coordinate dispatch and two navigation workflows pass; portrait excluded by app design, information toggle unresolved.
+
+- [2026-09-20 — Backend comparison and orientation](2026-09-20-wda-orientation.md): Mac semantic parity passes; fixed WDA aliases/exact orientation guard, installed for restart; primary acceptance returns to Sky-equivalent path.
