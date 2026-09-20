@@ -74,3 +74,7 @@ Native full-page scroll detection **TESTED** down/up via scoped scrollbar values
 ## Native creation and text capability checkpoint
 
 Desktop create/save/reopen **TESTED**, including named routes and notes on1b7be96. Editor metadata correction **TESTED**. iPad title/routes/player1 note persisted; coaching direct-value write failed persistence despite immediate readback. Raw unsupported value guard **IMPLEMENTED / RECHECK**. Sky normal typing retained notes in duplicate; Sky receiver-coordinate targeting failed even foregrounded. Both Save paths unexpectedly reached Team libraries; **RESEARCH**, not expected behavior. R16 remains PARTIAL, not certified. See [iteration](iterations/2026-09-20-text-capability.md).
+
+## Input delivery evidence
+
+R08/R12: action, resolved target and backend input_result now retained in intent results (**IMPLEMENTED**, restart acceptance pending). Previously backend descriptions were discarded while snapshots/deltas remained stored. Saved SKY IPAD KEYBOARD comparison coaching/title **TESTED**. Screenshot Save eventually returned to playbook;20-second check unknown and user window movement qualifies result. Team libraries cause remains **RESEARCH**. Blank-field set_value refusal still awaits native acceptance. [Iteration](iterations/2026-09-20-input-result.md).

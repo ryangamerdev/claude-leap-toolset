@@ -304,8 +304,12 @@ extension Engine {
                     _ = try s.save("intent",["step":i,"action":action,"dispatch":"not_sent","arguments":"omitted","snapshot":pre["snapshot"]!],interaction:interaction)
                     guard Diagnostics.shared.record(level:"info",kind:"automation_input_attempt",detail:"\(s.backend) \(action) step \(i)") != nil else {throw AutomationModel.fail("Diagnostics unavailable; no input sent")}
                     guard ProcessInfo.processInfo.systemUptime<deadline else {throw AutomationModel.fail("Workflow deadline reached before dispatch; no input sent")}
+                    if let node {
+                        r["target"] = node.filter { ["id","index","role","label","frame"].contains($0.key) }
+                    }
+                    r["action"] = action
                     attempted=true;r["dispatch"]="attempted"
-                    try await automationInput(s,action:action,node:node,args:a)
+                    r["input_result"] = try await automationInput(s,action:action,node:node,args:a)
                     r["acknowledgement"]="returned"
                 }
                 var post=pre
@@ -379,19 +383,19 @@ extension Engine {
         return try JSONSerialization.jsonObject(with:Data(payload.utf8)) as? [String:Any]
     }
 
-    func automationInput(_ s:AutomationSession,action:String,node:[String:Any]?,args:[String:Any]) async throws {
-        if let wda=s.wda {var a=args;a["app"]=s.app;try await wda.action(action,node:node,args:a);return}
+    func automationInput(_ s:AutomationSession,action:String,node:[String:Any]?,args:[String:Any]) async throws -> String {
+        if let wda=s.wda {var a=args;a["app"]=s.app;try await wda.action(action,node:node,args:a);return "WebDriverAgent acknowledged \(action); effect requires verification"}
         let index=node?["index"] as? Int
         let target=Target(elementIndex:index,x:(args["x"] as? Double).map { CGFloat($0) },y:(args["y"] as? Double).map { CGFloat($0) })
         let mode=InputMode(foreground:args["foreground"] as? Bool ?? false)
         switch action {
-        case "click","double_click":_ = try await click(app:s.app,target:target,button:MouseButton(alias:args["button"] as? String ?? "left") ?? .left,count:action == "double_click" ? 2:1,modifiers:args["modifiers"] as? String,mode:mode)
-        case "type_text":_ = try await typeText(app:s.app,text:args["text"] as? String ?? "",elementIndex:index,mode:mode)
-        case "set_value":guard let index else {throw AutomationModel.fail("set_value requires selector")};_ = try await setValue(app:s.app,elementIndex:index,value:args["text"] as? String ?? "",mode:mode)
-        case "press_key":_ = try await pressKey(app:s.app,key:args["key"] as? String ?? "",mode:mode)
-        case "scroll":_ = try await scroll(app:s.app,target:target,direction:args["direction"] as? String ?? "down",pages:args["pages"] as? Double ?? 1,mode:mode)
-        case "drag":_ = try await drag(app:s.app,from:Target(x:(args["from_x"] as? Double).map { CGFloat($0) },y:(args["from_y"] as? Double).map { CGFloat($0) }),to:Target(x:(args["to_x"] as? Double).map { CGFloat($0) },y:(args["to_y"] as? Double).map { CGFloat($0) }),modifiers:args["modifiers"] as? String,mode:mode)
-        case "activate":_ = try await activate(app:s.app)
+        case "click","double_click":return try await click(app:s.app,target:target,button:MouseButton(alias:args["button"] as? String ?? "left") ?? .left,count:action == "double_click" ? 2:1,modifiers:args["modifiers"] as? String,mode:mode)
+        case "type_text":return try await typeText(app:s.app,text:args["text"] as? String ?? "",elementIndex:index,mode:mode)
+        case "set_value":guard let index else {throw AutomationModel.fail("set_value requires selector")};return try await setValue(app:s.app,elementIndex:index,value:args["text"] as? String ?? "",mode:mode)
+        case "press_key":return try await pressKey(app:s.app,key:args["key"] as? String ?? "",mode:mode)
+        case "scroll":return try await scroll(app:s.app,target:target,direction:args["direction"] as? String ?? "down",pages:args["pages"] as? Double ?? 1,mode:mode)
+        case "drag":return try await drag(app:s.app,from:Target(x:(args["from_x"] as? Double).map { CGFloat($0) },y:(args["from_y"] as? Double).map { CGFloat($0) }),to:Target(x:(args["to_x"] as? Double).map { CGFloat($0) },y:(args["to_y"] as? Double).map { CGFloat($0) }),modifiers:args["modifiers"] as? String,mode:mode)
+        case "activate":return try await activate(app:s.app)
         default:throw AutomationModel.fail("Unsupported action")
         }
     }
