@@ -54,3 +54,7 @@ leap-cli, physical-device provisioning, Android/Windows/browser backends, arbitr
 ## Restarted iPad pointer acceptance
 
 [Native checkpoint](iterations/2026-09-20-ipad-pointer-native.md): installed Mac bounds correction passed. mac_ax double-click zoom, reset click, field pan and foreground sidebar drag scroll are **TESTED** by screenshot inspection; all retained window bounds stayed [130,99,1006,780]. User also observed sidebar movement. Wheel scroll is **FAILED** for visible effect in both tested focus modes. R06 remains scoped/unfinished, R07 now has this Mac native pass but WDA orientation acceptance remains open, and R15 is not certified: early actions omitted foreground:true but actual OS focus was not independently recorded. Workflow verification was not_evaluated; visual checks are separate evidence. Compact sidebar deltas retained57/50 changes while returning12; canvas changes still needed images. iPhone, desktop save/reopen and paired Blender release cases remain open.
+
+## Scroll-effect evidence candidate
+
+**IMPLEMENTED, native RECHECK:** scroll_effect separates scoped coherent AX displacement, bounded visual differences, and unverified effects from dispatch/expectation results. Automatic retained before/after captures, optional observation_region, bounded delayed observations, explicit capture diagnostics, no boundary inference and no automatic retry. offscreen changes are now included in generic deltas. This does not fix wheel delivery or certify scrolling. See [iteration](iterations/2026-09-20-scroll-evidence.md).

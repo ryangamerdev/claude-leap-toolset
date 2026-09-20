@@ -213,7 +213,7 @@ extension Engine {
                 case "drag":keys=["from_x","from_y","to_x","to_y","snapshot","space"]
                 case "type_text","set_value":keys=["text"]
                 case "press_key":keys=["key"]
-                case "scroll":keys=["direction"]
+                case "scroll":keys=["direction","observation_region"]
                 case "rotate":keys=["orientation"]
                 default:keys=[]
                 }
@@ -227,6 +227,8 @@ extension Engine {
                 for (key,value) in a {
                     if ["x","y","from_x","from_y","to_x","to_y","snapshot","pages"].contains(key) {
                         guard let number=value as? NSNumber,CFGetTypeID(number) != CFBooleanGetTypeID(),number.doubleValue.isFinite else {throw AutomationModel.fail("\(key) must be a finite number")}
+                    } else if key == "observation_region" {
+                        guard AutomationModel.coordinateBounds(value) != nil else {throw AutomationModel.fail("observation_region must be [x,y,width,height]")}
                     } else if key == "foreground" {
                         guard let number=value as? NSNumber,CFGetTypeID(number) == CFBooleanGetTypeID() else {throw AutomationModel.fail("foreground must be boolean")}
                     } else if !(value is String) {throw AutomationModel.fail("\(key) must be a string")}
@@ -252,6 +254,8 @@ extension Engine {
             var r:[String:Any]=["id":step["id"] ?? String(i),"index":i,"type":step["type"]!,"dispatch":"not_sent","verification":"not_evaluated","started_at":ISO8601DateFormatter().string(from:Date())]
             if stopped {r["execution"]="skipped";results.append(r);continue}
             var attempted=false
+            var scrollBefore:[String:Any]?,scrollRegion:[Double]?,scrollRoot:String?
+            var scrollErrors:[String]=[]
             do {
                 guard ProcessInfo.processInfo.systemUptime<deadline else {throw AutomationModel.fail("Workflow scheduling deadline exceeded")}
                 if let health=s.store.health() {throw AutomationModel.fail("Recording unavailable: \(health)")}
@@ -286,8 +290,20 @@ extension Engine {
                         let pairs=action == "drag" ? [("from_x","from_y"),("to_x","to_y")]:[("x","y")]
                         for (x,y) in pairs {guard let px=a[x] as? Double,let py=a[y] as? Double,px.isFinite,py.isFinite,px>=0,py>=0,px<b[2],py<b[3] else {throw AutomationModel.fail("Coordinate outside target bounds")}}
                     }
+                    if action == "scroll" {
+                        if let raw=a["observation_region"] {
+                            guard let region=ScrollEvidence.region(raw,bounds:pre["bounds"]) else {throw AutomationModel.fail("observation_region outside target bounds; no input sent")}
+                            scrollRegion=region
+                        }
+                        scrollRoot=node?["id"] as? String
+                        do {scrollBefore=try await automationCapture(s)} catch {
+                            scrollErrors.append(String(describing:error))
+                            Diagnostics.shared.record(level:"warning",kind:"scroll_evidence_failed",detail:String(describing:error))
+                        }
+                    }
                     _ = try s.save("intent",["step":i,"action":action,"dispatch":"not_sent","arguments":"omitted","snapshot":pre["snapshot"]!],interaction:interaction)
                     guard Diagnostics.shared.record(level:"info",kind:"automation_input_attempt",detail:"\(s.backend) \(action) step \(i)") != nil else {throw AutomationModel.fail("Diagnostics unavailable; no input sent")}
+                    guard ProcessInfo.processInfo.systemUptime<deadline else {throw AutomationModel.fail("Workflow deadline reached before dispatch; no input sent")}
                     attempted=true;r["dispatch"]="attempted"
                     try await automationInput(s,action:action,node:node,args:a)
                     r["acknowledgement"]="returned"
@@ -299,6 +315,37 @@ extension Engine {
                     post=snap;r["verification"]=v
                     if v != "passed" {stopped=true;overall=v}
                 } else if type == "action" {post=try await automationObserve(s)}
+                if type == "action",step["action"] as? String == "scroll" {
+                    let a=AutomationModel.object(step["arguments"])
+                    let end=min(deadline,ProcessInfo.processInfo.systemUptime+0.8)
+                    var samples=0
+                    var effect:[String:Any]=[:]
+                    repeat {
+                        effect=ScrollEvidence.geometry(before:pre["nodes"] as? [[String:Any]] ?? [],after:post["nodes"] as? [[String:Any]] ?? [],region:scrollRegion,root:scrollRoot,direction:a["direction"] as? String ?? "down")
+                        if effect["status"] as? String == "movement_observed" || ProcessInfo.processInfo.systemUptime>=end {break}
+                        try await Task.sleep(nanoseconds:200_000_000)
+                        post=try await automationObserve(s);samples += 1
+                    } while samples<4
+                    if pre["complete"] as? Bool != true || post["complete"] as? Bool != true || !AutomationModel.sameBounds(pre["bounds"],post["bounds"]) || !AutomationModel.sameOrientation(pre,post) {
+                        effect["status"]="unverified";effect["reason"]="Incomplete observation or changed target geometry"
+                    }
+                    effect["additionalObservations"]=samples
+                    effect["boundary"]="unknown"
+                    effect["before_snapshot"]=pre["snapshot"];effect["after_snapshot"]=post["snapshot"]
+                    if let scrollBefore {
+                        effect["before_artifact"]=scrollBefore
+                        do {
+                            let after=try await automationCapture(s);effect["after_artifact"]=after
+                            guard AutomationModel.sameBounds(pre["bounds"],post["bounds"]),AutomationModel.sameOrientation(pre,post) else {throw AutomationModel.fail("Scroll evidence target geometry changed")}
+                            effect["visual"]=try ScrollEvidence.pixels(before:scrollBefore,after:after,region:scrollRegion,bounds:pre["bounds"])
+                        } catch {
+                            scrollErrors.append(String(describing:error))
+                            Diagnostics.shared.record(level:"warning",kind:"scroll_evidence_failed",detail:String(describing:error))
+                        }
+                    }
+                    if !scrollErrors.isEmpty {effect["errors"]=scrollErrors}
+                    r["scroll_effect"]=effect
+                }
                 if type == "capture" {r["artifact"]=try await automationCapture(s)}
                 r["after_snapshot"]=post["snapshot"]
                 r["delta"]=AutomationModel.delta(pre["nodes"] as? [[String:Any]] ?? [],post["nodes"] as? [[String:Any]] ?? [],complete:pre["complete"] as? Bool == true && post["complete"] as? Bool == true)

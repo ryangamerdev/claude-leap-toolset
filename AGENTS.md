@@ -46,3 +46,10 @@ This refreshes Claude and Codex skill copies without touching the app or MCP reg
 The standard installer does this automatically. Compare installed/source contents before
 handoff; record skill changes and synchronization in the iteration history. A documentation-only
 sync needs no binary rebuild; restart if the host cached skill discovery metadata.
+
+## Investigation follow-through
+
+When the user asks a question and investigation identifies a concrete, supported improvement
+within Leap's objective, proceed to implement and deliver it under the build/install workflow;
+do not stop at proposing the solution. Distinguish hypotheses from evidence and preserve the
+native acceptance boundary. This standing preference was confirmed on 2026-09-20.

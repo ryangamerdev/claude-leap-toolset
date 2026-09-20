@@ -51,3 +51,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-20 — Mac coordinate bounds](2026-09-20-mac-bounds.md): native double-click safely rejected before input; normalized live CGFloat bounds, built/installed for restart.
 
 - [2026-09-20 — Restarted iPad pointer acceptance](2026-09-20-ipad-pointer-native.md): zoom/reset/pan and sidebar drag pass visual native checks; wheel has no effect even foregrounded, window stable.
+
+- [2026-09-20 — Scroll-effect evidence](2026-09-20-scroll-evidence.md): scoped displacement, bounded visual comparison and delayed observations; built/installed candidate awaiting native restart.

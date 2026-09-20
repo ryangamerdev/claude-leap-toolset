@@ -95,7 +95,7 @@ public enum AutomationModel {
             else if new[id] == nil {changes.append(["id":id,"change":complete ? "removed":"not_observed"])}
             else {
                 var fields:[String:Any]=[:]
-                for k in ["label","value","enabled","selected","focused","frame"] {
+                for k in ["label","value","enabled","selected","focused","frame","offscreen"] {
                     if String(describing:old[id]![k]) != String(describing:new[id]![k]) {
                         fields[k]=["before":old[id]![k] ?? NSNull(),"after":new[id]![k] ?? NSNull()]
                     }
