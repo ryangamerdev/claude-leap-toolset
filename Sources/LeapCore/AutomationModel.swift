@@ -36,6 +36,18 @@ public enum AutomationModel {
            !(node["ancestors"] as? [String] ?? []).contains(root) {return false}
         return true
     }
+    /// Missing optional metadata must not block unrelated controls or prove absence.
+    static func selectionReliable(_ nodes:[[String:Any]],_ selector:[String:Any]) -> Bool {
+        for node in nodes {
+            let missing=Set(node["unavailableFields"] as? [String] ?? [])
+            var relevant=Set(selector.keys).intersection(missing)
+            if selector["contains"] != nil && !missing.isDisjoint(with:["label","value"]) {relevant.insert("contains")}
+            if relevant.isEmpty {continue}
+            let known=selector.filter{!relevant.contains($0.key)}
+            if matches(node,known) {return false}
+        }
+        return true
+    }
     static let conditions: Set<String> = ["exists","absent","enabled","disabled","selected","value_equals","value_contains","count"]
     static func validateExpectation(_ expectation: [String:Any]) throws {
         guard Set(expectation.keys).isSubset(of:["selector","condition","value"]),
@@ -49,7 +61,7 @@ public enum AutomationModel {
         let hits=nodes.filter {matches($0,object(expectation["selector"]))}
         let condition=expectation["condition"] as? String ?? ""
         // Incomplete reads cannot establish exhaustive counts, uniqueness or absence.
-        if !complete {return "unknown"}
+        if !complete || !selectionReliable(nodes,object(expectation["selector"])) {return "unknown"}
         switch condition {
         case "exists": return hits.isEmpty ? "failed":"passed"
         case "absent": return hits.isEmpty ? "passed":"failed"

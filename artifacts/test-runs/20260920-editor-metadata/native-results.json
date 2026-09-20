@@ -1,0 +1,791 @@
+{
+  "session": "0A917C45-9764-4C36-B8B1-67C5AA37613A",
+  "results": [
+    {
+      "deadlineOverrun": false,
+      "duration_ms": 6373,
+      "execution": "completed",
+      "inputReplay": "never",
+      "interaction_id": "FBE50B51-960C-42F1-9FE3-0924298B6113",
+      "schemaVersion": 2,
+      "session_id": "0A917C45-9764-4C36-B8B1-67C5AA37613A",
+      "steps": [
+        {
+          "acknowledgement": "returned",
+          "after_snapshot": 1334,
+          "before_snapshot": 1328,
+          "delta": {
+            "changes": [
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      27,
+                      114,
+                      116,
+                      46
+                    ],
+                    "before": [
+                      27,
+                      574,
+                      116,
+                      46
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[2X2 SLOTS]#9"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      27.5,
+                      912.5,
+                      115,
+                      45
+                    ],
+                    "before": [
+                      27.5,
+                      1372.5,
+                      115,
+                      45
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[3-4 (BUCK)]#37"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      149.5,
+                      912.5,
+                      115,
+                      45
+                    ],
+                    "before": [
+                      149.5,
+                      1372.5,
+                      115,
+                      45
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[3-4 (TITE)]#38"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      27.5,
+                      860.5,
+                      115,
+                      45
+                    ],
+                    "before": [
+                      27.5,
+                      1320.5,
+                      115,
+                      45
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[3-4]#35"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      149.5,
+                      860.5,
+                      115,
+                      45
+                    ],
+                    "before": [
+                      149.5,
+                      1320.5,
+                      115,
+                      45
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[3-4]#36"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      149.5,
+                      721.5,
+                      115,
+                      45
+                    ],
+                    "before": [
+                      149.5,
+                      1181.5,
+                      115,
+                      45
+                    ]
+                  },
+                  "offscreen": {
+                    "after": false,
+                    "before": true
+                  }
+                },
+                "id": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[3\u20134 Tite]#32"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      27.5,
+                      721.5,
+                      115,
+                      45
+                    ],
+                    "before": [
+                      27.5,
+                      1181.5,
+                      115,
+                      45
+                    ]
+                  },
+                  "offscreen": {
+                    "after": false,
+                    "before": true
+                  }
+                },
+                "id": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[3\u20134]#31"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      27.5,
+                      964.5,
+                      115,
+                      45
+                    ],
+                    "before": [
+                      27.5,
+                      1424.5,
+                      115,
+                      45
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[4-2]#39"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      149.5,
+                      964.5,
+                      115,
+                      45
+                    ],
+                    "before": [
+                      149.5,
+                      1424.5,
+                      115,
+                      45
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[4-2]#40"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      27.5,
+                      1016.5,
+                      115,
+                      45
+                    ],
+                    "before": [
+                      27.5,
+                      1476.5,
+                      115,
+                      45
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[4-2]#41"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      149.5,
+                      114.5,
+                      115,
+                      45
+                    ],
+                    "before": [
+                      149.5,
+                      574.5,
+                      115,
+                      45
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[49ERS]#10"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      27.5,
+                      773.5,
+                      115,
+                      45
+                    ],
+                    "before": [
+                      27.5,
+                      1233.5,
+                      115,
+                      45
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[4\u20132\u20135 Nickel]#33"
+              }
+            ],
+            "complete": true,
+            "meaning": "Observed differences, not causal attribution; IDs can churn",
+            "omitted": 43,
+            "totalChanges": 55
+          },
+          "dispatch": "attempted",
+          "execution": "completed",
+          "finished_at": "2026-09-20T15:49:59Z",
+          "id": "0",
+          "index": 0,
+          "scroll_effect": {
+            "additionalObservations": 0,
+            "after_artifact": {
+              "bytes": 220403,
+              "coordinateSpace": "window_screenshot_pixels",
+              "file": "/Users/ryan/src/claude-leap/.leap/sessions/0A917C45-9764-4C36-B8B1-67C5AA37613A/87792D42-060C-4635-813E-93E2C53E2A4B.png",
+              "height": 748,
+              "pointsPerPixel": 1,
+              "session_id": "0A917C45-9764-4C36-B8B1-67C5AA37613A",
+              "snapshot": 1334,
+              "type": "screenshot",
+              "width": 1080
+            },
+            "after_snapshot": 1334,
+            "basis": "scoped AX scrollbar value in requested direction",
+            "before_artifact": {
+              "bytes": 221764,
+              "coordinateSpace": "window_screenshot_pixels",
+              "file": "/Users/ryan/src/claude-leap/.leap/sessions/0A917C45-9764-4C36-B8B1-67C5AA37613A/93A25CAD-CA96-4C81-8C49-7A1A082ABB8C.png",
+              "height": 748,
+              "pointsPerPixel": 1,
+              "session_id": "0A917C45-9764-4C36-B8B1-67C5AA37613A",
+              "snapshot": 1328,
+              "type": "screenshot",
+              "width": 1080
+            },
+            "before_snapshot": 1328,
+            "boundary": "unknown",
+            "causality": "Observed after input; concurrent user/app changes are possible",
+            "count": 1,
+            "samples": [
+              {
+                "after": 0.4806687565308255,
+                "before": 0,
+                "id": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXScrollBar[]#0"
+              }
+            ],
+            "status": "movement_observed",
+            "visual": {
+              "changedFraction": 0.16632080078125,
+              "meaning": "Visual difference is not proof of scroll displacement or boundary; cursor/animation may contribute",
+              "sampling": "128x128 grayscale; difference >12, more than32 pixels",
+              "scope": "region",
+              "status": "visual_change_observed"
+            }
+          },
+          "started_at": "2026-09-20T15:49:57Z",
+          "type": "action",
+          "verification": "not_evaluated"
+        },
+        {
+          "acknowledgement": "returned",
+          "after_snapshot": 1344,
+          "before_snapshot": 1338,
+          "delta": {
+            "changes": [
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      27,
+                      574,
+                      116,
+                      46
+                    ],
+                    "before": [
+                      27,
+                      114,
+                      116,
+                      46
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[2X2 SLOTS]#9"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      27.5,
+                      1372.5,
+                      115,
+                      45
+                    ],
+                    "before": [
+                      27.5,
+                      912.5,
+                      115,
+                      45
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[3-4 (BUCK)]#37"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      149.5,
+                      1372.5,
+                      115,
+                      45
+                    ],
+                    "before": [
+                      149.5,
+                      912.5,
+                      115,
+                      45
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[3-4 (TITE)]#38"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      27.5,
+                      1320.5,
+                      115,
+                      45
+                    ],
+                    "before": [
+                      27.5,
+                      860.5,
+                      115,
+                      45
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[3-4]#35"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      149.5,
+                      1320.5,
+                      115,
+                      45
+                    ],
+                    "before": [
+                      149.5,
+                      860.5,
+                      115,
+                      45
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[3-4]#36"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      149.5,
+                      1181.5,
+                      115,
+                      45
+                    ],
+                    "before": [
+                      149.5,
+                      721.5,
+                      115,
+                      45
+                    ]
+                  },
+                  "offscreen": {
+                    "after": true,
+                    "before": false
+                  }
+                },
+                "id": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[3\u20134 Tite]#32"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      27.5,
+                      1181.5,
+                      115,
+                      45
+                    ],
+                    "before": [
+                      27.5,
+                      721.5,
+                      115,
+                      45
+                    ]
+                  },
+                  "offscreen": {
+                    "after": true,
+                    "before": false
+                  }
+                },
+                "id": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[3\u20134]#31"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      27.5,
+                      1424.5,
+                      115,
+                      45
+                    ],
+                    "before": [
+                      27.5,
+                      964.5,
+                      115,
+                      45
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[4-2]#39"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      149.5,
+                      1424.5,
+                      115,
+                      45
+                    ],
+                    "before": [
+                      149.5,
+                      964.5,
+                      115,
+                      45
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[4-2]#40"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      27.5,
+                      1476.5,
+                      115,
+                      45
+                    ],
+                    "before": [
+                      27.5,
+                      1016.5,
+                      115,
+                      45
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[4-2]#41"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      149.5,
+                      574.5,
+                      115,
+                      45
+                    ],
+                    "before": [
+                      149.5,
+                      114.5,
+                      115,
+                      45
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[49ERS]#10"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      27.5,
+                      1233.5,
+                      115,
+                      45
+                    ],
+                    "before": [
+                      27.5,
+                      773.5,
+                      115,
+                      45
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[4\u20132\u20135 Nickel]#33"
+              }
+            ],
+            "complete": true,
+            "meaning": "Observed differences, not causal attribution; IDs can churn",
+            "omitted": 43,
+            "totalChanges": 55
+          },
+          "dispatch": "attempted",
+          "execution": "completed",
+          "finished_at": "2026-09-20T15:50:03Z",
+          "id": "1",
+          "index": 1,
+          "scroll_effect": {
+            "additionalObservations": 0,
+            "after_artifact": {
+              "bytes": 221725,
+              "coordinateSpace": "window_screenshot_pixels",
+              "file": "/Users/ryan/src/claude-leap/.leap/sessions/0A917C45-9764-4C36-B8B1-67C5AA37613A/FF24924E-B659-4D34-8EE9-516E4A80E93E.png",
+              "height": 748,
+              "pointsPerPixel": 1,
+              "session_id": "0A917C45-9764-4C36-B8B1-67C5AA37613A",
+              "snapshot": 1344,
+              "type": "screenshot",
+              "width": 1080
+            },
+            "after_snapshot": 1344,
+            "basis": "scoped AX scrollbar value in requested direction",
+            "before_artifact": {
+              "bytes": 220385,
+              "coordinateSpace": "window_screenshot_pixels",
+              "file": "/Users/ryan/src/claude-leap/.leap/sessions/0A917C45-9764-4C36-B8B1-67C5AA37613A/144F7761-0F96-419C-9B4B-F3C1E6600ABD.png",
+              "height": 748,
+              "pointsPerPixel": 1,
+              "session_id": "0A917C45-9764-4C36-B8B1-67C5AA37613A",
+              "snapshot": 1338,
+              "type": "screenshot",
+              "width": 1080
+            },
+            "before_snapshot": 1338,
+            "boundary": "unknown",
+            "causality": "Observed after input; concurrent user/app changes are possible",
+            "count": 1,
+            "samples": [
+              {
+                "after": 0,
+                "before": 0.4806687565308255,
+                "id": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXScrollBar[]#0"
+              }
+            ],
+            "status": "movement_observed",
+            "visual": {
+              "changedFraction": 0.16632080078125,
+              "meaning": "Visual difference is not proof of scroll displacement or boundary; cursor/animation may contribute",
+              "sampling": "128x128 grayscale; difference >12, more than32 pixels",
+              "scope": "region",
+              "status": "visual_change_observed"
+            }
+          },
+          "started_at": "2026-09-20T15:49:59Z",
+          "type": "action",
+          "verification": "not_evaluated"
+        }
+      ],
+      "verification": "not_evaluated"
+    },
+    {
+      "deadlineOverrun": false,
+      "duration_ms": 6824,
+      "execution": "stopped",
+      "inputReplay": "never",
+      "interaction_id": "744B3022-A07A-4A35-B680-02875C0A20A4",
+      "schemaVersion": 2,
+      "session_id": "0A917C45-9764-4C36-B8B1-67C5AA37613A",
+      "steps": [
+        {
+          "acknowledgement": "returned",
+          "after_snapshot": 1630,
+          "before_snapshot": 1607,
+          "delta": {
+            "changes": [
+              {
+                "change": "not_observed",
+                "id": "mb"
+              },
+              {
+                "change": "not_observed",
+                "id": "mb/AXMenuBarItem[Edit]#3"
+              },
+              {
+                "change": "not_observed",
+                "id": "mb/AXMenuBarItem[File]#2"
+              },
+              {
+                "change": "not_observed",
+                "id": "mb/AXMenuBarItem[GamedayMac]#1"
+              },
+              {
+                "change": "not_observed",
+                "id": "mb/AXMenuBarItem[Help]#6"
+              },
+              {
+                "change": "not_observed",
+                "id": "mb/AXMenuBarItem[View]#4"
+              },
+              {
+                "change": "not_observed",
+                "id": "mb/AXMenuBarItem[Window]#5"
+              },
+              {
+                "change": "not_observed",
+                "id": "w/AXWindow[Gameday]#0/AXButton[]#0"
+              },
+              {
+                "change": "not_observed",
+                "id": "w/AXWindow[Gameday]#0/AXButton[]#1"
+              },
+              {
+                "change": "not_observed",
+                "id": "w/AXWindow[Gameday]#0/AXButton[]#2"
+              },
+              {
+                "change": "not_observed",
+                "id": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXButton[Flashcards]#5"
+              },
+              {
+                "change": "not_observed",
+                "id": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXButton[Formations]#3"
+              }
+            ],
+            "complete": false,
+            "meaning": "Observed differences, not causal attribution; IDs can churn",
+            "omitted": 246,
+            "totalChanges": 258
+          },
+          "dispatch": "attempted",
+          "execution": "completed",
+          "failure_artifact": {
+            "bytes": 191306,
+            "coordinateSpace": "window_screenshot_pixels",
+            "file": "/Users/ryan/src/claude-leap/.leap/sessions/0A917C45-9764-4C36-B8B1-67C5AA37613A/C7D26CDC-F691-4DAF-AB2D-6979ACB9E9B2.png",
+            "height": 748,
+            "pointsPerPixel": 1,
+            "session_id": "0A917C45-9764-4C36-B8B1-67C5AA37613A",
+            "snapshot": 1630,
+            "type": "screenshot",
+            "width": 1080
+          },
+          "finished_at": "2026-09-20T15:51:53Z",
+          "id": "0",
+          "index": 0,
+          "started_at": "2026-09-20T15:51:46Z",
+          "type": "action",
+          "verification": "unknown"
+        }
+      ],
+      "verification": "unknown"
+    },
+    {
+      "deadlineOverrun": false,
+      "duration_ms": 419,
+      "execution": "completed",
+      "inputReplay": "never",
+      "interaction_id": "C428A4BB-E256-452E-8624-FC349F58B747",
+      "schemaVersion": 2,
+      "session_id": "0A917C45-9764-4C36-B8B1-67C5AA37613A",
+      "steps": [
+        {
+          "acknowledgement": "returned",
+          "after_snapshot": 1653,
+          "before_snapshot": 1649,
+          "delta": {
+            "changes": [],
+            "complete": false,
+            "meaning": "Observed differences, not causal attribution; IDs can churn",
+            "omitted": 0,
+            "totalChanges": 0
+          },
+          "dispatch": "attempted",
+          "execution": "completed",
+          "finished_at": "2026-09-20T15:52:17Z",
+          "id": "0",
+          "index": 0,
+          "started_at": "2026-09-20T15:52:16Z",
+          "type": "action",
+          "verification": "not_evaluated"
+        },
+        {
+          "after_snapshot": 1656,
+          "before_snapshot": 1656,
+          "delta": {
+            "changes": [],
+            "complete": false,
+            "meaning": "Observed differences, not causal attribution; IDs can churn",
+            "omitted": 0,
+            "totalChanges": 0
+          },
+          "dispatch": "not_sent",
+          "execution": "completed",
+          "finished_at": "2026-09-20T15:52:17Z",
+          "id": "1",
+          "index": 1,
+          "started_at": "2026-09-20T15:52:17Z",
+          "type": "observe",
+          "verification": "not_evaluated"
+        }
+      ],
+      "verification": "not_evaluated"
+    }
+  ],
+  "raw": "Local-only ignored .leap/sessions/0A917C45-9764-4C36-B8B1-67C5AA37613A"
+}

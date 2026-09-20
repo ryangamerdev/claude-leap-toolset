@@ -28,6 +28,7 @@ public struct AXNode {
     public let key: String
     public var capturedValue: String? = nil
     public var valueLimited: Bool = false
+    public var unavailableFields: [String] = []
 }
 
 public struct AXWindowSnapshot {
@@ -59,6 +60,7 @@ final class AXReadBudget {
     var batchRetries = 0
     var batchRecoveries = 0
     var failureDetails: [[String: String]] = []
+    var metadataFailures: [CFHashCode:Set<String>] = [:]
     var expired: Bool { ProcessInfo.processInfo.systemUptime >= deadline }
     init(seconds: Double) { deadline = ProcessInfo.processInfo.systemUptime + max(0.01,seconds) }
 }
@@ -80,7 +82,8 @@ enum AX {
     static func advisoryFailure(attribute: String, role: String?) -> Bool {
         // Subroles refine these non-text controls but do not determine their label/state
         // or child traversal. Unknown and text roles remain conservative (secure fields).
-        attribute == kAXSubroleAttribute && ["AXButton", "AXCheckBox", "AXScrollArea",
+        if role == "AXTextArea", [kAXIdentifierAttribute,kAXDescriptionAttribute].contains(attribute) {return true}
+        return attribute == kAXSubroleAttribute && ["AXButton", "AXCheckBox", "AXScrollArea",
             "AXToolbar", "AXMenuBar", "AXMenuBarItem", "AXImage"].contains(role ?? "")
     }
     static func note(_ result: AXError, attribute: String, element: AXUIElement, role: String? = nil) {
@@ -88,7 +91,10 @@ enum AX {
         if result != .success && ![-25205,-25212].contains(Int(result.rawValue)), let budget {
             budget.failures += 1
             let advisory = result == .failure && advisoryFailure(attribute: attribute, role: role)
-            if advisory { budget.advisoryFailures += 1 }
+            if advisory {
+                budget.advisoryFailures += 1
+                if role == "AXTextArea" {budget.metadataFailures[CFHash(element),default:[]].insert(attribute)}
+            }
             // No diagnostic AX reads: they could block or recursively add failures.
             // This hash correlates reads within an observation, never a durable target identity.
             if budget.failureDetails.count < 8 {
@@ -427,6 +433,10 @@ public struct AXWalker {
             || !actions.filter { !AXWalker.hiddenActions.contains($0) }.isEmpty
         let render = depth == 0 || !AXWalker.containerRoles.contains(role) || informative
 
+        var unavailableFields:[String]=[]
+        let missing=AX.budget?.metadataFailures[CFHash(el)] ?? []
+        if missing.contains(kAXIdentifierAttribute) {unavailableFields.append("identifier")}
+        if missing.contains(kAXDescriptionAttribute),title == nil {unavailableFields.append("label")}
         var childDepth = depth
         if render {
             nodes.append(AXNode(element: el, role: role, subrole: subrole, title: title, value: value,
@@ -434,7 +444,7 @@ public struct AXWalker {
                                 frame: frame, enabled: enabled, focused: focused, selected: selected,
                                 actions: actions, settable: settable, offscreen: offscreen, depth: depth, key: key,
                                 capturedValue: role == "AXSecureTextField" ? nil : (a[kAXValueAttribute] as? String).map {String($0.prefix(65536))},
-                                valueLimited: role != "AXSecureTextField" && ((a[kAXValueAttribute] as? String)?.count ?? 0)>65536))
+                                valueLimited: role != "AXSecureTextField" && ((a[kAXValueAttribute] as? String)?.count ?? 0)>65536, unavailableFields:unavailableFields))
             childDepth = depth + 1
         }
 

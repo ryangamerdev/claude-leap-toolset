@@ -57,3 +57,7 @@ native acceptance boundary. This standing preference was confirmed on 2026-09-20
 Continue the acceptance campaign across checkpoints without handing back until the objective is
 complete or an installed build requires session restart. After the user confirms restart, resume
 the next native case. Recorded at user request on 2026-09-20.
+
+Gameday data in this acceptance campaign is test data. The user authorizes saving and changing
+it freely; restoration to the original state is unnecessary. Repeat desktop and iPad play
+creation/save/reopen before the remaining Blender gate (2026-09-20 steering).

@@ -132,7 +132,7 @@ extension Engine {
             let nodes:[[String:Any]]=snap.nodes.map {n in
                 while let last=ancestors.last,last.0>=n.depth {ancestors.removeLast()}
                 var node:[String:Any]=["id":n.key,"role":n.role,"label":n.title ?? n.description ?? n.placeholder ?? "","enabled":n.enabled,"selected":n.selected,"focused":n.focused,"offscreen":n.offscreen,"depth":n.depth,"ancestors":ancestors.map{$0.1},"actions":n.actions,"valueLimited":n.valueLimited]
-                node["identifier"]=n.identifier;node["value"]=n.capturedValue ?? n.value;node["index"]=native.indexByKey[n.key]
+                node["unavailableFields"]=n.unavailableFields;node["identifier"]=n.identifier;node["value"]=n.capturedValue ?? n.value;node["index"]=native.indexByKey[n.key]
                 if let f=n.frame {node["frame"]=[f.minX-snap.frame.minX,f.minY-snap.frame.minY,f.width,f.height]}
                 ancestors.append((n.depth,n.key));return node
             }
@@ -154,9 +154,9 @@ extension Engine {
         }
         let after=max(0,args["after"] as? Int ?? 0), limit=max(1,min(100,args["limit"] as? Int ?? 20))
         let budget=max(2048,min(32000,args["max_bytes"] as? Int ?? 10000))
-        let fields=args["fields"] as? [String] ?? ["id","role","label","identifier","value","enabled","selected","frame"]
+        let fields=args["fields"] as? [String] ?? ["id","role","label","identifier","value","enabled","selected","frame","unavailableFields"]
         var result=snapshot.filter{$0.key != "nodes"}
-        result["matched"]=all.count;result["historical"]=args["snapshot"] != nil
+        result["selectorComplete"]=(snapshot["complete"] as? Bool == true && AutomationModel.selectionReliable(nodes,selector));result["matched"]=all.count;result["historical"]=args["snapshot"] != nil
         var items:[[String:Any]]=[]
         for node in all.dropFirst(after).prefix(limit) {
             var item=node.filter{fields.contains($0.key)}
@@ -274,7 +274,7 @@ extension Engine {
                     var node:[String:Any]?
                     if let selector=step["selector"] as? [String:Any] {
                         let hits=nodes.filter{AutomationModel.matches($0,selector)}
-                        guard pre["complete"] as? Bool == true,hits.count==1 else {throw AutomationModel.fail("Selector missing/ambiguous or observation incomplete; no input sent")}
+                        guard pre["complete"] as? Bool == true,AutomationModel.selectionReliable(nodes,selector),hits.count==1 else {throw AutomationModel.fail("Selector missing/ambiguous or observation incomplete; no input sent")}
                         node=hits[0]
                         guard node?["enabled"] as? Bool != false else {throw AutomationModel.fail("Target disabled; no input sent")}
                     }

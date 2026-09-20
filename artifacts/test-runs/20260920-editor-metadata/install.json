@@ -1,0 +1,10 @@
+{
+  "installed_at": "2026-09-20T15:55:30.401746+00:00",
+  "sha256": "6a80e2b3b12dd20098e8678931ba874445fc42f2a15a41982c120fbe26cd4aa9",
+  "rollback": "/Users/ryan/src/claude-leap/artifacts/backups/20260920-editor-metadata/previous.app",
+  "rollback_local_only": true,
+  "skills_synced": true,
+  "native_acceptance": "pending restart",
+  "focused_tests": 4,
+  "registration": "leap unchanged"
+}
