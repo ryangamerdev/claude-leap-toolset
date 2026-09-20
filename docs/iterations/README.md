@@ -63,3 +63,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-20 — Native creation and unsupported text values](2026-09-20-text-capability.md): desktop creation passes; iPad persistence exposes unsupported value write; guard installed for restart.
 
 - [2026-09-20 — Preserve backend input results](2026-09-20-input-result.md): native saved comparison verified; expose actual backend delivery description and target for navigation diagnosis.
+
+- [2026-09-20 — Reference review](2026-09-20-reference-revisit.md): exact preparation/focus/synthesis evidence and priority correction after user challenge.

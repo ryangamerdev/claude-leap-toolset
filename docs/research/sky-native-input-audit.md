@@ -23,3 +23,14 @@ Leap session_open returned Transport closed after prior installation; no native 
 ## Implementation boundaries
 
 This increment restores missing metadata, rejects construction failures and exposes coordinate scrolling. It does not reproduce Sky's entire focus state machine, out-of-process AX routing or observer implementation. Existing same-process pointer transport stays process-directed in foreground/background. No coordinate-flip guessing or automatic backend retries were added. Test native background field zoom/drag/reset next, then foreground if the effect fails; inspect actual window movement and retained evidence.
+
+## 2026-09-20 — Revisit after unexpected Save navigation
+
+Directly inspected full shards, not the index conclusions:
+- part-0001.c0x100071618 (ComputerUseAppController.click(elementID:...)): calls prepareToInteract(with:cursorNextInteractionTiming:positionElement:). Continuation0x10007172c reads computerUseAlwaysSimulateClick feature flag and passes it to UIElementProtocol.click with window/application/focusEnforcer/virtualCursor. The configured runtime flag value is unknown; do not assume every Sky button uses AXPress.
+- part-0027.c0x100795c08 (focusFieldIfNeeded continuation) classifies focusable fields and invokes focus.0x100796058 writes focused, then explicitly calls uncachedValue for focused; if not true it enters the click path. Leap's AX.insertText and keyboard fallback write AXFocused and sleep without equivalent verified-focus handling. That is a concrete difference, not evidence it caused Save navigation.
+- Existing target resolver0x1006f10dc and hosted-process/focus-state findings above remain incomplete in Leap. No evidence obtained that a virtual HID device is required.
+
+The latest manifest's behavioral bullets A/B remain overbroad despite its useful complete file inventory. Source calls to synthesized click and the force-synthesis feature flag directly contradict a universal AX-only claim. Decompiled async wrappers contain indirect continuations and unknown flag values; reproduce verified behavior, not guessed pseudocode parameters.
+
+Investigation priority: compare actual semantic versus pointer Save dispatch with the newly retained input_result and target; inspect current target identity/geometry and outcome. Then implement the relevant preparation/focus/host-routing difference supported by that trace. Avoid substituting another generic diagnostic increment or copying every reference branch without identifying the active path. Both tools previously reached unexpected Team libraries, while one qualified Leap coordinate Save returned to playbook. The incident is not yet a demonstrated Sky-only success/Leap-only failure.
