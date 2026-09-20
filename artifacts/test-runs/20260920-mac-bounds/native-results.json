@@ -1,0 +1,93 @@
+{
+  "session_id": "5CC6C6B5-1A67-4185-867E-7FE30F83C174",
+  "results": [
+    {
+      "deadlineOverrun": false,
+      "duration_ms": 1124,
+      "execution": "completed",
+      "inputReplay": "never",
+      "interaction_id": "DBAE757E-C549-486D-A67C-7AC8ED5BE0B8",
+      "schemaVersion": 2,
+      "session_id": "5CC6C6B5-1A67-4185-867E-7FE30F83C174",
+      "steps": [
+        {
+          "after_snapshot": 892,
+          "artifact": {
+            "bytes": 264503,
+            "coordinateSpace": "window_screenshot_pixels",
+            "file": "/Users/ryan/src/claude-leap/.leap/sessions/5CC6C6B5-1A67-4185-867E-7FE30F83C174/810FF62E-3E09-464F-B5B6-C4ECF6CDC39B.png",
+            "height": 780,
+            "pointsPerPixel": 1,
+            "session_id": "5CC6C6B5-1A67-4185-867E-7FE30F83C174",
+            "snapshot": 892,
+            "type": "screenshot",
+            "width": 1006
+          },
+          "before_snapshot": 892,
+          "delta": {
+            "changes": [],
+            "complete": true,
+            "meaning": "Observed differences, not causal attribution; IDs can churn",
+            "omitted": 0,
+            "totalChanges": 0
+          },
+          "dispatch": "not_sent",
+          "execution": "completed",
+          "finished_at": "2026-09-20T15:20:46Z",
+          "id": "0",
+          "index": 0,
+          "started_at": "2026-09-20T15:20:45Z",
+          "type": "capture",
+          "verification": "not_evaluated"
+        }
+      ],
+      "verification": "not_evaluated"
+    },
+    {
+      "deadlineOverrun": false,
+      "duration_ms": 1629,
+      "execution": "stopped",
+      "inputReplay": "never",
+      "interaction_id": "0BB5B5EC-F161-4419-ABB2-728B74E68A87",
+      "schemaVersion": 2,
+      "session_id": "5CC6C6B5-1A67-4185-867E-7FE30F83C174",
+      "steps": [
+        {
+          "after_snapshot": 899,
+          "before_snapshot": 897,
+          "dispatch": "not_sent",
+          "error": "Coordinate bounds unavailable",
+          "execution": "failed",
+          "failure_artifact": {
+            "bytes": 264507,
+            "coordinateSpace": "window_screenshot_pixels",
+            "file": "/Users/ryan/src/claude-leap/.leap/sessions/5CC6C6B5-1A67-4185-867E-7FE30F83C174/FC02C417-BE26-4E43-82B9-48575499C659.png",
+            "height": 780,
+            "pointsPerPixel": 1,
+            "session_id": "5CC6C6B5-1A67-4185-867E-7FE30F83C174",
+            "snapshot": 899,
+            "type": "screenshot",
+            "width": 1006
+          },
+          "finished_at": "2026-09-20T15:20:58Z",
+          "id": "0",
+          "index": 0,
+          "started_at": "2026-09-20T15:20:56Z",
+          "type": "action",
+          "verification": "unknown"
+        },
+        {
+          "dispatch": "not_sent",
+          "execution": "skipped",
+          "id": "1",
+          "index": 1,
+          "started_at": "2026-09-20T15:20:58Z",
+          "type": "capture",
+          "verification": "not_evaluated"
+        }
+      ],
+      "verification": "unknown"
+    }
+  ],
+  "note": "Referenced .leap files are local-only; no pointer input sent. Capture succeeded, double-click rejected at bounds type conversion."
+}

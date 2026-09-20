@@ -282,8 +282,7 @@ extension Engine {
                               AutomationModel.sameBounds(prior["bounds"],pre["bounds"]),
                               try RecordingStore.json(prior["nodes"] ?? []) == RecordingStore.json(pre["nodes"] ?? []),
                               prior["window"] as? String == pre["window"] as? String else {throw AutomationModel.fail("Coordinates require snapshot and space with unchanged target bounds; no input sent")}
-                        let b=pre["bounds"] as? [Double] ?? []
-                        guard b.count==4 else {throw AutomationModel.fail("Coordinate bounds unavailable")}
+                        guard let b=AutomationModel.coordinateBounds(pre["bounds"]) else {throw AutomationModel.fail("Coordinate bounds unavailable")}
                         let pairs=action == "drag" ? [("from_x","from_y"),("to_x","to_y")]:[("x","y")]
                         for (x,y) in pairs {guard let px=a[x] as? Double,let py=a[y] as? Double,px.isFinite,py.isFinite,px>=0,py>=0,px<b[2],py<b[3] else {throw AutomationModel.fail("Coordinate outside target bounds")}}
                     }

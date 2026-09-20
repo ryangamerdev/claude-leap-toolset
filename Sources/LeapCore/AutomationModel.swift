@@ -69,11 +69,18 @@ public enum AutomationModel {
         default: return "unknown"
         }
     }
+    static func coordinateBounds(_ value:Any?) -> [Double]? {
+        // Mac observations contain CGFloat arrays; persisted JSON contains NSNumber.
+        // Normalize both at the boundary instead of casting a live array to Double.
+        guard let values=value as? [NSNumber],values.count==4,
+              values.allSatisfy({CFGetTypeID($0) != CFBooleanGetTypeID() && $0.doubleValue.isFinite}) else {return nil}
+        let result=values.map(\.doubleValue)
+        guard result[2]>0,result[3]>0 else {return nil}
+        return result
+    }
     static func sameBounds(_ lhs:Any?, _ rhs:Any?) -> Bool {
-        guard let a=lhs as? [NSNumber],let b=rhs as? [NSNumber],a.count==4,b.count==4 else {return false}
-        return zip(a,b).allSatisfy { x,y in
-            x.doubleValue.isFinite && y.doubleValue.isFinite && x.doubleValue == y.doubleValue
-        }
+        guard let a=coordinateBounds(lhs),let b=coordinateBounds(rhs) else {return false}
+        return a == b
     }
     static func delta(_ before: [[String:Any]], _ after: [[String:Any]], complete: Bool) -> [String:Any] {
         func keyed(_ nodes: [[String:Any]]) -> [String:[String:Any]] {

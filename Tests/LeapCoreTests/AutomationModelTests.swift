@@ -20,6 +20,15 @@ final class AutomationModelTests:XCTestCase {
         XCTAssertFalse(AutomationModel.sameOrientation(before,after))
         XCTAssertTrue(AutomationModel.sameOrientation(["backend":"mac_ax"],["backend":"mac_ax"]))
     }
+    func testMacCGFloatBoundsNormalizeLikeStoredJSON() throws {
+        let live:[CGFloat]=[130,99,1006,780]
+        XCTAssertEqual(AutomationModel.coordinateBounds(live),[130,99,1006,780])
+        let stored=try JSONSerialization.jsonObject(with:JSONSerialization.data(withJSONObject:live))
+        XCTAssertEqual(AutomationModel.coordinateBounds(live),AutomationModel.coordinateBounds(stored))
+        XCTAssertNil(AutomationModel.coordinateBounds([true,0,1006,780] as [Any]))
+        XCTAssertNil(AutomationModel.coordinateBounds([0,0,0,780]))
+        XCTAssertNil(AutomationModel.coordinateBounds([0,0,1006,Double.infinity]))
+    }
     func testBoundsSurviveJSONRoundTrip() throws {
         let live:[Double]=[0,0,1180,820]
         let stored=try JSONSerialization.jsonObject(with:JSONSerialization.data(withJSONObject:live))

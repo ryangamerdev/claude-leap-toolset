@@ -46,3 +46,7 @@ leap-cli, physical-device provisioning, Android/Windows/browser backends, arbitr
 ## Sky native pointer correction
 
 [Reference audit](research/sky-native-input-audit.md), [iteration](iterations/2026-09-20-sky-pointer.md). Window-specific synthetic activation, explicit event-construction failures, prebuilt click/drag sequences and provenance-checked Mac coordinate scroll are implemented. Native acceptance awaits restart; existing MCP transport was closed. Sky field zoom/reset passed; sidebar scrolling had no confirmed effect in this trial. Hosted-process target routing and full synthetic focus-state tracking remain gaps, not presumed solved.
+
+## Mac bounds acceptance blocker
+
+[Iteration](iterations/2026-09-20-mac-bounds.md): native session/capture passed, double-click was not sent because the guard cast live CGFloat bounds to [Double]. Unified numeric normalization is installed for restart. Eleven model tests passed; pointer behavior remains unverified by this trial.

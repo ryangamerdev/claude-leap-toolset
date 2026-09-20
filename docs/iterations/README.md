@@ -47,3 +47,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-20 — Backend comparison and orientation](2026-09-20-wda-orientation.md): Mac semantic parity passes; fixed WDA aliases/exact orientation guard, installed for restart; primary acceptance returns to Sky-equivalent path.
 
 - [2026-09-20 — Sky-derived pointer delivery](2026-09-20-sky-pointer.md): native-reference audit, window-specific activation, explicit construction errors and Mac coordinate scroll; built/installed for restart.
+
+- [2026-09-20 — Mac coordinate bounds](2026-09-20-mac-bounds.md): native double-click safely rejected before input; normalized live CGFloat bounds, built/installed for restart.
