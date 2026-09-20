@@ -835,7 +835,7 @@ public actor Engine {
         Diagnostics.shared.record(level:"warning",kind:"text_keyboard_route",detail:"Using synthesized text input; not verified. foreground=\(mode.foreground). Text omitted.")
         try await withInput(s, mode) { d in
             if let i = elementIndex { try self.requireTextFocus(try s.element(i).node.element, session: s) }
-            try Input.type(text, d)
+            try Input.type(text, requirePhysical: s.app.bundleIdentifier == "com.apple.iphonesimulator", d)
         }
         await signal(indicatorPoint(s, elementIndex), .edit)
         return "typed \(text.count) characters (keystrokes dispatched; not verified)"
@@ -908,7 +908,7 @@ public actor Engine {
         try await withInput(s, mode) { d in
             try self.requireTextFocus(rec.node.element, session: s)
             try Input.press(KeyChord(keyCode: 0, flags: .maskCommand), d) // ⌘A
-            try Input.type(value, d)
+            try Input.type(value, requirePhysical: s.app.bundleIdentifier == "com.apple.iphonesimulator", d)
         }
         return "AX set failed (\(err.name)); focused [\(elementIndex)], selected all and typed instead"
     }

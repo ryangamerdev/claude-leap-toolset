@@ -90,3 +90,7 @@ Simulator multiline raw-value refusal **TESTED** with unchanged before/after val
 ### Consolidated Sky review — 2026-09-20
 
 See [cross-cutting comparison](research/sky-leap-consolidated-review.md). **IMPLEMENTED / native pending:** post-activation key-window and field-focus verification; keyboard modifier/timestamp/tap sequence; multiline append guard; uncertain-write/semantic-action replay prevention; verified UTF16 selection; unknown-key rejection. **RESEARCH:** hosted-process target routing and full background focus state machine. **PENDING:** compact per-step summary when a large workflow response is externalized. **UNRESOLVED:** Save → Team libraries in both tools, iPad persistence acceptance and paired Blender. No parity certification from unit tests.
+
+### Literal-text physical key translation
+
+**FAILED native on cc5e90a:** foreground typing unchanged; background Unicode chunks became aa. Sky text insertion observed working despite observation error. **IMPLEMENTED / RECHECK:** current-layout physical key translation with Unicode payload, whole-plan Simulator unsupported-character rejection, CRLF normalization;11 focused tests passed. Single-key follow-up inconclusive due user Escape input. See [iteration](iterations/2026-09-20-text-key-plan.md). No Save attempt this iteration.

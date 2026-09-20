@@ -285,25 +285,16 @@ public enum Input {
     }
 
     /// Types literal text. Newlines are sent as Return, tabs as Tab.
-    public static func type(_ text: String, flags: CGEventFlags = [], _ delivery: Delivery) throws {
-        var buffer: [UniChar] = []
-        func flush() throws {
-            guard !buffer.isEmpty else { return }
-            let events = try keyboardSequence(code: 0, flags: flags, unicode: buffer)
+    public static func type(_ text: String, flags: CGEventFlags = [], requirePhysical: Bool = false, _ delivery: Delivery) throws {
+        let plan = try TextKeyPlan.plan(text, layout: TextKeyPlan.layoutMap(), requirePhysical: requirePhysical)
+        // Resolve all characters before the first event. Unsupported Simulator text
+        // must not leave a partially typed prefix. Payload and physical key agree.
+        for stroke in plan {
+            let events = try keyboardSequence(code: stroke.code, flags: stroke.flags.union(flags),
+                unicode: stroke.text.map { Array($0.utf16) })
                 .map { (try routedEvent($0, delivery), keyGap) }
             sendPrepared(events, delivery)
-            buffer.removeAll()
         }
-        for scalar in text.utf16 {
-            switch scalar {
-            case 0x0A, 0x0D: try flush(); try press(KeyChord(keyCode: 36, flags: flags), delivery)
-            case 0x09: try flush(); try press(KeyChord(keyCode: 48, flags: flags), delivery)
-            default:
-                buffer.append(scalar)
-                if buffer.count >= 20 && !(0xD800...0xDBFF).contains(scalar) { try flush() }
-            }
-        }
-        try flush()
     }
 
     /// Paste via the pasteboard, then restore whatever the user had on it.

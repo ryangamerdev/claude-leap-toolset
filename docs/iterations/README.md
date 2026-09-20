@@ -69,3 +69,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-20 — Live control centers](2026-09-20-click-center.md): reference-derived center containment/live reveal geometry and Simulator multiline direct-value refusal.
 
 - [2026-09-20 — Keyboard event sequence](2026-09-20-keyboard-sequence.md): modifier events/timestamps/session posting matched to reference; multiline refusal passed native; keyboard candidate awaits restart.
+
+- [2026-09-20 — Physical text-key translation after native aa failure](2026-09-20-text-key-plan.md)

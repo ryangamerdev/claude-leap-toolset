@@ -27,3 +27,5 @@ Current next restart: live-center candidate (iterations/2026-09-20-click-center.
 Current next candidate: keyboard sequence (iterations/2026-09-20-keyboard-sequence.md). Restart and verify normal typed note replacement/persistence, then complete iPad and Blender. Multiline refusal passed; center native acceptance and Save navigation remain unresolved.
 
 2026-09-20 consolidated direction supersedes the keyboard-only candidate above: review research/sky-leap-consolidated-review.md, install shared preparation/keyboard/mutation/replay fixes together, restart once, then run existing iPad field focus/chord/type/save/reopen and desktop smoke. Investigate hosted routing only with actual target evidence. Complete iPad/Blender gates before optional response-summary refinements.
+
+Latest candidate 2026-09-20: text-key-plan supersedes prior keyboard-only acceptance. Native identified Unicode chunks delivered as physical A keys in Simulator. Current-layout translation implemented; restart and test normal text first, then persistence/desktop smoke/remaining gates. User Escape during trial requires fresh state and qualifies the later single-key result.
