@@ -98,6 +98,15 @@ assumptions; take a screenshot only for layout/rendering questions or when acces
   by element_index, or `foreground=true`.
 - Screenshot unavailable → the window is minimized or on another Space.
 
+## Capturing screens to files
+
+`screenshot(app, save_path)` writes the window to disk (parent folders created) and returns only
+a text confirmation, so you can capture many screens without flooding context; add `embed=true`
+to also see one inline. Target a device with `window` (`"iPhone 16"`, `"iPad Air"`). For a
+documentation pass, save under `docs/screenshots/<app-version>/<platform>-<screen>-<kind>.png`,
+e.g. `docs/screenshots/0.19.0/desktop-playbook-main.png`, `ipad-flashcards-main.png`. Navigate to
+each screen (click the tab, read the text state to confirm you are there), then capture.
+
 ## Coordinates and foreground
 
 - Prefer indices. Use `x,y` (window points; get them from `include_frames=true` or the screenshot,

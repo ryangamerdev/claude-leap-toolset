@@ -865,12 +865,14 @@ public actor Engine {
         return "activated \(s.displayName)"
     }
 
-    public func screenshot(app query: String, region: CGRect? = nil, scale: CGFloat = 1.0, png: Bool = false) async throws -> Screenshot {
+    public func screenshot(app query: String, region: CGRect? = nil, scale: CGFloat = 1.0, png: Bool = false,
+                           window: String? = nil) async throws -> Screenshot {
         try requireAX()
         let s = try await session(for: query)
-        let window = try await waitForWindow(s)
-        guard let frame = AX.frame(window) else { throw LeapError.noWindow(s.displayName) }
-        let title: String? = AX.attr(window, kAXTitleAttribute)
+        if let window { s.pinnedWindow = window.isEmpty ? nil : window }
+        let win = try await waitForWindow(s)
+        guard let frame = AX.frame(win) else { throw LeapError.noWindow(s.displayName) }
+        let title: String? = AX.attr(win, kAXTitleAttribute)
         guard let info = WindowInfo.match(pid: s.pid, frame: frame, title: title) else {
             throw LeapError.capture("window is not on screen")
         }

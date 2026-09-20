@@ -54,13 +54,15 @@ enum LeapTools {
              annotations: .init(readOnlyHint: true)),
 
         Tool(name: "screenshot",
-             description: "Window screenshot only (no accessibility tree). Optional region crop in window points for zooming into detail.",
+             description: "Capture a window as an image. With save_path it writes the file (creating parent folders) and, unless embed=true, returns only a text confirmation so bulk documentation capture does not flood context. Without save_path it returns the image inline.",
              inputSchema: schema([
                 "app": appProp,
+                "window": prop("string", "Target a specific window by title substring, e.g. \"iPhone 16\" or \"iPad Air\" in Simulator. Sticks for later actions on this app."),
                 "x": prop("number", "Crop origin x (window points)."), "y": prop("number", "Crop origin y."),
                 "width": prop("number", "Crop width."), "height": prop("number", "Crop height."),
-                "scale": prop("number", "0.1–1.0, default 1.0."),
-                "save_path": prop("string", "Also write the image to this file path (PNG or JPEG by extension), e.g. for before/after documentation."),
+                "scale": prop("number", "0.1–1.0, default 1.0 (full resolution)."),
+                "save_path": prop("string", "Write the image here (PNG or JPEG by extension); parent folders are created. e.g. docs/screenshots/0.19.0/desktop-playbook-main.png"),
+                "embed": prop("boolean", "Return the image inline as well as saving it (default false when save_path is set, so a capture pass stays light)."),
              ], required: ["app"]),
              annotations: .init(readOnlyHint: true)),
 
@@ -246,7 +248,8 @@ enum LeapTools {
             }
             let savePath = a.string("save_path").flatMap { $0.isEmpty ? nil : $0 }
             let wantsPNG = savePath?.lowercased().hasSuffix(".png") ?? false
-            let shot = try await engine.screenshot(app: try a.app(), region: region, scale: a.double("scale") ?? 1.0, png: wantsPNG)
+            let shot = try await engine.screenshot(app: try a.app(), region: region, scale: a.double("scale") ?? 1.0,
+                                                   png: wantsPNG, window: a.string("window"))
             var saved = ""
             if let path = savePath {
                 let url = URL(fileURLWithPath: (path as NSString).expandingTildeInPath)
@@ -254,7 +257,11 @@ enum LeapTools {
                 try shot.data.write(to: url)
                 saved = " — saved to \(url.path)"
             }
-            return result(text: "screenshot \(shot.pixelWidth)x\(shot.pixelHeight) px, \(String(format: "%.2f", shot.pointsPerPixel)) points/px" + (region.map { " (region \(Int($0.minX)),\(Int($0.minY)) \(Int($0.width))x\(Int($0.height)))" } ?? "") + saved, shot: shot)
+            // When saving to disk, don't also stream the image back unless asked: a capture pass
+            // of many screens should not cost a screenshot's worth of context per shot.
+            let embed = a.bool("embed") ?? (savePath == nil)
+            let text = "screenshot \(shot.pixelWidth)x\(shot.pixelHeight) px, \(String(format: "%.2f", shot.pointsPerPixel)) points/px" + (region.map { " (region \(Int($0.minX)),\(Int($0.minY)) \(Int($0.width))x\(Int($0.height)))" } ?? "") + saved
+            return result(text: text, shot: embed ? shot : nil)
 
         case "activate":
             return try await engine.activate(app: try a.app()).result
