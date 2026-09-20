@@ -86,3 +86,7 @@ Durable diagnostics IMPLEMENTED, native pending: independent pre-bind/error jour
 Latest native acceptance: diagnostic_query before binding, retained errors, geometry suppression records and cross-process group resume passed. Simulator rotation comparison confirms invalid AX rectangles vary with orientation; conversion remains unresolved. Read-only error completion wording is overbroad. [Evidence](iterations/2026-09-20-diagnostics-native.md). No binary change/restart required.
 
 Foreground comparison now performed: verified foreground input brought Simulator frontmost, but button geometry remained outside window. Public activate bypassed verification and falsely reported success; now reuses verified routine, native entrypoint acceptance pending restart. [Evidence](iterations/2026-09-20-activation.md).
+
+## Current research direction — native testing stack
+
+[2026-09-20 evaluation](research/native-test-stack-review.md) supersedes the immediate choice of blindly correcting Simulator coordinates: first complete pending public-activate acceptance, then evaluate a narrow XCTest/WebDriverAgent Simulator route alongside explicit target/coordinate provenance and typed outcomes. No backend selection is yet proven. Follow with shared selectors/assertions, bounded workflows/failure evidence and reusable regression scenarios while continuing Gameday/Blender acceptance. Broad physical-device/platform scope remains deferred. This was a research-only checkpoint, not a new build.

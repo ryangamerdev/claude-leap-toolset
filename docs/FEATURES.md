@@ -401,3 +401,17 @@ Durable diagnostics IMPLEMENTED, native pending: independent pre-bind/error jour
 Latest native acceptance: diagnostic_query before binding, retained errors, geometry suppression records and cross-process group resume passed. Simulator rotation comparison confirms invalid AX rectangles vary with orientation; conversion remains unresolved. Read-only error completion wording is overbroad. [Evidence](iterations/2026-09-20-diagnostics-native.md). No binary change/restart required.
 
 Foreground comparison now performed: verified foreground input brought Simulator frontmost, but button geometry remained outside window. Public activate bypassed verification and falsely reported success; now reuses verified routine, native entrypoint acceptance pending restart. [Evidence](iterations/2026-09-20-activation.md).
+
+## Native testing architecture review — 2026-09-20
+
+[Research and source comparison](research/native-test-stack-review.md). Proposed work, no new native passes. Existing DATA requirements remain authoritative; these rows clarify uncovered backend/test scope.
+
+| ID | Priority | Requirement | Status | Acceptance |
+|---|---|---|---|---|
+| ARCH-01 | P0 | Explicit target/backend/device/window identity and coordinate provenance; no ambiguous backend replay. | RESEARCH | Validate orientation, screenshot scale/crop, moved windows and two Simulator devices. |
+| ARCH-02 | P0 | Evaluate a device-native XCTest/WDA adapter behind Leap's existing evidence layer. | RESEARCH | Paired iPad/iPhone queries, toggle, tap, rotation and drag; measure latency/focus effects before choosing backend. |
+| ARCH-03 | P0 | Shared scoped semantic selectors for actions and assertions, uniqueness and fresh resolution. | PARTIAL | Existing label/index resolution is a base; test identifier/role/scope, duplicates and replaced controls. |
+| ARCH-04 | P1 | Runtime operation capabilities and unsupported/unavailable reasons per target/backend. | PENDING | Report backend availability separately from native acceptance and node actions. |
+| TEST-01 | P1 | Reviewed portable scenarios, explicit fixtures and machine-readable regression results. | PENDING | Replay Save/reopen and paired Blender workflow with retained failure artifacts; no recorded-index replay. |
+
+DATA-01/04/07/14/19 follow-up: typed execution versus verification including unknown, action-specific readiness, temporal expectations and bounded mixed workflows. DATA-05/16: linked binary failure evidence. These extend existing requirements rather than declaring them completed.

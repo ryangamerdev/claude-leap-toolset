@@ -8,6 +8,10 @@ Read [PLAN.md](PLAN.md) for execution order, [FEATURES.md](FEATURES.md) for stat
 
 Sky-or-better native app operation, demonstrated with Gameday, iPhone/iPad Simulator and separate paired Blender basic-shape Mickey-head artifacts. Immediate direction: durable session/event capture plus accurate action outcomes, then complete the remaining app campaign. `leap-cli` deferred. Preserve the same user-level operations for Sky then Leap; scripts must not bypass the UI modeling benchmark.
 
+## Latest research checkpoint
+
+Read [native test stack review](research/native-test-stack-review.md) before choosing the Simulator fix. Evaluated seven proposals against code and primary sources. XCTest/WDA is a candidate device backend, not implemented or proven. Add explicit target/coordinate provenance and typed outcomes; preserve Mac AX backend and no-replay protection. Current request was evaluation only. No binary changed; prior activation install still awaits restart/native acceptance. Older “no restart needed” text below belongs to earlier checkpoints.
+
 ## Resume checkpoint
 
 Newest candidate: public activate verification correction, identity artifacts/test-runs/20260920-activation/install.json. User prompted actual foreground test: old activate falsely said success, state background. press_key(Escape,foreground:true) used verified path; state frontmost, but button still relative418,969 outside1006x780. Geometry NOT fixed by foreground. Public activate now reuses that verified routine and logs activation_verified. After restart verify public activate from background (Simulator currently foreground). [Iteration](iterations/2026-09-20-activation.md).

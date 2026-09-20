@@ -35,3 +35,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-20 — Native diagnostics and rotation evidence](2026-09-20-diagnostics-native.md): pre-bind audit, retained errors and cross-process grouping passed; rotation mismatch measured, not solved.
 
 - [2026-09-20 — Verified public activation](2026-09-20-activation.md): explicit foreground test leaves geometry unchanged; fixes activate falsely reporting success.
+
+- [2026-09-20 — Native testing architecture review](2026-09-20-native-test-review.md): Apple/Appium comparison, existing Leap coverage, schema corrections and prioritized backend/test gaps; research only.
