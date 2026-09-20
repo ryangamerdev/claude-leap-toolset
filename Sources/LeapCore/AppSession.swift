@@ -154,7 +154,7 @@ public final class AppSession {
             let depth = table[idx]!.node.depth
             full += String(repeating: "  ", count: max(0, depth - 1)) + "[\(idx)] " + lines[idx]! + "\n"
         }
-        if snap.truncated { full += "… (tree truncated at \(walker.maxNodes) elements; scroll or use a query)\n" }
+        if snap.truncated { full += "… (capture truncated by deadline, depth or node limit; query retained evidence)\n" }
         let footer = Self.focusedFooter(snap: snap, table: table, order: order)
         full += footer
 
@@ -226,7 +226,7 @@ public final class AppSession {
         h += session.app.isActive ? " [frontmost]" : " [background]"
         h += " — state #\(session.generation)"
         if let stable = session.lastSettleStable {
-            h += stable ? " (settled)" : " (settle deadline reached: the UI was still changing — verify before acting)"
+            h += stable ? " (settled)" : " (settle deadline reached: stability not established — verify before acting)"
         }
         if session.relaunchedFrom != nil { h += " [new process since the previous state; indices restart]" }
         h += "\nIndices are stable; act with element_index or label. Screenshot pixels are window points at scale=1; pass include_frames=true for per-element coordinates."

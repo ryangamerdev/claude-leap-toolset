@@ -30,7 +30,10 @@ those development documents for unrelated app tasks.
 - State settling is not business completion. Use bounded wait_for/verified_action conditions
   for delayed outcomes. Retry observations, not uncertain inputs. A partial capture cannot
   establish absence; inspect readFailures, readFailureDetails, deadlineExceeded and truncation.
-  Batch retry/recovery counters, when present, describe read recovery, not input retries.
+  blockingReadFailures gates label/state checks; advisoryReadFailures retains missing subrole
+  metadata only for known non-text controls. Unknown/text roles remain blocking. A retainedEarlierObservation
+  flag means the final scan failed and an earlier capture was returned; reobserve before input.
+  Batch retry/recovery counters describe read recovery, not input retries.
 
 ## Retained evidence without replay
 

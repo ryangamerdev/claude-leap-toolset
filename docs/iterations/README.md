@@ -17,3 +17,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-20 — Native recovery result and Git delivery](2026-09-20-delivery-native-check.md): retry did not resolve iPad reads; records ongoing commit/push authorization and checkpoint scope.
 
 - [2026-09-20 — Sky/iPad attribute comparison](2026-09-20-sky-subrole.md): both controllers click successfully; Leap completeness/settling is the demonstrated gap.
+
+- [2026-09-20 — Field-specific capture quality](2026-09-20-field-quality.md): conservative advisory metadata classification and explicitly retained observations; native acceptance pending.

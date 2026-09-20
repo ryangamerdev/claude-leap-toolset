@@ -154,24 +154,35 @@ public actor Engine {
         // reported in the header and wait_for exists for explicit conditions.
         let sinceAction = Date().timeIntervalSince(s.lastActionAt)
         s.lastSettleStable = nil
+        var retainedObservationNotice = ""
         if sinceAction < maxSettleAfterAction {
             let deadline = s.lastActionAt.addingTimeInterval(settleDelay + maxSettleAfterAction)
             var previous = Self.fingerprint(snap)
+            var previousUsable = snap.supportsStateChecks
+            var retainedEarlier = false
             var stable = false
             while Date() < deadline {
                 try await Task.sleep(nanoseconds: 300_000_000)
                 guard let again = walker.snapshot(window: window, app: s.axApp, timeout:max(0.01,deadline.timeIntervalSinceNow)) else { break }
                 let now = Self.fingerprint(again)
                 let busy = again.nodes.contains { $0.role == "AXProgressIndicator" || $0.role == "AXBusyIndicator" }
-                snap = again
-                if now == previous && !busy && again.readFailures == 0 && !again.deadlineExceeded && !again.truncated { stable = true; break }
+                // Do not replace a usable observation with a sparse deadline scan.
+                if again.supportsStateChecks || !snap.supportsStateChecks {
+                    snap = again
+                    retainedEarlier = false
+                } else { retainedEarlier = true }
+                if now == previous && previousUsable && !busy && again.supportsStateChecks { stable = true; break }
                 previous = now
+                previousUsable = again.supportsStateChecks
             }
             s.lastSettleStable = stable
+            snap.retainedEarlierObservation = retainedEarlier
+            if retainedEarlier { retainedObservationNotice = "\nUsing an earlier usable observation from this call; the final scan was incomplete. This does not establish the latest state." }
         }
         let (full, diff) = s.render(snap, walker: walker, includeFrames: opts.includeFrames)
         s.relaunchedFrom = nil
         var text = (opts.disableDiff ? full : (diff ?? full))
+        text += retainedObservationNotice
         if s.generation == 1 { text += "\n" + Self.capabilities(s) }
         // Tooltip-sized AXDialog popups (Simulator shows a 52x20 "Window") are not targets.
         let others = windows(s).filter { !CFEqual($0.0, snap.window) }
@@ -198,8 +209,11 @@ public actor Engine {
                 text += "\n(screenshot unavailable: window is not on screen — minimized or on another Space)"
             }
         }
-        if snap.readFailures>0 || snap.deadlineExceeded || snap.truncated {
-            text += "\nObservation incomplete: readFailures=\(snap.readFailures), deadline=\(snap.deadlineExceeded), nodeLimit=\(snap.truncated). Missing controls do not prove absence."
+        if !snap.supportsStateChecks {
+            text += "\nObservation incomplete: readFailures=\(snap.readFailures), deadline=\(snap.deadlineExceeded), captureTruncated=\(snap.truncated). Missing controls do not prove absence."
+        }
+        if snap.advisoryReadFailures > 0 {
+            text += "\nOptional metadata unavailable: \(snap.advisoryReadFailures) reads; labels/state checks remain usable if no blocking capture errors. Details retained in snapshot."
         }
         do {
             let footer=try recordSnapshot(snap, session:s)
@@ -955,7 +969,7 @@ public actor Engine {
             let nodes = exact.isEmpty ? snap.nodes.filter { texts($0).contains { $0.contains(needle) } } : exact
             let hits = nodes.map { ElementRecord(index: s.indexByKey[$0.key] ?? 0, node: $0) }
             guard hits.count <= 1 else { throw LeapError.unsupported("Expectation unknown: label matches multiple elements; use a more specific label") }
-            let incomplete=snap.truncated || snap.readFailures>0 || snap.deadlineExceeded
+            let incomplete = !snap.supportsStateChecks
             if incomplete || ProcessInfo.processInfo.systemUptime > deadline {
                 if ProcessInfo.processInfo.systemUptime < deadline {
                     try await Task.sleep(nanoseconds:UInt64(min(0.3,max(0,deadline-ProcessInfo.processInfo.systemUptime))*1_000_000_000));continue

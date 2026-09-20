@@ -37,7 +37,11 @@ public struct AXWindowSnapshot {
     public let focusedElement: AXUIElement?
     public let nodes: [AXNode]
     public let truncated: Bool
+    public var retainedEarlierObservation: Bool = false
     public var readFailures: Int = 0
+    public var advisoryReadFailures: Int = 0
+    public var blockingReadFailures: Int { max(0, readFailures - advisoryReadFailures) }
+    public var supportsStateChecks: Bool { blockingReadFailures == 0 && !deadlineExceeded && !truncated }
     public var batchReadRetries: Int = 0
     public var batchReadRecoveries: Int = 0
     public var readFailureDetails: [[String: String]] = []
@@ -51,6 +55,7 @@ final class AXReadBudget {
     let started = ProcessInfo.processInfo.systemUptime
     let deadline: Double
     var failures = 0
+    var advisoryFailures = 0
     var batchRetries = 0
     var batchRecoveries = 0
     var failureDetails: [[String: String]] = []
@@ -72,15 +77,24 @@ enum AX {
         AXUIElementSetMessagingTimeout(el,Float(min(0.25,max(0.01,budget.deadline-ProcessInfo.processInfo.systemUptime))))
         return true
     }
-    static func note(_ result: AXError, attribute: String, element: AXUIElement) {
+    static func advisoryFailure(attribute: String, role: String?) -> Bool {
+        // Subroles refine these non-text controls but do not determine their label/state
+        // or child traversal. Unknown and text roles remain conservative (secure fields).
+        attribute == kAXSubroleAttribute && ["AXButton", "AXCheckBox", "AXScrollArea",
+            "AXToolbar", "AXMenuBar", "AXMenuBarItem", "AXImage"].contains(role ?? "")
+    }
+    static func note(_ result: AXError, attribute: String, element: AXUIElement, role: String? = nil) {
         // Unsupported/missing attributes are legitimate; transport/element failures are not absence.
         if result != .success && ![-25205,-25212].contains(Int(result.rawValue)), let budget {
             budget.failures += 1
+            let advisory = result == .failure && advisoryFailure(attribute: attribute, role: role)
+            if advisory { budget.advisoryFailures += 1 }
             // No diagnostic AX reads: they could block or recursively add failures.
             // This hash correlates reads within an observation, never a durable target identity.
             if budget.failureDetails.count < 8 {
                 budget.failureDetails.append(["attribute": attribute, "errorCode": String(result.rawValue),
-                    "error": String(describing: result), "elementHash": String(CFHash(element))])
+                    "error": String(describing: result), "elementHash": String(CFHash(element)),
+                    "role": role ?? "unknown", "impact": advisory ? "optional metadata" : "state coverage"])
             }
         }
     }
@@ -116,9 +130,9 @@ enum AX {
                             budget?.batchRecoveries += 1
                         }
                         if retry == .success, let recovered { dict[name] = recovered }
-                        note(retry, attribute: name, element: el)
+                        note(retry, attribute: name, element: el, role: dict[kAXRoleAttribute] as? String)
                     } else {
-                        note(error, attribute: name, element: el)
+                        note(error, attribute: name, element: el, role: dict[kAXRoleAttribute] as? String)
                     }
                     continue
                 }
@@ -330,7 +344,7 @@ public struct AXWalker {
             walkMenuBar(bar, nodes: &nodes, count: &count, truncated: &truncated)
         }
         return AXWindowSnapshot(window: window, title: title, frame: frame, focusedElement: focused,
-                                nodes: nodes, truncated: truncated, readFailures:budget.failures, batchReadRetries:budget.batchRetries, batchReadRecoveries:budget.batchRecoveries, readFailureDetails:budget.failureDetails, readFailureDetailsOmitted:max(0,budget.failures-budget.failureDetails.count), deadlineExceeded:budget.expired, captureStarted:budget.started, captureEnded:ProcessInfo.processInfo.systemUptime)
+                                nodes: nodes, truncated: truncated, readFailures:budget.failures, advisoryReadFailures:budget.advisoryFailures, batchReadRetries:budget.batchRetries, batchReadRecoveries:budget.batchRecoveries, readFailureDetails:budget.failureDetails, readFailureDetailsOmitted:max(0,budget.failures-budget.failureDetails.count), deadlineExceeded:budget.expired, captureStarted:budget.started, captureEnded:ProcessInfo.processInfo.systemUptime)
     }
 
     /// The app's menu bar: its titles always, and the items of any menu that is currently open.
