@@ -30,5 +30,19 @@ retain a tracked summary so the rationale is available from a fresh clone.
 
 Preserve registration name leap. Build/install meaningful increments, then ask for a session
 restart and use native MCP calls for acceptance. Supplement with focused regression tests;
-do not substitute harness results for the paired Gameday/Simulator/Blender trials. No commit
-or push is implied for future tasks unless the user authorizes it.
+do not substitute harness results for the paired Gameday/Simulator/Blender trials. After each build/install iteration, commit and push the relevant code, skills, documentation
+and curated evidence before handing back for restart. The user explicitly authorized this
+ongoing delivery workflow on 2026-09-20. Preserve unrelated changes and never force-push.
+
+## Skill maintenance
+
+When tool behavior, parameters or recommended usage change, update skills/claude-leap in the
+same iteration. Keep SKILL.md concise; put conditional detail in linked references. Describe
+installed capabilities separately from native acceptance and planned features. Source skills
+are authoritative; do not edit only the installed copies.
+
+Every development app installation must also run `python3 scripts/install.py --skills-only`.
+This refreshes Claude and Codex skill copies without touching the app or MCP registration.
+The standard installer does this automatically. Compare installed/source contents before
+handoff; record skill changes and synchronization in the iteration history. A documentation-only
+sync needs no binary rebuild; restart if the host cached skill discovery metadata.

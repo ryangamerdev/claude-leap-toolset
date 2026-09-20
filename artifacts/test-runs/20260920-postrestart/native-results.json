@@ -1,0 +1,3402 @@
+{
+  "first": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"coordinateSpace\":\"screen points, top-left origin; visibility is frame-based, not occlusion\",\"hasMore\":true,\"historical\":true,\"items\":[{\"index\":2,\"key\":\"w\\/AXWindow[Gameday]#0\\/AXGroup[]#0\\/AXButton[Team library: Higley High School Knights · Freshman]#0\",\"label\":\"Team library: Higley High School Knights · Freshman\",\"ordinal\":2,\"screenFrame\":[305.5,210,366,74.5],\"selected\":false},{\"index\":3,\"key\":\"w\\/AXWindow[Gameday]#0\\/AXGroup[]#0\\/AXButton[Playbook: Freshman 2026]#1\",\"label\":\"Playbook: Freshman 2026\",\"ordinal\":3,\"screenFrame\":[678.5,238.5,366,45],\"selected\":false},{\"index\":4,\"key\":\"w\\/AXWindow[Gameday]#0\\/AXGroup[]#0\\/AXButton[Playbook]#2\",\"label\":\"Playbook\",\"ordinal\":4,\"screenFrame\":[1051.5,238.5,63,45],\"selected\":false},{\"index\":5,\"key\":\"w\\/AXWindow[Gameday]#0\\/AXGroup[]#0\\/AXButton[Formations]#3\",\"label\":\"Formations\",\"ordinal\":5,\"screenFrame\":[1119.5,238.5,63,45],\"selected\":false},{\"index\":6,\"key\":\"w\\/AXWindow[Gameday]#0\\/AXGroup[]#0\\/AXButton[Route library]#4\",\"label\":\"Route library\",\"ordinal\":6,\"screenFrame\":[1187.5,238.5,63,45],\"selected\":false}],\"liveTargetWarning\":\"Historical indices\\/keys require fresh target validation before input\",\"matched\":139,\"next\":\"ui_to_text with same snapshot and filters, after=nextCursor; leap_asset for references\",\"nextCursor\":6,\"snapshot\":{\"captureEnded\":2308115.9789610836,\"captureLimit\":1500,\"captureStarted\":2308115.1316249999,\"deadlineExceeded\":false,\"generation\":1,\"interaction\":\"88251A77-6180-4604-8958-E4C94240CEC6\",\"nodeCount\":258,\"readFailures\":0,\"screenFrame\":[306,210,1080,748],\"session\":\"5BB1B560-B14A-47D7-BEAB-4EBA02CFDF82\",\"snapshot\":425,\"source\":\"AX snapshot; attributes read over an interval, not atomic\",\"truncated\":false,\"window\":\"Gameday\"}}"
+      }
+    ],
+    "isError": false
+  },
+  "diffPages": [
+    {
+      "after": 380,
+      "before": 370,
+      "changes": [
+        {
+          "afterOrdinal": 79,
+          "change": "added",
+          "fields": [
+            "label",
+            "enabled",
+            "selected",
+            "focused",
+            "offscreen",
+            "screenFrame"
+          ],
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXGroup[Football field]#0/AXUnknown[Offense LT]#0",
+          "label": "Offense LT",
+          "ordinal": 1
+        },
+        {
+          "afterOrdinal": 80,
+          "change": "added",
+          "fields": [
+            "label",
+            "enabled",
+            "selected",
+            "focused",
+            "offscreen",
+            "screenFrame"
+          ],
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXGroup[Football field]#0/AXUnknown[Offense LG]#1",
+          "label": "Offense LG",
+          "ordinal": 2
+        },
+        {
+          "afterOrdinal": 81,
+          "change": "added",
+          "fields": [
+            "label",
+            "enabled",
+            "selected",
+            "focused",
+            "offscreen",
+            "screenFrame"
+          ],
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXGroup[Football field]#0/AXUnknown[Offense C]#2",
+          "label": "Offense C",
+          "ordinal": 3
+        },
+        {
+          "afterOrdinal": 82,
+          "change": "added",
+          "fields": [
+            "label",
+            "enabled",
+            "selected",
+            "focused",
+            "offscreen",
+            "screenFrame"
+          ],
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXGroup[Football field]#0/AXUnknown[Offense RG]#3",
+          "label": "Offense RG",
+          "ordinal": 4
+        },
+        {
+          "afterOrdinal": 83,
+          "change": "added",
+          "fields": [
+            "label",
+            "enabled",
+            "selected",
+            "focused",
+            "offscreen",
+            "screenFrame"
+          ],
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXGroup[Football field]#0/AXUnknown[Offense RT]#4",
+          "label": "Offense RT",
+          "ordinal": 5
+        },
+        {
+          "afterOrdinal": 84,
+          "change": "added",
+          "fields": [
+            "label",
+            "enabled",
+            "selected",
+            "focused",
+            "offscreen",
+            "screenFrame"
+          ],
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXGroup[Football field]#0/AXUnknown[Offense 1]#5",
+          "label": "Offense 1",
+          "ordinal": 6
+        },
+        {
+          "afterOrdinal": 85,
+          "change": "added",
+          "fields": [
+            "label",
+            "enabled",
+            "selected",
+            "focused",
+            "offscreen",
+            "screenFrame"
+          ],
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXGroup[Football field]#0/AXUnknown[Offense 2]#6",
+          "label": "Offense 2",
+          "ordinal": 7
+        },
+        {
+          "afterOrdinal": 86,
+          "change": "added",
+          "fields": [
+            "label",
+            "enabled",
+            "selected",
+            "focused",
+            "offscreen",
+            "screenFrame"
+          ],
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXGroup[Football field]#0/AXUnknown[Offense 2]#7",
+          "label": "Offense 2",
+          "ordinal": 8
+        },
+        {
+          "afterOrdinal": 87,
+          "change": "added",
+          "fields": [
+            "label",
+            "enabled",
+            "selected",
+            "focused",
+            "offscreen",
+            "screenFrame"
+          ],
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXGroup[Football field]#0/AXUnknown[Offense 1]#8",
+          "label": "Offense 1",
+          "ordinal": 9
+        },
+        {
+          "afterOrdinal": 88,
+          "change": "added",
+          "fields": [
+            "label",
+            "enabled",
+            "selected",
+            "focused",
+            "offscreen",
+            "screenFrame"
+          ],
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXGroup[Football field]#0/AXUnknown[Offense Q]#9",
+          "label": "Offense Q",
+          "ordinal": 10
+        }
+      ],
+      "hasMore": true,
+      "incomplete": false,
+      "meaning": "Observed differences, not causal proof. Removal from a partial tree does not prove disappearance. Content-based keys can change when labels change.",
+      "nextCursor": 10,
+      "total": 34
+    },
+    {
+      "after": 380,
+      "before": 370,
+      "changes": [
+        {
+          "afterOrdinal": 89,
+          "change": "added",
+          "fields": [
+            "label",
+            "enabled",
+            "selected",
+            "focused",
+            "offscreen",
+            "screenFrame"
+          ],
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXGroup[Football field]#0/AXUnknown[Offense RB]#10",
+          "label": "Offense RB",
+          "ordinal": 11
+        },
+        {
+          "afterOrdinal": 90,
+          "change": "added",
+          "fields": [
+            "label",
+            "enabled",
+            "selected",
+            "focused",
+            "offscreen",
+            "screenFrame"
+          ],
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXGroup[Football field]#0/AXUnknown[Defense T]#11",
+          "label": "Defense T",
+          "ordinal": 12
+        },
+        {
+          "afterOrdinal": 91,
+          "change": "added",
+          "fields": [
+            "label",
+            "enabled",
+            "selected",
+            "focused",
+            "offscreen",
+            "screenFrame"
+          ],
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXGroup[Football field]#0/AXUnknown[Defense N]#12",
+          "label": "Defense N",
+          "ordinal": 13
+        },
+        {
+          "afterOrdinal": 92,
+          "change": "added",
+          "fields": [
+            "label",
+            "enabled",
+            "selected",
+            "focused",
+            "offscreen",
+            "screenFrame"
+          ],
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXGroup[Football field]#0/AXUnknown[Defense T]#13",
+          "label": "Defense T",
+          "ordinal": 14
+        },
+        {
+          "afterOrdinal": 93,
+          "change": "added",
+          "fields": [
+            "label",
+            "enabled",
+            "selected",
+            "focused",
+            "offscreen",
+            "screenFrame"
+          ],
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXGroup[Football field]#0/AXUnknown[Defense D]#14",
+          "label": "Defense D",
+          "ordinal": 15
+        },
+        {
+          "afterOrdinal": 94,
+          "change": "added",
+          "fields": [
+            "label",
+            "enabled",
+            "selected",
+            "focused",
+            "offscreen",
+            "screenFrame"
+          ],
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXGroup[Football field]#0/AXUnknown[Defense S]#15",
+          "label": "Defense S",
+          "ordinal": 16
+        },
+        {
+          "afterOrdinal": 95,
+          "change": "added",
+          "fields": [
+            "label",
+            "enabled",
+            "selected",
+            "focused",
+            "offscreen",
+            "screenFrame"
+          ],
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXGroup[Football field]#0/AXUnknown[Defense M]#16",
+          "label": "Defense M",
+          "ordinal": 17
+        },
+        {
+          "afterOrdinal": 96,
+          "change": "added",
+          "fields": [
+            "label",
+            "enabled",
+            "selected",
+            "focused",
+            "offscreen",
+            "screenFrame"
+          ],
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXGroup[Football field]#0/AXUnknown[Defense K]#17",
+          "label": "Defense K",
+          "ordinal": 18
+        },
+        {
+          "afterOrdinal": 97,
+          "change": "added",
+          "fields": [
+            "label",
+            "value",
+            "enabled",
+            "selected",
+            "focused",
+            "offscreen",
+            "screenFrame"
+          ],
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXGroup[Football field]#0/AXButton[Zoom to 150 percent]#0",
+          "label": "Zoom to 150 percent",
+          "ordinal": 19
+        },
+        {
+          "afterOrdinal": 98,
+          "change": "added",
+          "fields": [
+            "label",
+            "value",
+            "enabled",
+            "selected",
+            "focused",
+            "offscreen",
+            "screenFrame"
+          ],
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXGroup[Football field]#0/AXStaticText[]#0",
+          "label": "",
+          "ordinal": 20
+        }
+      ],
+      "hasMore": true,
+      "incomplete": false,
+      "meaning": "Observed differences, not causal proof. Removal from a partial tree does not prove disappearance. Content-based keys can change when labels change.",
+      "nextCursor": 20,
+      "total": 34
+    },
+    {
+      "after": 380,
+      "before": 370,
+      "changes": [
+        {
+          "afterOrdinal": 99,
+          "change": "added",
+          "fields": [
+            "label",
+            "value",
+            "enabled",
+            "selected",
+            "focused",
+            "offscreen",
+            "screenFrame"
+          ],
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXGroup[Football field]#0/AXStaticText[]#1",
+          "label": "",
+          "ordinal": 21
+        },
+        {
+          "afterOrdinal": 100,
+          "change": "added",
+          "fields": [
+            "label",
+            "enabled",
+            "selected",
+            "focused",
+            "offscreen",
+            "screenFrame"
+          ],
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXButton[Show play information]#8",
+          "label": "Show play information",
+          "ordinal": 22
+        },
+        {
+          "afterOrdinal": 102,
+          "change": "added",
+          "fields": [
+            "label",
+            "value",
+            "enabled",
+            "selected",
+            "focused",
+            "offscreen",
+            "screenFrame"
+          ],
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXStaticText[Active sequence position]#4",
+          "label": "Active sequence position",
+          "ordinal": 23
+        },
+        {
+          "change": "removed",
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXButton[Show field]#8",
+          "keyShortened": false,
+          "ordinal": 24
+        },
+        {
+          "change": "removed",
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#1",
+          "keyShortened": false,
+          "ordinal": 25
+        },
+        {
+          "change": "removed",
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#1/AXOpaqueProviderGroup[]#0",
+          "keyShortened": false,
+          "ordinal": 26
+        },
+        {
+          "change": "removed",
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#1/AXOpaqueProviderGroup[]#0/AXStaticText[]#0",
+          "keyShortened": false,
+          "ordinal": 27
+        },
+        {
+          "change": "removed",
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#1/AXOpaqueProviderGroup[]#0/AXStaticText[]#1",
+          "keyShortened": false,
+          "ordinal": 28
+        },
+        {
+          "change": "removed",
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#1/AXOpaqueProviderGroup[]#0/AXStaticText[]#2",
+          "keyShortened": false,
+          "ordinal": 29
+        },
+        {
+          "change": "removed",
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#1/AXOpaqueProviderGroup[]#0/AXStaticText[]#3",
+          "keyShortened": false,
+          "ordinal": 30
+        }
+      ],
+      "hasMore": true,
+      "incomplete": false,
+      "meaning": "Observed differences, not causal proof. Removal from a partial tree does not prove disappearance. Content-based keys can change when labels change.",
+      "nextCursor": 30,
+      "total": 34
+    },
+    {
+      "after": 380,
+      "before": 370,
+      "changes": [
+        {
+          "change": "removed",
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXStaticText[Active sequence position]#6",
+          "keyShortened": false,
+          "ordinal": 31
+        },
+        {
+          "change": "removed",
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXStaticText[]#4",
+          "keyShortened": false,
+          "ordinal": 32
+        },
+        {
+          "change": "removed",
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXStaticText[]#5",
+          "keyShortened": false,
+          "ordinal": 33
+        },
+        {
+          "change": "removed",
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXTextField[Coaching notes]#1",
+          "keyShortened": false,
+          "ordinal": 34
+        }
+      ],
+      "hasMore": false,
+      "incomplete": false,
+      "meaning": "Observed differences, not causal proof. Removal from a partial tree does not prove disappearance. Content-based keys can change when labels change.",
+      "nextCursor": 34,
+      "total": 34
+    }
+  ],
+  "eventPages": [
+    {
+      "counts": [
+        {
+          "count": "13",
+          "first": "33",
+          "kind": "action_intent",
+          "last": "384"
+        },
+        {
+          "count": "13",
+          "first": "34",
+          "kind": "action_result",
+          "last": "385"
+        },
+        {
+          "count": "101",
+          "first": "8",
+          "kind": "ax_notification",
+          "last": "403"
+        },
+        {
+          "count": "8",
+          "first": "317",
+          "kind": "expectation_result",
+          "last": "394"
+        },
+        {
+          "count": "6",
+          "first": "7",
+          "kind": "session_start",
+          "last": "402"
+        },
+        {
+          "count": "49",
+          "first": "9",
+          "kind": "snapshot",
+          "last": "425"
+        },
+        {
+          "count": "235",
+          "first": "1",
+          "kind": "subscription",
+          "last": "424"
+        }
+      ],
+      "coverage": "Recorded evidence only. API errors are not proof of failed effects; unsupported notifications and capture gaps require attention. Events grouped by session, notification and ephemeral element hash; separate actions are never merged.",
+      "hasMore": true,
+      "historical": true,
+      "items": [
+        {
+          "count": "1",
+          "elementHash": "1852865649",
+          "firstReceipt": "2026-09-20T10:18:37Z",
+          "last": "8",
+          "lastReceipt": "2026-09-20T10:18:37Z",
+          "notification": "AXWindowCreated",
+          "seq": "8",
+          "session": "F32376AA-772C-4A01-97C8-B2679EFD3240"
+        },
+        {
+          "count": "1",
+          "elementHash": "1852865665",
+          "firstReceipt": "2026-09-20T10:18:46Z",
+          "last": "35",
+          "lastReceipt": "2026-09-20T10:18:46Z",
+          "notification": "AXLayoutChanged",
+          "seq": "35",
+          "session": "F32376AA-772C-4A01-97C8-B2679EFD3240"
+        },
+        {
+          "count": "2",
+          "elementHash": "1668314721",
+          "firstReceipt": "2026-09-20T10:18:46Z",
+          "last": "48",
+          "lastReceipt": "2026-09-20T10:18:57Z",
+          "notification": "AXLayoutChanged",
+          "seq": "36",
+          "session": "F32376AA-772C-4A01-97C8-B2679EFD3240"
+        },
+        {
+          "count": "1",
+          "elementHash": "1634828210",
+          "firstReceipt": "2026-09-20T10:18:50Z",
+          "last": "39",
+          "lastReceipt": "2026-09-20T10:18:50Z",
+          "notification": "AXApplicationActivated",
+          "seq": "39",
+          "session": "F32376AA-772C-4A01-97C8-B2679EFD3240"
+        },
+        {
+          "count": "2",
+          "elementHash": "1701868529",
+          "firstReceipt": "2026-09-20T10:18:50Z",
+          "last": "56",
+          "lastReceipt": "2026-09-20T10:19:05Z",
+          "notification": "AXLayoutChanged",
+          "seq": "40",
+          "session": "F32376AA-772C-4A01-97C8-B2679EFD3240"
+        }
+      ],
+      "next": {
+        "actions": "recording_review(view: actions)",
+        "events": "recording_review(view: events)",
+        "evidence": "recording_query(after: record seq minus 1, limit: 1)",
+        "page": "recording_review with same filters, through and after=nextCursor",
+        "tree": "recording_nodes(snapshot: snapshot seq, outline: true)"
+      },
+      "nextCursor": 40,
+      "presentation": "Values/excerpts may be shortened; full retained records remain stored. Overview lists attention records first; counts cover the whole selected history, not just this page.",
+      "scope": {
+        "interaction": "all",
+        "session": "all"
+      },
+      "through": 425,
+      "totals": [
+        {
+          "attentionRecords": "21",
+          "first": "1",
+          "last": "425",
+          "records": "425"
+        }
+      ],
+      "view": "events"
+    },
+    {
+      "counts": [
+        {
+          "count": "13",
+          "first": "33",
+          "kind": "action_intent",
+          "last": "384"
+        },
+        {
+          "count": "13",
+          "first": "34",
+          "kind": "action_result",
+          "last": "385"
+        },
+        {
+          "count": "101",
+          "first": "8",
+          "kind": "ax_notification",
+          "last": "403"
+        },
+        {
+          "count": "8",
+          "first": "317",
+          "kind": "expectation_result",
+          "last": "394"
+        },
+        {
+          "count": "6",
+          "first": "7",
+          "kind": "session_start",
+          "last": "402"
+        },
+        {
+          "count": "49",
+          "first": "9",
+          "kind": "snapshot",
+          "last": "425"
+        },
+        {
+          "count": "235",
+          "first": "1",
+          "kind": "subscription",
+          "last": "424"
+        }
+      ],
+      "coverage": "Recorded evidence only. API errors are not proof of failed effects; unsupported notifications and capture gaps require attention. Events grouped by session, notification and ephemeral element hash; separate actions are never merged.",
+      "hasMore": true,
+      "historical": true,
+      "items": [
+        {
+          "count": "1",
+          "elementHash": "1852866017",
+          "firstReceipt": "2026-09-20T10:18:57Z",
+          "last": "46",
+          "lastReceipt": "2026-09-20T10:18:57Z",
+          "notification": "AXLayoutChanged",
+          "seq": "46",
+          "session": "F32376AA-772C-4A01-97C8-B2679EFD3240"
+        },
+        {
+          "count": "1",
+          "elementHash": "1852866033",
+          "firstReceipt": "2026-09-20T10:18:57Z",
+          "last": "47",
+          "lastReceipt": "2026-09-20T10:18:57Z",
+          "notification": "AXLayoutChanged",
+          "seq": "47",
+          "session": "F32376AA-772C-4A01-97C8-B2679EFD3240"
+        },
+        {
+          "count": "1",
+          "elementHash": "1634828210",
+          "firstReceipt": "2026-09-20T10:19:05Z",
+          "last": "55",
+          "lastReceipt": "2026-09-20T10:19:05Z",
+          "notification": "AXApplicationDeactivated",
+          "seq": "55",
+          "session": "F32376AA-772C-4A01-97C8-B2679EFD3240"
+        },
+        {
+          "count": "1",
+          "elementHash": "1852866177",
+          "firstReceipt": "2026-09-20T10:23:27Z",
+          "last": "93",
+          "lastReceipt": "2026-09-20T10:23:27Z",
+          "notification": "AXWindowCreated",
+          "seq": "93",
+          "session": "E905AA1C-9346-462B-91A5-3B98E057A853"
+        },
+        {
+          "count": "1",
+          "elementHash": "1668314529",
+          "firstReceipt": "2026-09-20T10:23:34Z",
+          "last": "118",
+          "lastReceipt": "2026-09-20T10:23:34Z",
+          "notification": "AXFocusedUIElementChanged",
+          "seq": "118",
+          "session": "E905AA1C-9346-462B-91A5-3B98E057A853"
+        }
+      ],
+      "next": {
+        "actions": "recording_review(view: actions)",
+        "events": "recording_review(view: events)",
+        "evidence": "recording_query(after: record seq minus 1, limit: 1)",
+        "page": "recording_review with same filters, through and after=nextCursor",
+        "tree": "recording_nodes(snapshot: snapshot seq, outline: true)"
+      },
+      "nextCursor": 118,
+      "presentation": "Values/excerpts may be shortened; full retained records remain stored. Overview lists attention records first; counts cover the whole selected history, not just this page.",
+      "scope": {
+        "interaction": "all",
+        "session": "all"
+      },
+      "through": 425,
+      "totals": [
+        {
+          "attentionRecords": "21",
+          "first": "1",
+          "last": "425",
+          "records": "425"
+        }
+      ],
+      "view": "events"
+    },
+    {
+      "counts": [
+        {
+          "count": "13",
+          "first": "33",
+          "kind": "action_intent",
+          "last": "384"
+        },
+        {
+          "count": "13",
+          "first": "34",
+          "kind": "action_result",
+          "last": "385"
+        },
+        {
+          "count": "101",
+          "first": "8",
+          "kind": "ax_notification",
+          "last": "403"
+        },
+        {
+          "count": "8",
+          "first": "317",
+          "kind": "expectation_result",
+          "last": "394"
+        },
+        {
+          "count": "6",
+          "first": "7",
+          "kind": "session_start",
+          "last": "402"
+        },
+        {
+          "count": "49",
+          "first": "9",
+          "kind": "snapshot",
+          "last": "425"
+        },
+        {
+          "count": "235",
+          "first": "1",
+          "kind": "subscription",
+          "last": "424"
+        }
+      ],
+      "coverage": "Recorded evidence only. API errors are not proof of failed effects; unsupported notifications and capture gaps require attention. Events grouped by session, notification and ephemeral element hash; separate actions are never merged.",
+      "hasMore": true,
+      "historical": true,
+      "items": [
+        {
+          "count": "56",
+          "elementHash": "1668314545",
+          "firstReceipt": "2026-09-20T10:23:36Z",
+          "last": "277",
+          "lastReceipt": "2026-09-20T10:24:50Z",
+          "notification": "AXLayoutChanged",
+          "seq": "120",
+          "session": "E905AA1C-9346-462B-91A5-3B98E057A853"
+        },
+        {
+          "count": "1",
+          "elementHash": "1852866273",
+          "firstReceipt": "2026-09-20T10:23:36Z",
+          "last": "133",
+          "lastReceipt": "2026-09-20T10:23:36Z",
+          "notification": "AXLayoutChanged",
+          "seq": "133",
+          "session": "E905AA1C-9346-462B-91A5-3B98E057A853"
+        },
+        {
+          "count": "1",
+          "elementHash": "1852866289",
+          "firstReceipt": "2026-09-20T10:23:36Z",
+          "last": "134",
+          "lastReceipt": "2026-09-20T10:23:36Z",
+          "notification": "AXLayoutChanged",
+          "seq": "134",
+          "session": "E905AA1C-9346-462B-91A5-3B98E057A853"
+        },
+        {
+          "count": "1",
+          "elementHash": "1852866305",
+          "firstReceipt": "2026-09-20T10:23:36Z",
+          "last": "135",
+          "lastReceipt": "2026-09-20T10:23:36Z",
+          "notification": "AXLayoutChanged",
+          "seq": "135",
+          "session": "E905AA1C-9346-462B-91A5-3B98E057A853"
+        },
+        {
+          "count": "1",
+          "elementHash": "1852866321",
+          "firstReceipt": "2026-09-20T10:23:36Z",
+          "last": "136",
+          "lastReceipt": "2026-09-20T10:23:36Z",
+          "notification": "AXLayoutChanged",
+          "seq": "136",
+          "session": "E905AA1C-9346-462B-91A5-3B98E057A853"
+        }
+      ],
+      "next": {
+        "actions": "recording_review(view: actions)",
+        "events": "recording_review(view: events)",
+        "evidence": "recording_query(after: record seq minus 1, limit: 1)",
+        "page": "recording_review with same filters, through and after=nextCursor",
+        "tree": "recording_nodes(snapshot: snapshot seq, outline: true)"
+      },
+      "nextCursor": 136,
+      "presentation": "Values/excerpts may be shortened; full retained records remain stored. Overview lists attention records first; counts cover the whole selected history, not just this page.",
+      "scope": {
+        "interaction": "all",
+        "session": "all"
+      },
+      "through": 425,
+      "totals": [
+        {
+          "attentionRecords": "21",
+          "first": "1",
+          "last": "425",
+          "records": "425"
+        }
+      ],
+      "view": "events"
+    },
+    {
+      "counts": [
+        {
+          "count": "13",
+          "first": "33",
+          "kind": "action_intent",
+          "last": "384"
+        },
+        {
+          "count": "13",
+          "first": "34",
+          "kind": "action_result",
+          "last": "385"
+        },
+        {
+          "count": "101",
+          "first": "8",
+          "kind": "ax_notification",
+          "last": "403"
+        },
+        {
+          "count": "8",
+          "first": "317",
+          "kind": "expectation_result",
+          "last": "394"
+        },
+        {
+          "count": "6",
+          "first": "7",
+          "kind": "session_start",
+          "last": "402"
+        },
+        {
+          "count": "49",
+          "first": "9",
+          "kind": "snapshot",
+          "last": "425"
+        },
+        {
+          "count": "235",
+          "first": "1",
+          "kind": "subscription",
+          "last": "424"
+        }
+      ],
+      "coverage": "Recorded evidence only. API errors are not proof of failed effects; unsupported notifications and capture gaps require attention. Events grouped by session, notification and ephemeral element hash; separate actions are never merged.",
+      "hasMore": true,
+      "historical": true,
+      "items": [
+        {
+          "count": "1",
+          "elementHash": "1852866337",
+          "firstReceipt": "2026-09-20T10:23:36Z",
+          "last": "137",
+          "lastReceipt": "2026-09-20T10:23:36Z",
+          "notification": "AXLayoutChanged",
+          "seq": "137",
+          "session": "E905AA1C-9346-462B-91A5-3B98E057A853"
+        },
+        {
+          "count": "1",
+          "elementHash": "1852866353",
+          "firstReceipt": "2026-09-20T10:23:36Z",
+          "last": "138",
+          "lastReceipt": "2026-09-20T10:23:36Z",
+          "notification": "AXLayoutChanged",
+          "seq": "138",
+          "session": "E905AA1C-9346-462B-91A5-3B98E057A853"
+        },
+        {
+          "count": "1",
+          "elementHash": "1852867217",
+          "firstReceipt": "2026-09-20T10:23:45Z",
+          "last": "156",
+          "lastReceipt": "2026-09-20T10:23:45Z",
+          "notification": "AXLayoutChanged",
+          "seq": "156",
+          "session": "E905AA1C-9346-462B-91A5-3B98E057A853"
+        },
+        {
+          "count": "1",
+          "elementHash": "1852867233",
+          "firstReceipt": "2026-09-20T10:23:45Z",
+          "last": "157",
+          "lastReceipt": "2026-09-20T10:23:45Z",
+          "notification": "AXLayoutChanged",
+          "seq": "157",
+          "session": "E905AA1C-9346-462B-91A5-3B98E057A853"
+        },
+        {
+          "count": "4",
+          "elementHash": "1701868529",
+          "firstReceipt": "2026-09-20T10:24:16Z",
+          "last": "278",
+          "lastReceipt": "2026-09-20T10:24:50Z",
+          "notification": "AXLayoutChanged",
+          "seq": "193",
+          "session": "E905AA1C-9346-462B-91A5-3B98E057A853"
+        }
+      ],
+      "next": {
+        "actions": "recording_review(view: actions)",
+        "events": "recording_review(view: events)",
+        "evidence": "recording_query(after: record seq minus 1, limit: 1)",
+        "page": "recording_review with same filters, through and after=nextCursor",
+        "tree": "recording_nodes(snapshot: snapshot seq, outline: true)"
+      },
+      "nextCursor": 193,
+      "presentation": "Values/excerpts may be shortened; full retained records remain stored. Overview lists attention records first; counts cover the whole selected history, not just this page.",
+      "scope": {
+        "interaction": "all",
+        "session": "all"
+      },
+      "through": 425,
+      "totals": [
+        {
+          "attentionRecords": "21",
+          "first": "1",
+          "last": "425",
+          "records": "425"
+        }
+      ],
+      "view": "events"
+    },
+    {
+      "counts": [
+        {
+          "count": "13",
+          "first": "33",
+          "kind": "action_intent",
+          "last": "384"
+        },
+        {
+          "count": "13",
+          "first": "34",
+          "kind": "action_result",
+          "last": "385"
+        },
+        {
+          "count": "101",
+          "first": "8",
+          "kind": "ax_notification",
+          "last": "403"
+        },
+        {
+          "count": "8",
+          "first": "317",
+          "kind": "expectation_result",
+          "last": "394"
+        },
+        {
+          "count": "6",
+          "first": "7",
+          "kind": "session_start",
+          "last": "402"
+        },
+        {
+          "count": "49",
+          "first": "9",
+          "kind": "snapshot",
+          "last": "425"
+        },
+        {
+          "count": "235",
+          "first": "1",
+          "kind": "subscription",
+          "last": "424"
+        }
+      ],
+      "coverage": "Recorded evidence only. API errors are not proof of failed effects; unsupported notifications and capture gaps require attention. Events grouped by session, notification and ephemeral element hash; separate actions are never merged.",
+      "hasMore": true,
+      "historical": true,
+      "items": [
+        {
+          "count": "1",
+          "elementHash": "1869640849",
+          "firstReceipt": "2026-09-20T10:24:26Z",
+          "last": "225",
+          "lastReceipt": "2026-09-20T10:24:26Z",
+          "notification": "AXLayoutChanged",
+          "seq": "225",
+          "session": "E905AA1C-9346-462B-91A5-3B98E057A853"
+        },
+        {
+          "count": "1",
+          "elementHash": "1869640865",
+          "firstReceipt": "2026-09-20T10:24:26Z",
+          "last": "226",
+          "lastReceipt": "2026-09-20T10:24:26Z",
+          "notification": "AXLayoutChanged",
+          "seq": "226",
+          "session": "E905AA1C-9346-462B-91A5-3B98E057A853"
+        },
+        {
+          "count": "1",
+          "elementHash": "1869640881",
+          "firstReceipt": "2026-09-20T10:24:26Z",
+          "last": "227",
+          "lastReceipt": "2026-09-20T10:24:26Z",
+          "notification": "AXLayoutChanged",
+          "seq": "227",
+          "session": "E905AA1C-9346-462B-91A5-3B98E057A853"
+        },
+        {
+          "count": "1",
+          "elementHash": "1869640897",
+          "firstReceipt": "2026-09-20T10:24:26Z",
+          "last": "228",
+          "lastReceipt": "2026-09-20T10:24:26Z",
+          "notification": "AXLayoutChanged",
+          "seq": "228",
+          "session": "E905AA1C-9346-462B-91A5-3B98E057A853"
+        },
+        {
+          "count": "1",
+          "elementHash": "1869640913",
+          "firstReceipt": "2026-09-20T10:24:26Z",
+          "last": "229",
+          "lastReceipt": "2026-09-20T10:24:26Z",
+          "notification": "AXLayoutChanged",
+          "seq": "229",
+          "session": "E905AA1C-9346-462B-91A5-3B98E057A853"
+        }
+      ],
+      "next": {
+        "actions": "recording_review(view: actions)",
+        "events": "recording_review(view: events)",
+        "evidence": "recording_query(after: record seq minus 1, limit: 1)",
+        "page": "recording_review with same filters, through and after=nextCursor",
+        "tree": "recording_nodes(snapshot: snapshot seq, outline: true)"
+      },
+      "nextCursor": 229,
+      "presentation": "Values/excerpts may be shortened; full retained records remain stored. Overview lists attention records first; counts cover the whole selected history, not just this page.",
+      "scope": {
+        "interaction": "all",
+        "session": "all"
+      },
+      "through": 425,
+      "totals": [
+        {
+          "attentionRecords": "21",
+          "first": "1",
+          "last": "425",
+          "records": "425"
+        }
+      ],
+      "view": "events"
+    },
+    {
+      "counts": [
+        {
+          "count": "13",
+          "first": "33",
+          "kind": "action_intent",
+          "last": "384"
+        },
+        {
+          "count": "13",
+          "first": "34",
+          "kind": "action_result",
+          "last": "385"
+        },
+        {
+          "count": "101",
+          "first": "8",
+          "kind": "ax_notification",
+          "last": "403"
+        },
+        {
+          "count": "8",
+          "first": "317",
+          "kind": "expectation_result",
+          "last": "394"
+        },
+        {
+          "count": "6",
+          "first": "7",
+          "kind": "session_start",
+          "last": "402"
+        },
+        {
+          "count": "49",
+          "first": "9",
+          "kind": "snapshot",
+          "last": "425"
+        },
+        {
+          "count": "235",
+          "first": "1",
+          "kind": "subscription",
+          "last": "424"
+        }
+      ],
+      "coverage": "Recorded evidence only. API errors are not proof of failed effects; unsupported notifications and capture gaps require attention. Events grouped by session, notification and ephemeral element hash; separate actions are never merged.",
+      "hasMore": true,
+      "historical": true,
+      "items": [
+        {
+          "count": "1",
+          "elementHash": "1869640929",
+          "firstReceipt": "2026-09-20T10:24:26Z",
+          "last": "230",
+          "lastReceipt": "2026-09-20T10:24:26Z",
+          "notification": "AXLayoutChanged",
+          "seq": "230",
+          "session": "E905AA1C-9346-462B-91A5-3B98E057A853"
+        },
+        {
+          "count": "1",
+          "elementHash": "1869641793",
+          "firstReceipt": "2026-09-20T10:24:34Z",
+          "last": "248",
+          "lastReceipt": "2026-09-20T10:24:34Z",
+          "notification": "AXLayoutChanged",
+          "seq": "248",
+          "session": "E905AA1C-9346-462B-91A5-3B98E057A853"
+        },
+        {
+          "count": "1",
+          "elementHash": "1869641809",
+          "firstReceipt": "2026-09-20T10:24:34Z",
+          "last": "249",
+          "lastReceipt": "2026-09-20T10:24:34Z",
+          "notification": "AXLayoutChanged",
+          "seq": "249",
+          "session": "E905AA1C-9346-462B-91A5-3B98E057A853"
+        },
+        {
+          "count": "1",
+          "elementHash": "1869642225",
+          "firstReceipt": "2026-09-20T10:38:48Z",
+          "last": "293",
+          "lastReceipt": "2026-09-20T10:38:48Z",
+          "notification": "AXWindowCreated",
+          "seq": "293",
+          "session": "A16C3242-997E-4E00-946D-F07E234DF73F"
+        },
+        {
+          "count": "1",
+          "elementHash": "1869642241",
+          "firstReceipt": "2026-09-20T10:38:54Z",
+          "last": "320",
+          "lastReceipt": "2026-09-20T10:38:54Z",
+          "notification": "AXLayoutChanged",
+          "seq": "320",
+          "session": "A16C3242-997E-4E00-946D-F07E234DF73F"
+        }
+      ],
+      "next": {
+        "actions": "recording_review(view: actions)",
+        "events": "recording_review(view: events)",
+        "evidence": "recording_query(after: record seq minus 1, limit: 1)",
+        "page": "recording_review with same filters, through and after=nextCursor",
+        "tree": "recording_nodes(snapshot: snapshot seq, outline: true)"
+      },
+      "nextCursor": 320,
+      "presentation": "Values/excerpts may be shortened; full retained records remain stored. Overview lists attention records first; counts cover the whole selected history, not just this page.",
+      "scope": {
+        "interaction": "all",
+        "session": "all"
+      },
+      "through": 425,
+      "totals": [
+        {
+          "attentionRecords": "21",
+          "first": "1",
+          "last": "425",
+          "records": "425"
+        }
+      ],
+      "view": "events"
+    },
+    {
+      "counts": [
+        {
+          "count": "13",
+          "first": "33",
+          "kind": "action_intent",
+          "last": "384"
+        },
+        {
+          "count": "13",
+          "first": "34",
+          "kind": "action_result",
+          "last": "385"
+        },
+        {
+          "count": "101",
+          "first": "8",
+          "kind": "ax_notification",
+          "last": "403"
+        },
+        {
+          "count": "8",
+          "first": "317",
+          "kind": "expectation_result",
+          "last": "394"
+        },
+        {
+          "count": "6",
+          "first": "7",
+          "kind": "session_start",
+          "last": "402"
+        },
+        {
+          "count": "49",
+          "first": "9",
+          "kind": "snapshot",
+          "last": "425"
+        },
+        {
+          "count": "235",
+          "first": "1",
+          "kind": "subscription",
+          "last": "424"
+        }
+      ],
+      "coverage": "Recorded evidence only. API errors are not proof of failed effects; unsupported notifications and capture gaps require attention. Events grouped by session, notification and ephemeral element hash; separate actions are never merged.",
+      "hasMore": true,
+      "historical": true,
+      "items": [
+        {
+          "count": "2",
+          "elementHash": "1668314721",
+          "firstReceipt": "2026-09-20T10:38:54Z",
+          "last": "333",
+          "lastReceipt": "2026-09-20T10:40:31Z",
+          "notification": "AXLayoutChanged",
+          "seq": "321",
+          "session": "A16C3242-997E-4E00-946D-F07E234DF73F"
+        },
+        {
+          "count": "1",
+          "elementHash": "1869642593",
+          "firstReceipt": "2026-09-20T10:40:31Z",
+          "last": "331",
+          "lastReceipt": "2026-09-20T10:40:31Z",
+          "notification": "AXLayoutChanged",
+          "seq": "331",
+          "session": "A16C3242-997E-4E00-946D-F07E234DF73F"
+        },
+        {
+          "count": "1",
+          "elementHash": "1869642609",
+          "firstReceipt": "2026-09-20T10:40:31Z",
+          "last": "332",
+          "lastReceipt": "2026-09-20T10:40:31Z",
+          "notification": "AXLayoutChanged",
+          "seq": "332",
+          "session": "A16C3242-997E-4E00-946D-F07E234DF73F"
+        },
+        {
+          "count": "1",
+          "elementHash": "1869642753",
+          "firstReceipt": "2026-09-20T10:40:32Z",
+          "last": "340",
+          "lastReceipt": "2026-09-20T10:40:32Z",
+          "notification": "AXWindowCreated",
+          "seq": "340",
+          "session": "A16C3242-997E-4E00-946D-F07E234DF73F"
+        },
+        {
+          "count": "1",
+          "elementHash": "1869642785",
+          "firstReceipt": "2026-09-20T11:32:00Z",
+          "last": "375",
+          "lastReceipt": "2026-09-20T11:32:00Z",
+          "notification": "AXLayoutChanged",
+          "seq": "375",
+          "session": "DD5F7E9C-3E0E-4B51-8AF5-3489195B96DE"
+        }
+      ],
+      "next": {
+        "actions": "recording_review(view: actions)",
+        "events": "recording_review(view: events)",
+        "evidence": "recording_query(after: record seq minus 1, limit: 1)",
+        "page": "recording_review with same filters, through and after=nextCursor",
+        "tree": "recording_nodes(snapshot: snapshot seq, outline: true)"
+      },
+      "nextCursor": 375,
+      "presentation": "Values/excerpts may be shortened; full retained records remain stored. Overview lists attention records first; counts cover the whole selected history, not just this page.",
+      "scope": {
+        "interaction": "all",
+        "session": "all"
+      },
+      "through": 425,
+      "totals": [
+        {
+          "attentionRecords": "21",
+          "first": "1",
+          "last": "425",
+          "records": "425"
+        }
+      ],
+      "view": "events"
+    },
+    {
+      "counts": [
+        {
+          "count": "13",
+          "first": "33",
+          "kind": "action_intent",
+          "last": "384"
+        },
+        {
+          "count": "13",
+          "first": "34",
+          "kind": "action_result",
+          "last": "385"
+        },
+        {
+          "count": "101",
+          "first": "8",
+          "kind": "ax_notification",
+          "last": "403"
+        },
+        {
+          "count": "8",
+          "first": "317",
+          "kind": "expectation_result",
+          "last": "394"
+        },
+        {
+          "count": "6",
+          "first": "7",
+          "kind": "session_start",
+          "last": "402"
+        },
+        {
+          "count": "49",
+          "first": "9",
+          "kind": "snapshot",
+          "last": "425"
+        },
+        {
+          "count": "235",
+          "first": "1",
+          "kind": "subscription",
+          "last": "424"
+        }
+      ],
+      "coverage": "Recorded evidence only. API errors are not proof of failed effects; unsupported notifications and capture gaps require attention. Events grouped by session, notification and ephemeral element hash; separate actions are never merged.",
+      "hasMore": false,
+      "historical": true,
+      "items": [
+        {
+          "count": "2",
+          "elementHash": "1668314721",
+          "firstReceipt": "2026-09-20T11:32:00Z",
+          "last": "388",
+          "lastReceipt": "2026-09-20T11:32:54Z",
+          "notification": "AXLayoutChanged",
+          "seq": "376",
+          "session": "DD5F7E9C-3E0E-4B51-8AF5-3489195B96DE"
+        },
+        {
+          "count": "1",
+          "elementHash": "1869643137",
+          "firstReceipt": "2026-09-20T11:32:54Z",
+          "last": "386",
+          "lastReceipt": "2026-09-20T11:32:54Z",
+          "notification": "AXLayoutChanged",
+          "seq": "386",
+          "session": "DD5F7E9C-3E0E-4B51-8AF5-3489195B96DE"
+        },
+        {
+          "count": "1",
+          "elementHash": "1869643153",
+          "firstReceipt": "2026-09-20T11:32:54Z",
+          "last": "387",
+          "lastReceipt": "2026-09-20T11:32:54Z",
+          "notification": "AXLayoutChanged",
+          "seq": "387",
+          "session": "DD5F7E9C-3E0E-4B51-8AF5-3489195B96DE"
+        },
+        {
+          "count": "1",
+          "elementHash": "1869643297",
+          "firstReceipt": "2026-09-20T11:42:11Z",
+          "last": "403",
+          "lastReceipt": "2026-09-20T11:42:11Z",
+          "notification": "AXWindowCreated",
+          "seq": "403",
+          "session": "5BB1B560-B14A-47D7-BEAB-4EBA02CFDF82"
+        }
+      ],
+      "next": {
+        "actions": "recording_review(view: actions)",
+        "events": "recording_review(view: events)",
+        "evidence": "recording_query(after: record seq minus 1, limit: 1)",
+        "page": "recording_review with same filters, through and after=nextCursor",
+        "tree": "recording_nodes(snapshot: snapshot seq, outline: true)"
+      },
+      "nextCursor": 403,
+      "presentation": "Values/excerpts may be shortened; full retained records remain stored. Overview lists attention records first; counts cover the whole selected history, not just this page.",
+      "scope": {
+        "interaction": "all",
+        "session": "all"
+      },
+      "through": 425,
+      "totals": [
+        {
+          "attentionRecords": "21",
+          "first": "1",
+          "last": "425",
+          "records": "425"
+        }
+      ],
+      "view": "events"
+    }
+  ],
+  "subtrees": [
+    {
+      "coordinateSpace": "screen points, top-left origin; visibility is frame-based, not occlusion",
+      "hasMore": false,
+      "historical": true,
+      "items": [
+        {
+          "depth": 1,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0",
+          "label": "",
+          "ordinal": 20,
+          "role": "AXScrollArea"
+        }
+      ],
+      "liveTargetWarning": "Historical indices/keys require fresh target validation before input",
+      "matched": 1,
+      "next": "ui_to_text with same snapshot and filters, after=nextCursor; leap_asset for references",
+      "nextCursor": 20,
+      "snapshot": {
+        "captureEnded": 2308115.9789610836,
+        "captureLimit": 1500,
+        "captureStarted": 2308115.131625,
+        "deadlineExceeded": false,
+        "generation": 1,
+        "interaction": "88251A77-6180-4604-8958-E4C94240CEC6",
+        "nodeCount": 258,
+        "readFailures": 0,
+        "screenFrame": [
+          306,
+          210,
+          1080,
+          748
+        ],
+        "session": "5BB1B560-B14A-47D7-BEAB-4EBA02CFDF82",
+        "snapshot": 425,
+        "source": "AX snapshot; attributes read over an interval, not atomic",
+        "truncated": false,
+        "window": "Gameday"
+      }
+    },
+    {
+      "coordinateSpace": "screen points, top-left origin; visibility is frame-based, not occlusion",
+      "hasMore": false,
+      "historical": true,
+      "items": [
+        {
+          "depth": 1,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0",
+          "label": "",
+          "ordinal": 20,
+          "role": "AXScrollArea"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[RUN]#0",
+          "label": "RUN",
+          "ordinal": 21,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[PASS]#1",
+          "label": "PASS",
+          "ordinal": 22,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[ZEBRA]#2",
+          "label": "ZEBRA",
+          "ordinal": 23,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[OSCAR ]#3",
+          "label": "OSCAR ",
+          "ordinal": 24,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[CONNOR ]#4",
+          "label": "CONNOR ",
+          "ordinal": 25,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[ZUES (11)]#5",
+          "label": "ZUES (11)",
+          "ordinal": 26,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[ZELDA (11)]#6",
+          "label": "ZELDA (11)",
+          "ordinal": 27,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[OMAR (11)]#7",
+          "label": "OMAR (11)",
+          "ordinal": 28,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[TEMPO]#8",
+          "label": "TEMPO",
+          "ordinal": 29,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXStaticText[]#0",
+          "label": "",
+          "ordinal": 30,
+          "role": "AXStaticText"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[2X2 SLOTS]#9",
+          "label": "2X2 SLOTS",
+          "ordinal": 31,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[49ERS]#10",
+          "label": "49ERS",
+          "ordinal": 32,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[ANY]#11",
+          "label": "ANY",
+          "ordinal": 33,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[ANY]#12",
+          "label": "ANY",
+          "ordinal": 34,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[ARIZONA]#13",
+          "label": "ARIZONA",
+          "ordinal": 35,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[BULLY]#14",
+          "label": "BULLY",
+          "ordinal": 36,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[CARDINALS]#15",
+          "label": "CARDINALS",
+          "ordinal": 37,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[DART]#16",
+          "label": "DART",
+          "ordinal": 38,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[DART BUNCH]#17",
+          "label": "DART BUNCH",
+          "ordinal": 39,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[DUAL]#18",
+          "label": "DUAL",
+          "ordinal": 40,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[EARLY]#19",
+          "label": "EARLY",
+          "ordinal": 41,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[FIELD]#20",
+          "label": "FIELD",
+          "ordinal": 42,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[FRISCO]#21",
+          "label": "FRISCO",
+          "ordinal": 43,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[LA]#22",
+          "label": "LA",
+          "ordinal": 44,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[LATE]#23",
+          "label": "LATE",
+          "ordinal": 45,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[LAZOR]#24",
+          "label": "LAZOR",
+          "ordinal": 46,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[LEX]#25",
+          "label": "LEX",
+          "ordinal": 47,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[RAMS]#26",
+          "label": "RAMS",
+          "ordinal": 48,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[REX]#27",
+          "label": "REX",
+          "ordinal": 49,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[TURBO]#28",
+          "label": "TURBO",
+          "ordinal": 50,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[Unnamed formation]#29",
+          "label": "Unnamed formation",
+          "ordinal": 51,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[ZOMBIE]#30",
+          "label": "ZOMBIE",
+          "ordinal": 52,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXStaticText[]#1",
+          "label": "",
+          "ordinal": 53,
+          "role": "AXStaticText"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[3–4]#31",
+          "label": "3–4",
+          "ordinal": 54,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[3–4 Tite]#32",
+          "label": "3–4 Tite",
+          "ordinal": 55,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[4–2–5 Nickel]#33",
+          "label": "4–2–5 Nickel",
+          "ordinal": 56,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[Unspecified front]#34",
+          "label": "Unspecified front",
+          "ordinal": 57,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXStaticText[]#2",
+          "label": "",
+          "ordinal": 58,
+          "role": "AXStaticText"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[3-4]#35",
+          "label": "3-4",
+          "ordinal": 59,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[3-4]#36",
+          "label": "3-4",
+          "ordinal": 60,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[3-4 (BUCK)]#37",
+          "label": "3-4 (BUCK)",
+          "ordinal": 61,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[3-4 (TITE)]#38",
+          "label": "3-4 (TITE)",
+          "ordinal": 62,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[4-2]#39",
+          "label": "4-2",
+          "ordinal": 63,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[4-2]#40",
+          "label": "4-2",
+          "ordinal": 64,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[4-2]#41",
+          "label": "4-2",
+          "ordinal": 65,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[Scout alignment]#42",
+          "label": "Scout alignment",
+          "ordinal": 66,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[Scout alignment]#43",
+          "label": "Scout alignment",
+          "ordinal": 67,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[Scout alignment]#44",
+          "label": "Scout alignment",
+          "ordinal": 68,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[Scout alignment]#45",
+          "label": "Scout alignment",
+          "ordinal": 69,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[Scout alignment]#46",
+          "label": "Scout alignment",
+          "ordinal": 70,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[Scout alignment]#47",
+          "label": "Scout alignment",
+          "ordinal": 71,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXScrollBar[]#0",
+          "label": "",
+          "ordinal": 72,
+          "role": "AXScrollBar"
+        }
+      ],
+      "liveTargetWarning": "Historical indices/keys require fresh target validation before input",
+      "matched": 53,
+      "next": "ui_to_text with same snapshot and filters, after=nextCursor; leap_asset for references",
+      "nextCursor": 72,
+      "snapshot": {
+        "captureEnded": 2308115.9789610836,
+        "captureLimit": 1500,
+        "captureStarted": 2308115.131625,
+        "deadlineExceeded": false,
+        "generation": 1,
+        "interaction": "88251A77-6180-4604-8958-E4C94240CEC6",
+        "nodeCount": 258,
+        "readFailures": 0,
+        "screenFrame": [
+          306,
+          210,
+          1080,
+          748
+        ],
+        "session": "5BB1B560-B14A-47D7-BEAB-4EBA02CFDF82",
+        "snapshot": 425,
+        "source": "AX snapshot; attributes read over an interval, not atomic",
+        "truncated": false,
+        "window": "Gameday"
+      }
+    },
+    {
+      "coordinateSpace": "screen points, top-left origin; visibility is frame-based, not occlusion",
+      "hasMore": false,
+      "historical": true,
+      "items": [
+        {
+          "depth": 1,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0",
+          "label": "",
+          "ordinal": 20,
+          "role": "AXScrollArea"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[RUN]#0",
+          "label": "RUN",
+          "ordinal": 21,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[PASS]#1",
+          "label": "PASS",
+          "ordinal": 22,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[ZEBRA]#2",
+          "label": "ZEBRA",
+          "ordinal": 23,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[OSCAR ]#3",
+          "label": "OSCAR ",
+          "ordinal": 24,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[CONNOR ]#4",
+          "label": "CONNOR ",
+          "ordinal": 25,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[ZUES (11)]#5",
+          "label": "ZUES (11)",
+          "ordinal": 26,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[ZELDA (11)]#6",
+          "label": "ZELDA (11)",
+          "ordinal": 27,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[OMAR (11)]#7",
+          "label": "OMAR (11)",
+          "ordinal": 28,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[TEMPO]#8",
+          "label": "TEMPO",
+          "ordinal": 29,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXStaticText[]#0",
+          "label": "",
+          "ordinal": 30,
+          "role": "AXStaticText"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[2X2 SLOTS]#9",
+          "label": "2X2 SLOTS",
+          "ordinal": 31,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[49ERS]#10",
+          "label": "49ERS",
+          "ordinal": 32,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[ANY]#11",
+          "label": "ANY",
+          "ordinal": 33,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[ANY]#12",
+          "label": "ANY",
+          "ordinal": 34,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[ARIZONA]#13",
+          "label": "ARIZONA",
+          "ordinal": 35,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[BULLY]#14",
+          "label": "BULLY",
+          "ordinal": 36,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[CARDINALS]#15",
+          "label": "CARDINALS",
+          "ordinal": 37,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[DART]#16",
+          "label": "DART",
+          "ordinal": 38,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[DART BUNCH]#17",
+          "label": "DART BUNCH",
+          "ordinal": 39,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[DUAL]#18",
+          "label": "DUAL",
+          "ordinal": 40,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[EARLY]#19",
+          "label": "EARLY",
+          "ordinal": 41,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[FIELD]#20",
+          "label": "FIELD",
+          "ordinal": 42,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[FRISCO]#21",
+          "label": "FRISCO",
+          "ordinal": 43,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[LA]#22",
+          "label": "LA",
+          "ordinal": 44,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[LATE]#23",
+          "label": "LATE",
+          "ordinal": 45,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[LAZOR]#24",
+          "label": "LAZOR",
+          "ordinal": 46,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[LEX]#25",
+          "label": "LEX",
+          "ordinal": 47,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[RAMS]#26",
+          "label": "RAMS",
+          "ordinal": 48,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[REX]#27",
+          "label": "REX",
+          "ordinal": 49,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[TURBO]#28",
+          "label": "TURBO",
+          "ordinal": 50,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[Unnamed formation]#29",
+          "label": "Unnamed formation",
+          "ordinal": 51,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[ZOMBIE]#30",
+          "label": "ZOMBIE",
+          "ordinal": 52,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXStaticText[]#1",
+          "label": "",
+          "ordinal": 53,
+          "role": "AXStaticText"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[3–4]#31",
+          "label": "3–4",
+          "ordinal": 54,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[3–4 Tite]#32",
+          "label": "3–4 Tite",
+          "ordinal": 55,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[4–2–5 Nickel]#33",
+          "label": "4–2–5 Nickel",
+          "ordinal": 56,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[Unspecified front]#34",
+          "label": "Unspecified front",
+          "ordinal": 57,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXStaticText[]#2",
+          "label": "",
+          "ordinal": 58,
+          "role": "AXStaticText"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[3-4]#35",
+          "label": "3-4",
+          "ordinal": 59,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[3-4]#36",
+          "label": "3-4",
+          "ordinal": 60,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[3-4 (BUCK)]#37",
+          "label": "3-4 (BUCK)",
+          "ordinal": 61,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[3-4 (TITE)]#38",
+          "label": "3-4 (TITE)",
+          "ordinal": 62,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[4-2]#39",
+          "label": "4-2",
+          "ordinal": 63,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[4-2]#40",
+          "label": "4-2",
+          "ordinal": 64,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[4-2]#41",
+          "label": "4-2",
+          "ordinal": 65,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[Scout alignment]#42",
+          "label": "Scout alignment",
+          "ordinal": 66,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[Scout alignment]#43",
+          "label": "Scout alignment",
+          "ordinal": 67,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[Scout alignment]#44",
+          "label": "Scout alignment",
+          "ordinal": 68,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[Scout alignment]#45",
+          "label": "Scout alignment",
+          "ordinal": 69,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[Scout alignment]#46",
+          "label": "Scout alignment",
+          "ordinal": 70,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[Scout alignment]#47",
+          "label": "Scout alignment",
+          "ordinal": 71,
+          "role": "AXButton"
+        },
+        {
+          "depth": 2,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXScrollBar[]#0",
+          "label": "",
+          "ordinal": 72,
+          "role": "AXScrollBar"
+        },
+        {
+          "depth": 3,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXScrollBar[]#0/AXValueIndicator[]#0",
+          "label": "",
+          "ordinal": 73,
+          "role": "AXValueIndicator"
+        },
+        {
+          "depth": 3,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXScrollBar[]#0/AXButton[]#2",
+          "label": "",
+          "ordinal": 74,
+          "role": "AXButton"
+        },
+        {
+          "depth": 3,
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXScrollBar[]#0/AXButton[]#3",
+          "label": "",
+          "ordinal": 75,
+          "role": "AXButton"
+        }
+      ],
+      "liveTargetWarning": "Historical indices/keys require fresh target validation before input",
+      "matched": 56,
+      "next": "ui_to_text with same snapshot and filters, after=nextCursor; leap_asset for references",
+      "nextCursor": 75,
+      "snapshot": {
+        "captureEnded": 2308115.9789610836,
+        "captureLimit": 1500,
+        "captureStarted": 2308115.131625,
+        "deadlineExceeded": false,
+        "generation": 1,
+        "interaction": "88251A77-6180-4604-8958-E4C94240CEC6",
+        "nodeCount": 258,
+        "readFailures": 0,
+        "screenFrame": [
+          306,
+          210,
+          1080,
+          748
+        ],
+        "session": "5BB1B560-B14A-47D7-BEAB-4EBA02CFDF82",
+        "snapshot": 425,
+        "source": "AX snapshot; attributes read over an interval, not atomic",
+        "truncated": false,
+        "window": "Gameday"
+      }
+    }
+  ],
+  "buttonPages": [
+    {
+      "coordinateSpace": "screen points, top-left origin; visibility is frame-based, not occlusion",
+      "hasMore": true,
+      "historical": true,
+      "items": [
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXButton[Team library: Higley High School Knights · Freshman]#0",
+          "label": "Team library: Higley High School Knights · Freshman",
+          "ordinal": 2,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXButton[Playbook: Freshman 2026]#1",
+          "label": "Playbook: Freshman 2026",
+          "ordinal": 3,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXButton[Playbook]#2",
+          "label": "Playbook",
+          "ordinal": 4,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXButton[Formations]#3",
+          "label": "Formations",
+          "ordinal": 5,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXButton[Route library]#4",
+          "label": "Route library",
+          "ordinal": 6,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXButton[Flashcards]#5",
+          "label": "Flashcards",
+          "ordinal": 7,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXButton[Import]#6",
+          "label": "Import",
+          "ordinal": 8,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXButton[Offense]#0",
+          "label": "Offense",
+          "ordinal": 12,
+          "selected": true
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXButton[Defense]#1",
+          "label": "Defense",
+          "ordinal": 13,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXButton[Sideline]#2",
+          "label": "Sideline",
+          "ordinal": 14,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXButton[Reset filters]#3",
+          "label": "Reset filters",
+          "ordinal": 16,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXButton[Include Base Plays]#4",
+          "label": "Include Base Plays",
+          "ordinal": 17,
+          "selected": true
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXButton[Edit filters]#5",
+          "label": "Edit filters",
+          "ordinal": 18,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXButton[Select play]#6",
+          "label": "Select play",
+          "ordinal": 19,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[RUN]#0",
+          "label": "RUN",
+          "ordinal": 21,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[PASS]#1",
+          "label": "PASS",
+          "ordinal": 22,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[ZEBRA]#2",
+          "label": "ZEBRA",
+          "ordinal": 23,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[OSCAR ]#3",
+          "label": "OSCAR ",
+          "ordinal": 24,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[CONNOR ]#4",
+          "label": "CONNOR ",
+          "ordinal": 25,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[ZUES (11)]#5",
+          "label": "ZUES (11)",
+          "ordinal": 26,
+          "selected": false
+        }
+      ],
+      "liveTargetWarning": "Historical indices/keys require fresh target validation before input",
+      "matched": 139,
+      "next": "ui_to_text with same snapshot and filters, after=nextCursor; leap_asset for references",
+      "nextCursor": 26,
+      "snapshot": {
+        "captureEnded": 2308115.9789610836,
+        "captureLimit": 1500,
+        "captureStarted": 2308115.131625,
+        "deadlineExceeded": false,
+        "generation": 1,
+        "interaction": "88251A77-6180-4604-8958-E4C94240CEC6",
+        "nodeCount": 258,
+        "readFailures": 0,
+        "screenFrame": [
+          306,
+          210,
+          1080,
+          748
+        ],
+        "session": "5BB1B560-B14A-47D7-BEAB-4EBA02CFDF82",
+        "snapshot": 425,
+        "source": "AX snapshot; attributes read over an interval, not atomic",
+        "truncated": false,
+        "window": "Gameday"
+      }
+    },
+    {
+      "coordinateSpace": "screen points, top-left origin; visibility is frame-based, not occlusion",
+      "hasMore": true,
+      "historical": true,
+      "items": [
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[ZELDA (11)]#6",
+          "label": "ZELDA (11)",
+          "ordinal": 27,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[OMAR (11)]#7",
+          "label": "OMAR (11)",
+          "ordinal": 28,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[TEMPO]#8",
+          "label": "TEMPO",
+          "ordinal": 29,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[2X2 SLOTS]#9",
+          "label": "2X2 SLOTS",
+          "ordinal": 31,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[49ERS]#10",
+          "label": "49ERS",
+          "ordinal": 32,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[ANY]#11",
+          "label": "ANY",
+          "ordinal": 33,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[ANY]#12",
+          "label": "ANY",
+          "ordinal": 34,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[ARIZONA]#13",
+          "label": "ARIZONA",
+          "ordinal": 35,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[BULLY]#14",
+          "label": "BULLY",
+          "ordinal": 36,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[CARDINALS]#15",
+          "label": "CARDINALS",
+          "ordinal": 37,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[DART]#16",
+          "label": "DART",
+          "ordinal": 38,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[DART BUNCH]#17",
+          "label": "DART BUNCH",
+          "ordinal": 39,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[DUAL]#18",
+          "label": "DUAL",
+          "ordinal": 40,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[EARLY]#19",
+          "label": "EARLY",
+          "ordinal": 41,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[FIELD]#20",
+          "label": "FIELD",
+          "ordinal": 42,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[FRISCO]#21",
+          "label": "FRISCO",
+          "ordinal": 43,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[LA]#22",
+          "label": "LA",
+          "ordinal": 44,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[LATE]#23",
+          "label": "LATE",
+          "ordinal": 45,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[LAZOR]#24",
+          "label": "LAZOR",
+          "ordinal": 46,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[LEX]#25",
+          "label": "LEX",
+          "ordinal": 47,
+          "selected": false
+        }
+      ],
+      "liveTargetWarning": "Historical indices/keys require fresh target validation before input",
+      "matched": 139,
+      "next": "ui_to_text with same snapshot and filters, after=nextCursor; leap_asset for references",
+      "nextCursor": 47,
+      "snapshot": {
+        "captureEnded": 2308115.9789610836,
+        "captureLimit": 1500,
+        "captureStarted": 2308115.131625,
+        "deadlineExceeded": false,
+        "generation": 1,
+        "interaction": "88251A77-6180-4604-8958-E4C94240CEC6",
+        "nodeCount": 258,
+        "readFailures": 0,
+        "screenFrame": [
+          306,
+          210,
+          1080,
+          748
+        ],
+        "session": "5BB1B560-B14A-47D7-BEAB-4EBA02CFDF82",
+        "snapshot": 425,
+        "source": "AX snapshot; attributes read over an interval, not atomic",
+        "truncated": false,
+        "window": "Gameday"
+      }
+    },
+    {
+      "coordinateSpace": "screen points, top-left origin; visibility is frame-based, not occlusion",
+      "hasMore": true,
+      "historical": true,
+      "items": [
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[RAMS]#26",
+          "label": "RAMS",
+          "ordinal": 48,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[REX]#27",
+          "label": "REX",
+          "ordinal": 49,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[TURBO]#28",
+          "label": "TURBO",
+          "ordinal": 50,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[Unnamed formation]#29",
+          "label": "Unnamed formation",
+          "ordinal": 51,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[ZOMBIE]#30",
+          "label": "ZOMBIE",
+          "ordinal": 52,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[3–4]#31",
+          "label": "3–4",
+          "ordinal": 54,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[3–4 Tite]#32",
+          "label": "3–4 Tite",
+          "ordinal": 55,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[4–2–5 Nickel]#33",
+          "label": "4–2–5 Nickel",
+          "ordinal": 56,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[Unspecified front]#34",
+          "label": "Unspecified front",
+          "ordinal": 57,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[3-4]#35",
+          "label": "3-4",
+          "ordinal": 59,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[3-4]#36",
+          "label": "3-4",
+          "ordinal": 60,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[3-4 (BUCK)]#37",
+          "label": "3-4 (BUCK)",
+          "ordinal": 61,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[3-4 (TITE)]#38",
+          "label": "3-4 (TITE)",
+          "ordinal": 62,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[4-2]#39",
+          "label": "4-2",
+          "ordinal": 63,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[4-2]#40",
+          "label": "4-2",
+          "ordinal": 64,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[4-2]#41",
+          "label": "4-2",
+          "ordinal": 65,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[Scout alignment]#42",
+          "label": "Scout alignment",
+          "ordinal": 66,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[Scout alignment]#43",
+          "label": "Scout alignment",
+          "ordinal": 67,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[Scout alignment]#44",
+          "label": "Scout alignment",
+          "ordinal": 68,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[Scout alignment]#45",
+          "label": "Scout alignment",
+          "ordinal": 69,
+          "selected": false
+        }
+      ],
+      "liveTargetWarning": "Historical indices/keys require fresh target validation before input",
+      "matched": 139,
+      "next": "ui_to_text with same snapshot and filters, after=nextCursor; leap_asset for references",
+      "nextCursor": 69,
+      "snapshot": {
+        "captureEnded": 2308115.9789610836,
+        "captureLimit": 1500,
+        "captureStarted": 2308115.131625,
+        "deadlineExceeded": false,
+        "generation": 1,
+        "interaction": "88251A77-6180-4604-8958-E4C94240CEC6",
+        "nodeCount": 258,
+        "readFailures": 0,
+        "screenFrame": [
+          306,
+          210,
+          1080,
+          748
+        ],
+        "session": "5BB1B560-B14A-47D7-BEAB-4EBA02CFDF82",
+        "snapshot": 425,
+        "source": "AX snapshot; attributes read over an interval, not atomic",
+        "truncated": false,
+        "window": "Gameday"
+      }
+    },
+    {
+      "coordinateSpace": "screen points, top-left origin; visibility is frame-based, not occlusion",
+      "hasMore": true,
+      "historical": true,
+      "items": [
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[Scout alignment]#46",
+          "label": "Scout alignment",
+          "ordinal": 70,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[Scout alignment]#47",
+          "label": "Scout alignment",
+          "ordinal": 71,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXScrollBar[]#0/AXButton[]#2",
+          "label": "",
+          "ordinal": 74,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXScrollArea[]#0/AXScrollBar[]#0/AXButton[]#3",
+          "label": "",
+          "ordinal": 75,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXButton[Labels]#7",
+          "label": "Labels",
+          "ordinal": 77,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXButton[Show field]#8",
+          "label": "Show field",
+          "ordinal": 88,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXButton[Previous play]#9",
+          "label": "Previous play",
+          "ordinal": 89,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXButton[New play]#10",
+          "label": "New play",
+          "ordinal": 91,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXButton[Edit play]#11",
+          "label": "Edit play",
+          "ordinal": 92,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXButton[Duplicate play]#12",
+          "label": "Duplicate play",
+          "ordinal": 93,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXButton[Delete play]#13",
+          "label": "Delete play",
+          "ordinal": 94,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXGroup[]#0/AXButton[Next play]#14",
+          "label": "Next play",
+          "ordinal": 95,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[New route]#0",
+          "label": "New route",
+          "ordinal": 99,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXButton[Clear route search]#1",
+          "label": "Clear route search",
+          "ordinal": 103,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXOpaqueProviderGroup[]#0/AXButton[Show Receiver routes]#0",
+          "label": "Show Receiver routes",
+          "ordinal": 105,
+          "selected": true
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXOpaqueProviderGroup[]#0/AXButton[Show Backfield routes]#1",
+          "label": "Show Backfield routes",
+          "ordinal": 106,
+          "selected": true
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXOpaqueProviderGroup[]#0/AXButton[Show Pre-snap motion routes]#2",
+          "label": "Show Pre-snap motion routes",
+          "ordinal": 107,
+          "selected": true
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXOpaqueProviderGroup[]#0/AXButton[Show Blocking / pulling routes]#3",
+          "label": "Show Blocking / pulling routes",
+          "ordinal": 108,
+          "selected": true
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXOpaqueProviderGroup[]#0/AXButton[Show Defensive assignment routes]#4",
+          "label": "Show Defensive assignment routes",
+          "ordinal": 109,
+          "selected": true
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXOpaqueProviderGroup[]#1/AXButton[2 Step Slant]#0",
+          "label": "2 Step Slant",
+          "ordinal": 112,
+          "selected": false
+        }
+      ],
+      "liveTargetWarning": "Historical indices/keys require fresh target validation before input",
+      "matched": 139,
+      "next": "ui_to_text with same snapshot and filters, after=nextCursor; leap_asset for references",
+      "nextCursor": 112,
+      "snapshot": {
+        "captureEnded": 2308115.9789610836,
+        "captureLimit": 1500,
+        "captureStarted": 2308115.131625,
+        "deadlineExceeded": false,
+        "generation": 1,
+        "interaction": "88251A77-6180-4604-8958-E4C94240CEC6",
+        "nodeCount": 258,
+        "readFailures": 0,
+        "screenFrame": [
+          306,
+          210,
+          1080,
+          748
+        ],
+        "session": "5BB1B560-B14A-47D7-BEAB-4EBA02CFDF82",
+        "snapshot": 425,
+        "source": "AX snapshot; attributes read over an interval, not atomic",
+        "truncated": false,
+        "window": "Gameday"
+      }
+    },
+    {
+      "coordinateSpace": "screen points, top-left origin; visibility is frame-based, not occlusion",
+      "hasMore": true,
+      "historical": true,
+      "items": [
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXOpaqueProviderGroup[]#1/AXButton[2 Step Slant (Quick)]#1",
+          "label": "2 Step Slant (Quick)",
+          "ordinal": 113,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXOpaqueProviderGroup[]#1/AXButton[3 Step Slant]#2",
+          "label": "3 Step Slant",
+          "ordinal": 114,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXOpaqueProviderGroup[]#1/AXButton[3 Step Slant (Flat)]#3",
+          "label": "3 Step Slant (Flat)",
+          "ordinal": 115,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXOpaqueProviderGroup[]#1/AXButton[4yd Mesh]#4",
+          "label": "4yd Mesh",
+          "ordinal": 116,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXOpaqueProviderGroup[]#1/AXButton[5 Speed out]#5",
+          "label": "5 Speed out",
+          "ordinal": 117,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXOpaqueProviderGroup[]#1/AXButton[5 yard Drive]#6",
+          "label": "5 yard Drive",
+          "ordinal": 118,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXOpaqueProviderGroup[]#1/AXButton[5 Yard drive spot]#7",
+          "label": "5 Yard drive spot",
+          "ordinal": 119,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXOpaqueProviderGroup[]#1/AXButton[5 Yard Snag]#8",
+          "label": "5 Yard Snag",
+          "ordinal": 120,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXOpaqueProviderGroup[]#1/AXButton[5yd Drive]#9",
+          "label": "5yd Drive",
+          "ordinal": 121,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXOpaqueProviderGroup[]#1/AXButton[5yd Drive Spot]#10",
+          "label": "5yd Drive Spot",
+          "ordinal": 122,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXOpaqueProviderGroup[]#1/AXButton[5yd In]#11",
+          "label": "5yd In",
+          "ordinal": 123,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXOpaqueProviderGroup[]#1/AXButton[5yd Mesh]#12",
+          "label": "5yd Mesh",
+          "ordinal": 124,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXOpaqueProviderGroup[]#1/AXButton[5yd Option Route]#13",
+          "label": "5yd Option Route",
+          "ordinal": 125,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXOpaqueProviderGroup[]#1/AXButton[5yd OTB]#14",
+          "label": "5yd OTB",
+          "ordinal": 126,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXOpaqueProviderGroup[]#1/AXButton[5yd Snag]#15",
+          "label": "5yd Snag",
+          "ordinal": 127,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXOpaqueProviderGroup[]#1/AXButton[5yd Snag, Replace the WLB]#16",
+          "label": "5yd Snag, Replace the WLB",
+          "ordinal": 128,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXOpaqueProviderGroup[]#1/AXButton[5yd Spot Drive]#17",
+          "label": "5yd Spot Drive",
+          "ordinal": 129,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXOpaqueProviderGroup[]#1/AXButton[6 Full Step Speed Out Route]#18",
+          "label": "6 Full Step Speed Out Route",
+          "ordinal": 130,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXOpaqueProviderGroup[]#1/AXButton[8yd Angle Curl (Turn Inside)]#19",
+          "label": "8yd Angle Curl (Turn Inside)",
+          "ordinal": 131,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXOpaqueProviderGroup[]#1/AXButton[8yd Angle Route (Turn Inside)]#20",
+          "label": "8yd Angle Route (Turn Inside)",
+          "ordinal": 132,
+          "selected": false
+        }
+      ],
+      "liveTargetWarning": "Historical indices/keys require fresh target validation before input",
+      "matched": 139,
+      "next": "ui_to_text with same snapshot and filters, after=nextCursor; leap_asset for references",
+      "nextCursor": 132,
+      "snapshot": {
+        "captureEnded": 2308115.9789610836,
+        "captureLimit": 1500,
+        "captureStarted": 2308115.131625,
+        "deadlineExceeded": false,
+        "generation": 1,
+        "interaction": "88251A77-6180-4604-8958-E4C94240CEC6",
+        "nodeCount": 258,
+        "readFailures": 0,
+        "screenFrame": [
+          306,
+          210,
+          1080,
+          748
+        ],
+        "session": "5BB1B560-B14A-47D7-BEAB-4EBA02CFDF82",
+        "snapshot": 425,
+        "source": "AX snapshot; attributes read over an interval, not atomic",
+        "truncated": false,
+        "window": "Gameday"
+      }
+    },
+    {
+      "coordinateSpace": "screen points, top-left origin; visibility is frame-based, not occlusion",
+      "hasMore": true,
+      "historical": true,
+      "items": [
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXOpaqueProviderGroup[]#1/AXButton[10yd Dig]#21",
+          "label": "10yd Dig",
+          "ordinal": 133,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXOpaqueProviderGroup[]#1/AXButton[12 back to 10 Comeback]#22",
+          "label": "12 back to 10 Comeback",
+          "ordinal": 134,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXOpaqueProviderGroup[]#1/AXButton[12 Yard backside Dig]#23",
+          "label": "12 Yard backside Dig",
+          "ordinal": 135,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXOpaqueProviderGroup[]#1/AXButton[12 Yard Dig]#24",
+          "label": "12 Yard Dig",
+          "ordinal": 136,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXOpaqueProviderGroup[]#1/AXButton[12 Yd Dig]#25",
+          "label": "12 Yd Dig",
+          "ordinal": 137,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXOpaqueProviderGroup[]#1/AXButton[12-10 Comeback]#26",
+          "label": "12-10 Comeback",
+          "ordinal": 138,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXOpaqueProviderGroup[]#1/AXButton[12yd Dig]#27",
+          "label": "12yd Dig",
+          "ordinal": 139,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXOpaqueProviderGroup[]#1/AXButton[12yd Speed Dig]#28",
+          "label": "12yd Speed Dig",
+          "ordinal": 140,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#0/AXOpaqueProviderGroup[]#1/AXButton[Back-Line Dig]#29",
+          "label": "Back-Line Dig",
+          "ordinal": 141,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#1/AXButton[New formation]#0",
+          "label": "New formation",
+          "ordinal": 148,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#1/AXButton[Offense]#1",
+          "label": "Offense",
+          "ordinal": 150,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#1/AXButton[Defense]#2",
+          "label": "Defense",
+          "ordinal": 151,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#1/AXOpaqueProviderGroup[]#0/AXGroup[Football field]#0/AXButton[Zoom to 150 percent]#0",
+          "label": "Zoom to 150 percent",
+          "ordinal": 166,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#1/AXOpaqueProviderGroup[]#0/AXButton[Edit]#0",
+          "label": "Edit",
+          "ordinal": 168,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#1/AXOpaqueProviderGroup[]#0/AXButton[Duplicate]#1",
+          "label": "Duplicate",
+          "ordinal": 169,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#1/AXOpaqueProviderGroup[]#0/AXButton[Delete 2X2 SLOTS]#2",
+          "label": "Delete 2X2 SLOTS",
+          "ordinal": 170,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#1/AXOpaqueProviderGroup[]#0/AXGroup[Football field]#1/AXButton[Zoom to 150 percent]#0",
+          "label": "Zoom to 150 percent",
+          "ordinal": 183,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#1/AXOpaqueProviderGroup[]#0/AXButton[Edit]#3",
+          "label": "Edit",
+          "ordinal": 185,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#1/AXOpaqueProviderGroup[]#0/AXButton[Duplicate]#4",
+          "label": "Duplicate",
+          "ordinal": 186,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#1/AXOpaqueProviderGroup[]#0/AXButton[Delete 49ERS]#5",
+          "label": "Delete 49ERS",
+          "ordinal": 187,
+          "selected": false
+        }
+      ],
+      "liveTargetWarning": "Historical indices/keys require fresh target validation before input",
+      "matched": 139,
+      "next": "ui_to_text with same snapshot and filters, after=nextCursor; leap_asset for references",
+      "nextCursor": 187,
+      "snapshot": {
+        "captureEnded": 2308115.9789610836,
+        "captureLimit": 1500,
+        "captureStarted": 2308115.131625,
+        "deadlineExceeded": false,
+        "generation": 1,
+        "interaction": "88251A77-6180-4604-8958-E4C94240CEC6",
+        "nodeCount": 258,
+        "readFailures": 0,
+        "screenFrame": [
+          306,
+          210,
+          1080,
+          748
+        ],
+        "session": "5BB1B560-B14A-47D7-BEAB-4EBA02CFDF82",
+        "snapshot": 425,
+        "source": "AX snapshot; attributes read over an interval, not atomic",
+        "truncated": false,
+        "window": "Gameday"
+      }
+    },
+    {
+      "coordinateSpace": "screen points, top-left origin; visibility is frame-based, not occlusion",
+      "hasMore": false,
+      "historical": true,
+      "items": [
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#1/AXOpaqueProviderGroup[]#0/AXGroup[Football field]#2/AXButton[Zoom to 150 percent]#0",
+          "label": "Zoom to 150 percent",
+          "ordinal": 197,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#1/AXOpaqueProviderGroup[]#0/AXButton[Edit]#6",
+          "label": "Edit",
+          "ordinal": 199,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#1/AXOpaqueProviderGroup[]#0/AXButton[Duplicate]#7",
+          "label": "Duplicate",
+          "ordinal": 200,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#1/AXOpaqueProviderGroup[]#0/AXButton[Delete ANY]#8",
+          "label": "Delete ANY",
+          "ordinal": 201,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#1/AXOpaqueProviderGroup[]#0/AXGroup[Football field]#3/AXButton[Zoom to 150 percent]#0",
+          "label": "Zoom to 150 percent",
+          "ordinal": 210,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#1/AXOpaqueProviderGroup[]#0/AXButton[Edit]#9",
+          "label": "Edit",
+          "ordinal": 212,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#1/AXOpaqueProviderGroup[]#0/AXButton[Duplicate]#10",
+          "label": "Duplicate",
+          "ordinal": 213,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#1/AXOpaqueProviderGroup[]#0/AXButton[Delete ANY]#11",
+          "label": "Delete ANY",
+          "ordinal": 214,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#1/AXOpaqueProviderGroup[]#0/AXGroup[Football field]#4/AXButton[Zoom to 150 percent]#0",
+          "label": "Zoom to 150 percent",
+          "ordinal": 227,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#1/AXOpaqueProviderGroup[]#0/AXButton[Edit]#12",
+          "label": "Edit",
+          "ordinal": 229,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#1/AXOpaqueProviderGroup[]#0/AXButton[Duplicate]#13",
+          "label": "Duplicate",
+          "ordinal": 230,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#1/AXOpaqueProviderGroup[]#0/AXButton[Delete ARIZONA]#14",
+          "label": "Delete ARIZONA",
+          "ordinal": 231,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#1/AXOpaqueProviderGroup[]#0/AXGroup[Football field]#5/AXButton[Zoom to 150 percent]#0",
+          "label": "Zoom to 150 percent",
+          "ordinal": 244,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#1/AXOpaqueProviderGroup[]#0/AXButton[Edit]#15",
+          "label": "Edit",
+          "ordinal": 246,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#1/AXOpaqueProviderGroup[]#0/AXButton[Duplicate]#16",
+          "label": "Duplicate",
+          "ordinal": 247,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXGroup[]#0/AXScrollArea[]#1/AXOpaqueProviderGroup[]#0/AXButton[Delete BULLY]#17",
+          "label": "Delete BULLY",
+          "ordinal": 248,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXButton[]#0",
+          "label": "",
+          "ordinal": 249,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXButton[]#1",
+          "label": "",
+          "ordinal": 250,
+          "selected": false
+        },
+        {
+          "key": "w/AXWindow[Gameday]#0/AXButton[]#2",
+          "label": "",
+          "ordinal": 251,
+          "selected": false
+        }
+      ],
+      "liveTargetWarning": "Historical indices/keys require fresh target validation before input",
+      "matched": 139,
+      "next": "ui_to_text with same snapshot and filters, after=nextCursor; leap_asset for references",
+      "nextCursor": 251,
+      "snapshot": {
+        "captureEnded": 2308115.9789610836,
+        "captureLimit": 1500,
+        "captureStarted": 2308115.131625,
+        "deadlineExceeded": false,
+        "generation": 1,
+        "interaction": "88251A77-6180-4604-8958-E4C94240CEC6",
+        "nodeCount": 258,
+        "readFailures": 0,
+        "screenFrame": [
+          306,
+          210,
+          1080,
+          748
+        ],
+        "session": "5BB1B560-B14A-47D7-BEAB-4EBA02CFDF82",
+        "snapshot": 425,
+        "source": "AX snapshot; attributes read over an interval, not atomic",
+        "truncated": false,
+        "window": "Gameday"
+      }
+    }
+  ],
+  "forward": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"actions\":[{\"acknowledgement\":\"returned\",\"actionId\":\"B652CF60-2138-466A-9B49-6933B0C9DC35\",\"detail\":\"pressed [88] via accessibility\",\"intentRecord\":\"430\",\"resultRecord\":\"433\",\"tool\":\"click\"}],\"captureGapRecords\":0,\"checks\":[{\"condition\":\"appears\",\"label\":\"Show play information\",\"outcome\":\"unknown\",\"phase\":\"before\",\"record\":\"428\"},{\"condition\":\"appears\",\"label\":\"Show play information\",\"outcome\":\"met\",\"phase\":\"after\",\"record\":\"435\"}],\"interaction\":\"8D5F4459-1FB4-447E-BCE6-88EBA73522EB\",\"meaning\":\"Current-state checks do not prove persistence or causation. Preserve API uncertainty; never replay merely because acknowledgement failed.\",\"next\":\"recording_review(view: actions, interaction_id: this interaction) for all records; ui_diff for snapshot changes\",\"omitted\":false,\"outcome\":\"requested current-state checks met\",\"snapshots\":[{\"count\":\"4\",\"first\":\"427\",\"last\":\"436\"}]}\n## Gameday — window \"Gameday\" 1080x748 at screen (306,210) [background] — state #3 (settled)\nIndices are stable; act with element_index or label. Screenshot pixels are window points at scale=1; pass include_frames=true for per-element coordinates.\n## Diff vs state #2 (247 unchanged elements omitted; indices are stable; pass disable_diff=true if you did not see #2)\n+ [259] Unknown desc=\"Offense LT\"\n+ [260] Unknown desc=\"Offense LG\"\n+ [261] Unknown desc=\"Offense C\"\n+ [262] Unknown desc=\"Offense RG\"\n+ [263] Unknown desc=\"Offense RT\"\n+ [264] Unknown desc=\"Offense 1\"\n+ [265] Unknown desc=\"Offense 2\"\n+ [266] Unknown desc=\"Offense 2\"\n+ [267] Unknown desc=\"Offense 1\"\n+ [268] Unknown desc=\"Offense Q\"\n+ [269] Unknown desc=\"Offense RB\"\n+ [270] Unknown desc=\"Defense T\"\n+ [271] Unknown desc=\"Defense N\"\n+ [272] Unknown desc=\"Defense T\"\n+ [273] Unknown desc=\"Defense D\"\n+ [274] Unknown desc=\"Defense S\"\n+ [275] Unknown desc=\"Defense M\"\n+ [276] Unknown desc=\"Defense K\"\n+ [277] Button value=\"Default view\" desc=\"Zoom to 150 percent\"\n+ [278] StaticText value=\"DEFENSE  ↑\"\n+ [279] StaticText value=\"11 O  /  7 D\"\n+ [280] Button desc=\"Show play information\"\n+ [281] StaticText value=\"1 of 1\" desc=\"Active sequence position\"\nRemoved element indices: 79-88, 90\nFocused element: [1]\n\nRecording: session=5BB1B560-B14A-47D7-BEAB-4EBA02CFDF82 snapshot=436 coverage=captured interaction=8D5F4459-1FB4-447E-BCE6-88EBA73522EB; inspect with ui_to_text(snapshot: 436) or recording_review(interaction_id: 8D5F4459-1FB4-447E-BCE6-88EBA73522EB)."
+      }
+    ],
+    "isError": false
+  },
+  "reverse": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"actions\":[{\"acknowledgement\":\"returned\",\"actionId\":\"7C924AAB-42FB-4BD4-B11F-532E0A24085C\",\"detail\":\"pressed [280] via accessibility\",\"intentRecord\":\"440\",\"resultRecord\":\"441\",\"tool\":\"click\"}],\"captureGapRecords\":0,\"checks\":[{\"condition\":\"appears\",\"label\":\"Show field\",\"outcome\":\"unknown\",\"phase\":\"before\",\"record\":\"438\"},{\"condition\":\"appears\",\"label\":\"Show field\",\"outcome\":\"met\",\"phase\":\"after\",\"record\":\"450\"}],\"interaction\":\"C7A12E91-7D5B-4707-B2B8-7A1527A3A600\",\"meaning\":\"Current-state checks do not prove persistence or causation. Preserve API uncertainty; never replay merely because acknowledgement failed.\",\"next\":\"recording_review(view: actions, interaction_id: this interaction) for all records; ui_diff for snapshot changes\",\"omitted\":false,\"outcome\":\"requested current-state checks met\",\"snapshots\":[{\"count\":\"4\",\"first\":\"437\",\"last\":\"451\"}]}\n## Gameday — window \"Gameday\" 1080x748 at screen (306,210) [background] — state #4 (settled)\nIndices are stable; act with element_index or label. Screenshot pixels are window points at scale=1; pass include_frames=true for per-element coordinates.\n## Diff vs state #3 (247 unchanged elements omitted; indices are stable; pass disable_diff=true if you did not see #3)\n+ [79] StaticText value=\"COACHING NOTES\"\n+ [80] TextField value=\"Halftime adjustment: attack the soft flat. Read the flat defender; throw the slant if he widens. Trial play for UI testing.⏎CAM-03 persistence check: 2026-09-20.\" placeholder=\"Add coaching notes\" desc=\"Coaching notes\" [settable] actions=Confirm\n+ [81] StaticText value=\"PLAY INFORMATION\"\n+ [82] ScrollArea actions=ScrollLeftByPage,ScrollRightByPage,ScrollUpByPage,ScrollDownByPage\n+ [83] OpaqueProviderGroup/OpaqueProviderGrid actions=ScrollToTop,ScrollToBottom\n+ [84] StaticText value=\"1\"\n+ [85] StaticText value=\"Two hard steps, win inside; eyes to QB.\"\n+ [86] StaticText value=\"2\"\n+ [87] StaticText value=\"Widen quickly to the flat; be ready on rhythm.\"\n+ [88] Button desc=\"Show field\"\n+ [90] StaticText value=\"1 of 1\" desc=\"Active sequence position\"\nRemoved element indices: 259-281\nFocused element: [1]\n\nRecording: session=5BB1B560-B14A-47D7-BEAB-4EBA02CFDF82 snapshot=451 coverage=captured interaction=C7A12E91-7D5B-4707-B2B8-7A1527A3A600; inspect with ui_to_text(snapshot: 451) or recording_review(interaction_id: C7A12E91-7D5B-4707-B2B8-7A1527A3A600)."
+      }
+    ],
+    "isError": false
+  }
+}

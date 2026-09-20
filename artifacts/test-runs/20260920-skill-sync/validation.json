@@ -1,0 +1,10 @@
+{
+  "SKILL.md": {
+    "sha256": "a2b3487f404ff79ec8d0a01f9dcfa1035176dee14a01314a0abbe5944ef6b3db",
+    "installedCopiesMatch": true
+  },
+  "references/ui-details.md": {
+    "sha256": "491aef964a3b5cf0bf86db65a07abda081671033dad91ec44ceb05684ab77bf0",
+    "installedCopiesMatch": true
+  }
+}

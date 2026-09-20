@@ -12,7 +12,7 @@ Durable recording is an immediate foundation: preserve received events and obser
 
 - Gameday field/scroll/navigation, historical query pagination, ambiguous -25204 recovery and mirrored-route Save/reopen have scoped historical passes. Retained before/after checks passed native transitions. No broad feature is certified.
 - The integrated candidate adds budgeted/quality-aware acquisition, structured UI queries, text assets, snapshot comparisons, joined interaction results and automatic recording after binding. [Exact scope and native acceptance](research/integrated-observation-layer.md).
-- Latest install identity is in artifacts/test-runs/20260920-integrated/install.json after installation. Confirm user restart before native acceptance. Supporting code tests do not establish app behavior.
+- Latest install identity is in artifacts/test-runs/20260920-ax-batch-recovery/install.json after installation. Confirm user restart before native acceptance. Supporting code tests do not establish app behavior.
 - Next: run the integrated acceptance cases after restart; fix concrete failures together where they share a cause. Then finish bounded Gameday work, exercise iPhone/iPad Simulator and prioritize paired Blender construction.
 - Temporal expectations, controlled blocked/delayed observation coverage, durable window identity, binary evidence ingestion and compound workflows remain incomplete. leap-cli stays deferred.
 
@@ -56,3 +56,13 @@ Runner/Tracer-inspired review and tree outline are implemented. After the next r
 Current acceptance order is the integrated checklist linked above; older increment descriptions retain historical context and do not require repeating already-passed cases wholesale.
 
 Current restart check: first bound app observation must attach automatically, then compare historical snapshots 370/380 (34 changes, no frame changes). See [integrated native trial](research/integrated-native-trial.md). Several integrated functions now have scoped native passes; do not restart their implementation.
+
+2026-09-20 update: first-bound-app observation, corrected historical diff, subtree/button pagination and grouped event pagination passed. CAM-04 read-only discovery passed for both controllers. Next restart case is the repeated iPad read failure: inspect bounded failure details before attempting absence-based expectations. See [iteration rationale](iterations/2026-09-20-postrestart.md).
+
+User direction: DATA-20 makes the ordinary action result an interaction-scoped delta, with unchanged controls omitted and full retained snapshots available on demand. Reuse ui_diff and existing pre/post recording, but make baseline identity and incomplete observations explicit; current rendered diffs alone do not fulfill this entire contract.
+
+Current next native case: iPad generic per-field AXSubrole failure recovery, using retry/recovery counts and error details. After acquisition is understood, integrate DATA-20 action deltas and DATA-21 timestamped interaction discovery using existing retained snapshots, before continuing Simulator and Blender acceptance.
+
+Delivery requirement: maintain source skills with behavior changes and refresh Claude/Codex copies using `python3 scripts/install.py --skills-only` during development installs. Keep detailed usage conditional and native acceptance status separate.
+
+Current 2026-09-20 result: individual retries did not resolve the two iPad AXSubrole failures. Investigate affected roles/keys and attribute-specific completeness before further retry changes. User now authorizes/requires commit and push after every build/install iteration; no new restart is needed for the Git checkpoint alone.

@@ -22,3 +22,7 @@ Tested build c2775ef3377f90e7d7dc1459a3c9968fabd9795ed77c19078cd3747a7e4c8eb4 af
 - Continue structured subtree/depth/field checks and grouped review pagination; then Gameday Save timing and controlled partial/delayed observations before Simulator/Blender. No broad parity/certification claim yet.
 
 Gameday was restored to information view. No play data changed during these tests. Recorder DD5F7E9C-3E0E-4B51-8AF5-3489195B96DE stopped cleanly. Evidence, build logs and rollback identity live in artifacts/test-runs/20260920-integrated-fixes.
+
+## Postrestart verification
+
+The two corrections and additional pagination/subtree cases passed native testing. See [iteration results](../iterations/2026-09-20-postrestart.md). This supersedes the pending status above, retaining the original failure history.

@@ -1,0 +1,20 @@
+{
+  "ipad": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"coordinateSpace\":\"screen points, top-left origin; visibility is frame-based, not occlusion\",\"hasMore\":false,\"historical\":true,\"items\":[{\"index\":6,\"label\":\"Playbook: Freshman 2026\",\"ordinal\":6},{\"index\":7,\"label\":\"Playbook\",\"ordinal\":7},{\"index\":12,\"label\":\"PLAYBOOK\",\"ordinal\":12}],\"liveTargetWarning\":\"Historical indices\\/keys require fresh target validation before input\",\"matched\":3,\"next\":\"ui_to_text with same snapshot and filters, after=nextCursor; leap_asset for references\",\"nextCursor\":12,\"snapshot\":{\"batchReadRecoveries\":0,\"batchReadRetries\":2,\"captureEnded\":2308798.1349739586,\"captureLimit\":1500,\"captureStarted\":2308797.3090039585,\"deadlineExceeded\":false,\"generation\":1,\"interaction\":\"2C128B1F-0BF6-44C9-A2E3-2C29E5422367\",\"nodeCount\":105,\"readFailureDetails\":[{\"attribute\":\"AXSubrole\",\"elementHash\":\"1869632489\",\"error\":\"AXError(rawValue: -25200)\",\"errorCode\":\"-25200\"},{\"attribute\":\"AXSubrole\",\"elementHash\":\"1869632505\",\"error\":\"AXError(rawValue: -25200)\",\"errorCode\":\"-25200\"}],\"readFailureDetailsOmitted\":0,\"readFailures\":2,\"screenFrame\":[377,61,1006,780],\"session\":\"F8A8BA2C-6115-4106-B0FC-18199879BBA9\",\"snapshot\":506,\"source\":\"AX snapshot; attributes read over an interval, not atomic\",\"truncated\":false,\"window\":\"iPad Air 11-inch (M2) – iOS 18.0\"}}"
+      }
+    ],
+    "isError": false
+  },
+  "iphone": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"coordinateSpace\":\"screen points, top-left origin; visibility is frame-based, not occlusion\",\"hasMore\":false,\"historical\":true,\"items\":[{\"index\":113,\"label\":\"Playbook: Phone parity\",\"ordinal\":8},{\"index\":114,\"label\":\"Playbook\",\"ordinal\":9}],\"liveTargetWarning\":\"Historical indices\\/keys require fresh target validation before input\",\"matched\":2,\"next\":\"ui_to_text with same snapshot and filters, after=nextCursor; leap_asset for references\",\"nextCursor\":9,\"snapshot\":{\"batchReadRecoveries\":0,\"batchReadRetries\":0,\"captureEnded\":2308798.4308129167,\"captureLimit\":1500,\"captureStarted\":2308798.3302140418,\"deadlineExceeded\":false,\"generation\":2,\"interaction\":\"717A0FB7-58F8-4687-B8BE-37ACD6B8D16C\",\"nodeCount\":31,\"readFailureDetails\":[],\"readFailureDetailsOmitted\":0,\"readFailures\":0,\"screenFrame\":[840,38,888,509],\"session\":\"F8A8BA2C-6115-4106-B0FC-18199879BBA9\",\"snapshot\":508,\"source\":\"AX snapshot; attributes read over an interval, not atomic\",\"truncated\":false,\"window\":\"iPhone 16 – iOS 18.0\"}}"
+      }
+    ],
+    "isError": false
+  }
+}

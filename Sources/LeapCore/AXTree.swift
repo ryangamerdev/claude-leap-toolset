@@ -38,6 +38,10 @@ public struct AXWindowSnapshot {
     public let nodes: [AXNode]
     public let truncated: Bool
     public var readFailures: Int = 0
+    public var batchReadRetries: Int = 0
+    public var batchReadRecoveries: Int = 0
+    public var readFailureDetails: [[String: String]] = []
+    public var readFailureDetailsOmitted: Int = 0
     public var deadlineExceeded: Bool = false
     public var captureStarted: Double = 0
     public var captureEnded: Double = 0
@@ -47,6 +51,9 @@ final class AXReadBudget {
     let started = ProcessInfo.processInfo.systemUptime
     let deadline: Double
     var failures = 0
+    var batchRetries = 0
+    var batchRecoveries = 0
+    var failureDetails: [[String: String]] = []
     var expired: Bool { ProcessInfo.processInfo.systemUptime >= deadline }
     init(seconds: Double) { deadline = ProcessInfo.processInfo.systemUptime + max(0.01,seconds) }
 }
@@ -65,16 +72,24 @@ enum AX {
         AXUIElementSetMessagingTimeout(el,Float(min(0.25,max(0.01,budget.deadline-ProcessInfo.processInfo.systemUptime))))
         return true
     }
-    static func note(_ result: AXError) {
+    static func note(_ result: AXError, attribute: String, element: AXUIElement) {
         // Unsupported/missing attributes are legitimate; transport/element failures are not absence.
-        if result != .success && ![-25205,-25212].contains(Int(result.rawValue)) {budget?.failures += 1}
+        if result != .success && ![-25205,-25212].contains(Int(result.rawValue)), let budget {
+            budget.failures += 1
+            // No diagnostic AX reads: they could block or recursively add failures.
+            // This hash correlates reads within an observation, never a durable target identity.
+            if budget.failureDetails.count < 8 {
+                budget.failureDetails.append(["attribute": attribute, "errorCode": String(result.rawValue),
+                    "error": String(describing: result), "elementHash": String(CFHash(element))])
+            }
+        }
     }
 
     static func attr<T>(_ el: AXUIElement, _ name: String) -> T? {
         guard prepare(el) else {return nil}
         defer {if budget != nil {AXUIElementSetMessagingTimeout(el,AppSession.messagingTimeout)}}
         var v: CFTypeRef?
-        let result=AXUIElementCopyAttributeValue(el, name as CFString, &v);note(result)
+        let result=AXUIElementCopyAttributeValue(el, name as CFString, &v);note(result, attribute: name, element: el)
         guard result == .success, let v else { return nil }
         return v as? T
     }
@@ -90,7 +105,22 @@ enum AX {
                 guard let value else {continue}
                 if CFGetTypeID(value) == AXValueGetTypeID(), AXValueGetType(value as! AXValue) == .axError {
                     var error=AXError.success
-                    AXValueGetValue(value as! AXValue,.axError,&error);note(error);continue
+                    AXValueGetValue(value as! AXValue,.axError,&error)
+                    // A provider may reject one field in a successful batch but support
+                    // its individual getter. Retry reads only, once, within the same budget.
+                    if error == .failure && prepare(el) {
+                        budget?.batchRetries += 1
+                        var recovered: CFTypeRef?
+                        let retry = AXUIElementCopyAttributeValue(el, name as CFString, &recovered)
+                        if retry == .success || retry == .attributeUnsupported || retry == .noValue {
+                            budget?.batchRecoveries += 1
+                        }
+                        if retry == .success, let recovered { dict[name] = recovered }
+                        note(retry, attribute: name, element: el)
+                    } else {
+                        note(error, attribute: name, element: el)
+                    }
+                    continue
                 }
                 dict[name] = value
             }
@@ -103,7 +133,7 @@ enum AX {
         for name in names {
             guard prepare(el) else {break}
             var v: CFTypeRef?
-            let result=AXUIElementCopyAttributeValue(el, name as CFString, &v);note(result)
+            let result=AXUIElementCopyAttributeValue(el, name as CFString, &v);note(result, attribute: name, element: el)
             if result == .success, let v { dict[name] = v }
         }
         return dict
@@ -214,7 +244,7 @@ enum AX {
         guard prepare(el) else {return false}
         defer {if budget != nil {AXUIElementSetMessagingTimeout(el,AppSession.messagingTimeout)}}
         var settable: DarwinBoolean = false
-        let result=AXUIElementIsAttributeSettable(el,name as CFString,&settable);note(result)
+        let result=AXUIElementIsAttributeSettable(el,name as CFString,&settable);note(result, attribute: name, element: el)
         return result == .success && settable.boolValue
     }
 
@@ -300,7 +330,7 @@ public struct AXWalker {
             walkMenuBar(bar, nodes: &nodes, count: &count, truncated: &truncated)
         }
         return AXWindowSnapshot(window: window, title: title, frame: frame, focusedElement: focused,
-                                nodes: nodes, truncated: truncated, readFailures:budget.failures, deadlineExceeded:budget.expired, captureStarted:budget.started, captureEnded:ProcessInfo.processInfo.systemUptime)
+                                nodes: nodes, truncated: truncated, readFailures:budget.failures, batchReadRetries:budget.batchRetries, batchReadRecoveries:budget.batchRecoveries, readFailureDetails:budget.failureDetails, readFailureDetailsOmitted:max(0,budget.failures-budget.failureDetails.count), deadlineExceeded:budget.expired, captureStarted:budget.started, captureEnded:ProcessInfo.processInfo.systemUptime)
     }
 
     /// The app's menu bar: its titles always, and the items of any menu that is currently open.

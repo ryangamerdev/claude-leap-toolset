@@ -7,3 +7,11 @@ Use [the template](TEMPLATE.md) and follow [repository instructions](../../AGENT
 
 Raw databases, generated fixtures, builds and logs remain local under ignored paths. Tracked
 reports, JSON results, test sources and install metadata preserve the reviewable history.
+
+- [2026-09-20 — Native acceptance and capture diagnostics](2026-09-20-postrestart.md): first-attach/diff fixes passed; subtree and pagination verified; Simulator discovery exposed repeated iPad read failures and prompted bounded diagnostics.
+
+- [2026-09-20 — Per-attribute batch recovery](2026-09-20-ax-batch-recovery.md): native diagnostics identified AXSubrole failures; bounded individual-read fallback awaits native verification.
+
+- [2026-09-20 — Skill synchronization](2026-09-20-skill-sync.md): concise entrypoint, optional UI reference and Claude/Codex install synchronization.
+
+- [2026-09-20 — Native recovery result and Git delivery](2026-09-20-delivery-native-check.md): retry did not resolve iPad reads; records ongoing commit/push authorization and checkpoint scope.

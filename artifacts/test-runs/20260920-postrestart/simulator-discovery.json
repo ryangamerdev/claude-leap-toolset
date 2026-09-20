@@ -1,0 +1,38 @@
+{
+  "ipad": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"coordinateSpace\":\"screen points, top-left origin; visibility is frame-based, not occlusion\",\"hasMore\":false,\"historical\":true,\"items\":[{\"index\":6,\"label\":\"Playbook: Freshman 2026\",\"ordinal\":6},{\"index\":7,\"label\":\"Playbook\",\"ordinal\":7}],\"liveTargetWarning\":\"Historical indices\\/keys require fresh target validation before input\",\"matched\":2,\"next\":\"ui_to_text with same snapshot and filters, after=nextCursor; leap_asset for references\",\"nextCursor\":7,\"snapshot\":{\"captureEnded\":2308223.3934360836,\"captureLimit\":1500,\"captureStarted\":2308222.3614789583,\"deadlineExceeded\":false,\"generation\":1,\"interaction\":\"A5B214EC-FDFE-4061-9106-5E32D8F2678C\",\"nodeCount\":105,\"readFailures\":2,\"screenFrame\":[377,61,1006,780],\"session\":\"9CD75491-EF28-4FDD-A7D9-C5A8D2278BF0\",\"snapshot\":466,\"source\":\"AX snapshot; attributes read over an interval, not atomic\",\"truncated\":false,\"window\":\"iPad Air 11-inch (M2) – iOS 18.0\"}}"
+      }
+    ],
+    "isError": false
+  },
+  "iphone": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"coordinateSpace\":\"screen points, top-left origin; visibility is frame-based, not occlusion\",\"hasMore\":false,\"historical\":true,\"items\":[{\"index\":113,\"label\":\"Playbook: Phone parity\",\"ordinal\":8},{\"index\":114,\"label\":\"Playbook\",\"ordinal\":9}],\"liveTargetWarning\":\"Historical indices\\/keys require fresh target validation before input\",\"matched\":2,\"next\":\"ui_to_text with same snapshot and filters, after=nextCursor; leap_asset for references\",\"nextCursor\":9,\"snapshot\":{\"captureEnded\":2308223.6428238335,\"captureLimit\":1500,\"captureStarted\":2308223.5451555834,\"deadlineExceeded\":false,\"generation\":2,\"interaction\":\"BCF3FA05-5CB7-4648-9AAC-48B135231D87\",\"nodeCount\":31,\"readFailures\":0,\"screenFrame\":[840,38,888,509],\"session\":\"9CD75491-EF28-4FDD-A7D9-C5A8D2278BF0\",\"snapshot\":467,\"source\":\"AX snapshot; attributes read over an interval, not atomic\",\"truncated\":false,\"window\":\"iPhone 16 – iOS 18.0\"}}"
+      }
+    ],
+    "isError": false
+  },
+  "sticky": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"coordinateSpace\":\"screen points, top-left origin; visibility is frame-based, not occlusion\",\"hasMore\":false,\"historical\":true,\"items\":[{\"index\":113,\"label\":\"Playbook: Phone parity\",\"ordinal\":8},{\"index\":114,\"label\":\"Playbook\",\"ordinal\":9}],\"liveTargetWarning\":\"Historical indices\\/keys require fresh target validation before input\",\"matched\":2,\"next\":\"ui_to_text with same snapshot and filters, after=nextCursor; leap_asset for references\",\"nextCursor\":9,\"snapshot\":{\"captureEnded\":2308223.8513445416,\"captureLimit\":1500,\"captureStarted\":2308223.7627679585,\"deadlineExceeded\":false,\"generation\":3,\"interaction\":\"59E2A067-8364-4551-9CC5-84FDA3730DFA\",\"nodeCount\":31,\"readFailures\":0,\"screenFrame\":[840,38,888,509],\"session\":\"9CD75491-EF28-4FDD-A7D9-C5A8D2278BF0\",\"snapshot\":473,\"source\":\"AX snapshot; attributes read over an interval, not atomic\",\"truncated\":false,\"window\":\"iPhone 16 – iOS 18.0\"}}"
+      }
+    ],
+    "isError": false
+  },
+  "ipadRecheck": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"coordinateSpace\":\"screen points, top-left origin; visibility is frame-based, not occlusion\",\"hasMore\":false,\"historical\":true,\"items\":[{\"index\":6,\"label\":\"Playbook: Freshman 2026\",\"ordinal\":6},{\"index\":7,\"label\":\"Playbook\",\"ordinal\":7},{\"index\":12,\"label\":\"PLAYBOOK\",\"ordinal\":12}],\"liveTargetWarning\":\"Historical indices\\/keys require fresh target validation before input\",\"matched\":3,\"next\":\"ui_to_text with same snapshot and filters, after=nextCursor; leap_asset for references\",\"nextCursor\":12,\"snapshot\":{\"captureEnded\":2308239.225844292,\"captureLimit\":1500,\"captureStarted\":2308238.3249886669,\"deadlineExceeded\":false,\"generation\":4,\"interaction\":\"007741FF-DD52-4BE9-9835-90C9449664EA\",\"nodeCount\":105,\"readFailures\":2,\"screenFrame\":[377,61,1006,780],\"session\":\"9CD75491-EF28-4FDD-A7D9-C5A8D2278BF0\",\"snapshot\":474,\"source\":\"AX snapshot; attributes read over an interval, not atomic\",\"truncated\":false,\"window\":\"iPad Air 11-inch (M2) – iOS 18.0\"}}"
+      }
+    ],
+    "isError": false
+  }
+}

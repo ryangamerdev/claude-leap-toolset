@@ -1,0 +1,9 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"coordinateSpace\":\"screen points, top-left origin; visibility is frame-based, not occlusion\",\"hasMore\":false,\"historical\":true,\"items\":[{\"index\":6,\"label\":\"Playbook: Freshman 2026\",\"ordinal\":6},{\"index\":7,\"label\":\"Playbook\",\"ordinal\":7},{\"index\":12,\"label\":\"PLAYBOOK\",\"ordinal\":12}],\"liveTargetWarning\":\"Historical indices\\/keys require fresh target validation before input\",\"matched\":3,\"next\":\"ui_to_text with same snapshot and filters, after=nextCursor; leap_asset for references\",\"nextCursor\":12,\"snapshot\":{\"captureEnded\":2308438.8573621251,\"captureLimit\":1500,\"captureStarted\":2308437.8600807502,\"deadlineExceeded\":false,\"generation\":1,\"interaction\":\"5D2D94F2-C2CC-4595-B382-F20A999347FB\",\"nodeCount\":105,\"readFailureDetails\":[{\"attribute\":\"AXSubrole\",\"elementHash\":\"1869632489\",\"error\":\"AXError(rawValue: -25200)\",\"errorCode\":\"-25200\"},{\"attribute\":\"AXSubrole\",\"elementHash\":\"1869632505\",\"error\":\"AXError(rawValue: -25200)\",\"errorCode\":\"-25200\"}],\"readFailureDetailsOmitted\":0,\"readFailures\":2,\"screenFrame\":[377,61,1006,780],\"session\":\"9363E96F-048A-402E-89F5-609EB257FBCC\",\"snapshot\":484,\"source\":\"AX snapshot; attributes read over an interval, not atomic\",\"truncated\":false,\"window\":\"iPad Air 11-inch (M2) – iOS 18.0\"}}"
+    }
+  ],
+  "isError": false
+}

@@ -4,12 +4,13 @@
 Usage:
   install.py            # build+sign the app if needed, then install a self-contained copy
   install.py --no-build # skip the build step (use the existing dist/ app)
+  install.py --skills-only # refresh Claude and Codex skills without app/config changes
   install.py --uninstall
 
 This does NOT symlink into the repo. It copies the signed app bundle to
   ~/Applications/claude-leap.app
 and copies each skill to
-  ~/.claude/skills/<name>
+  ~/.claude/skills/<name> and $CODEX_HOME/skills/<name> (default ~/.codex/skills)
 then registers the MCP server at the installed path. After this the repo can be moved
 or deleted and the install keeps working. Re-run to update to a newer build.
 
@@ -28,7 +29,8 @@ INSTALL_APP = os.path.expanduser("~/Applications/claude-leap.app")
 INSTALLED_SERVER = os.path.join(INSTALL_APP, "Contents", "MacOS", "claude-leap")
 
 SKILLS_DIR = os.path.join(ROOT, "skills")
-SKILLS_DST_ROOT = os.path.expanduser("~/.claude/skills")
+SKILLS_DST_ROOTS = list(dict.fromkeys([os.path.expanduser("~/.claude/skills"),
+    os.path.join(os.path.expanduser(os.environ.get("CODEX_HOME", "~/.codex")), "skills")]))
 
 
 def run(cmd, check=True):
@@ -59,7 +61,8 @@ def each_skill():
     for name in sorted(os.listdir(SKILLS_DIR)):
         src = os.path.join(SKILLS_DIR, name)
         if os.path.isdir(src) and os.path.exists(os.path.join(src, "SKILL.md")):
-            yield name, src, os.path.join(SKILLS_DST_ROOT, name)
+            for destination in SKILLS_DST_ROOTS:
+                yield name, src, os.path.join(destination, name)
 
 
 def install_app():
@@ -75,7 +78,8 @@ def install_app():
 
 
 def install_skills():
-    os.makedirs(SKILLS_DST_ROOT, exist_ok=True)
+    for destination in SKILLS_DST_ROOTS:
+        os.makedirs(destination, exist_ok=True)
     for name, src, dst in each_skill():
         with open(os.path.join(src, "SKILL.md")) as f:
             assert f.read(64).startswith("---\nname: " + name), f"{name}/SKILL.md frontmatter name mismatch"
@@ -86,6 +90,11 @@ def install_skills():
 
 def main():
     args = set(sys.argv[1:])
+    if "--skills-only" in args:
+        if args != {"--skills-only"}:
+            raise SystemExit("--skills-only cannot be combined with other options")
+        install_skills()
+        return
     if "--uninstall" in args:
         run(["claude", "mcp", "remove", "leap", "-s", "user"], check=False)
         _rm(INSTALL_APP)
