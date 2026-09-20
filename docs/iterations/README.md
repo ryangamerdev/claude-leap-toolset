@@ -41,3 +41,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-20 — Specification and intent-layer rebuild](2026-09-20-intent-rebuild.md): new session/workflow API, Mac and native XCTest adapters, retained evidence and regression tooling; signed install ready for restart/native acceptance.
 
 - [2026-09-20 — First native WDA trial](2026-09-20-wda-native.md): observation/history passed, taps had no observed effect; fixed numeric bounds false rejection and installed for restart.
+
+- [2026-09-20 — Landscape native checkpoint](2026-09-20-wda-landscape.md): coordinate dispatch and two navigation workflows pass; portrait excluded by app design, information toggle unresolved.

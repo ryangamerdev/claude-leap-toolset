@@ -8,9 +8,9 @@ Reliable native app operation at least as effective as Sky, demonstrated by desk
 
 ## Execution
 
-1. Restart onto the numeric-bounds correction ([latest trial](iterations/2026-09-20-wda-native.md)). The first two selector taps had no observed effect, including after host foregrounding. Test one current-snapshot device-coordinate tap before further semantic retries. Through native MCP, open the actual iPad guest app with backend wda and the prepared endpoint. Query a named control, perform one reversible toggle with a postcondition, inspect retained history and compare its device coordinates with a saved screenshot. Keep prior Sky operation/order as baseline.
+1. Numeric-bounds correction now passed native dispatch after restart. WDA Route library and Playbook button workflows passed their postconditions. The information-button coordinate tap dispatched but had no observed effect; diagnose this specific control without assuming all guest input fails. Gameday is intentionally landscape-only (user clarification); exclude portrait rotation from its acceptance cases.
 2. Correct any shared orchestration/backend defects together; build/install, update skills, commit/push, then restart once for the consolidated candidate. Do not declare success from the runner health check or protocol fixture.
-3. Complete both Simulator orientation/scroll/tap/drag scenarios and Mac Gameday coach/create/save/reopen through the preferred intent API. Fix unsupported operations only when needed for the fixed gate. Use old primitives diagnostically, labeling bypasses as such.
+3. Complete both Simulator landscape scroll/tap/drag scenarios and Mac Gameday coach/create/save/reopen through the preferred intent API. Fix unsupported operations only when needed for the fixed gate. Use old primitives diagnostically, labeling bypasses as such.
 4. Finish the paired Blender modeling/save/reopen trial without bypassing UI modeling through a construction script. Keep the simple object and equivalent operations; compare outcome and intervention requirements.
 5. Execute saved regression scenarios and uncertainty/target-change cases on the accepted build. Close R01–R16 only for stated scope and retained evidence; publish remaining nonblocking limitations.
 
