@@ -84,3 +84,5 @@ Indicator correction: invalid/offscreen/out-of-window semantic-action coordinate
 Durable diagnostics IMPLEMENTED, native pending: independent pre-bind/error journal, diagnostic_query with bounded severity/kind/interaction/session queries, recovery and suppressed-marker evidence. No blanket no-silent-path certification; optional AX probes remain summarized. [Iteration](iterations/2026-09-20-diagnostics.md).
 
 Latest native acceptance: diagnostic_query before binding, retained errors, geometry suppression records and cross-process group resume passed. Simulator rotation comparison confirms invalid AX rectangles vary with orientation; conversion remains unresolved. Read-only error completion wording is overbroad. [Evidence](iterations/2026-09-20-diagnostics-native.md). No binary change/restart required.
+
+Foreground comparison now performed: verified foreground input brought Simulator frontmost, but button geometry remained outside window. Public activate bypassed verification and falsely reported success; now reuses verified routine, native entrypoint acceptance pending restart. [Evidence](iterations/2026-09-20-activation.md).

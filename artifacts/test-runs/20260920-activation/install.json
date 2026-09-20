@@ -1,0 +1,8 @@
+{
+  "sha256": "13379976548abecfbb7ac433fcaa8a7174e2fb473894b8974091fa73b8a6aa9b",
+  "installed": "/Users/ryan/Applications/claude-leap.app",
+  "backup": "/Users/ryan/src/claude-leap/artifacts/backups/leap-activation-20260920-054823/claude-leap.app",
+  "installedAt": "2026-09-20T05:48:23.517282-07:00",
+  "verification": "Signed release verified; native reused activation path passed; public activate entrypoint pending restart; skills synchronized",
+  "registration": "leap unchanged"
+}

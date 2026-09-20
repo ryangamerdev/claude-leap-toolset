@@ -33,3 +33,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-20 — Durable diagnostics](2026-09-20-diagnostics.md): independent journal, bounded audit queries and explicit recovery/error reporting.
 
 - [2026-09-20 — Native diagnostics and rotation evidence](2026-09-20-diagnostics-native.md): pre-bind audit, retained errors and cross-process grouping passed; rotation mismatch measured, not solved.
+
+- [2026-09-20 — Verified public activation](2026-09-20-activation.md): explicit foreground test leaves geometry unchanged; fixes activate falsely reporting success.

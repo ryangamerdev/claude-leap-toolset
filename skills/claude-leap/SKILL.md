@@ -82,7 +82,8 @@ when the element is marked offscreen or its frame is invalid/outside the selecte
 the action result reports this. A visible marker is feedback, not proof of input delivery.
 
 Prefer background operation. Pointer delivery targets the app window; foreground=true is
-explicit activation when needed and should be announced. Keyboard fallback may use system
+explicit activation when needed and should be announced. The activate tool now verifies
+frontmost status before reporting success; native acceptance of this entrypoint is pending. Keyboard fallback may use system
 input. Do not assume pointer behavior proves keyboard isolation.
 
 For multiple Simulator windows, select the actual window title explicitly and verify its

@@ -1065,8 +1065,10 @@ public actor Engine {
 
     public func activate(app query: String) async throws -> String {
         let s = try await session(for: query)
-        s.app.activate()
-        return "activated \(s.displayName)"
+        try requireAX()
+        try await activate(s)
+        Diagnostics.shared.record(level:"info",kind:"activation_verified",detail:"Target app is frontmost after activation",fields:["app":s.displayName])
+        return "activated \(s.displayName); verified frontmost"
     }
 
     public func screenshot(app query: String, region: CGRect? = nil, scale: CGFloat = 1.0, png: Bool = false,
