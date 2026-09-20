@@ -82,3 +82,5 @@ Latest native checkpoint: [grouped evidence acceptance](iterations/2026-09-20-gr
 Indicator correction: invalid/offscreen/out-of-window semantic-action coordinates now suppress the visual marker while retaining AX dispatch. IMPLEMENTED; two geometry tests passed, native placement/valid-marker checks pending restart. This does not solve Simulator coordinate transforms. [Rationale](iterations/2026-09-20-indicator-geometry.md).
 
 Durable diagnostics IMPLEMENTED, native pending: independent pre-bind/error journal, diagnostic_query with bounded severity/kind/interaction/session queries, recovery and suppressed-marker evidence. No blanket no-silent-path certification; optional AX probes remain summarized. [Iteration](iterations/2026-09-20-diagnostics.md).
+
+Latest native acceptance: diagnostic_query before binding, retained errors, geometry suppression records and cross-process group resume passed. Simulator rotation comparison confirms invalid AX rectangles vary with orientation; conversion remains unresolved. Read-only error completion wording is overbroad. [Evidence](iterations/2026-09-20-diagnostics-native.md). No binary change/restart required.

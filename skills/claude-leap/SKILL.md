@@ -18,7 +18,7 @@ those development documents for unrelated app tasks.
 - For a named task across apps/restarts, use recording_group(action:start,name), then explicitly
   resume its group_id after restart. Switching/ending groups closes current app capture epochs;
   next observations create new ones. Prior IDs and history stay intact. End closes grouping,
-  not automatic recording. Stopped apps stay paused. Same-process grouping passed native tests; cross-process resume remains pending.
+  not automatic recording. Stopped apps stay paused. Same-process and cross-process group resume passed scoped native tests.
 - recording_sessions lists groups or app captures, counts and storage sizes with pagination.
   Payloads live in SQLite; empty asset directories do not mean missing history. Existing captures
   stay ungrouped. interaction_timeline(group_id) spans the group's captures; session_id narrows one.
