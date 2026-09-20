@@ -1,0 +1,1293 @@
+{
+  "session": "5845A8D4-E737-414C-98E7-B99B8110AE5D",
+  "results": [
+    {
+      "deadlineOverrun": false,
+      "duration_ms": 7021,
+      "execution": "completed",
+      "inputReplay": "never",
+      "interaction_id": "59551695-0914-490C-AAF0-7365A91D7A36",
+      "schemaVersion": 2,
+      "session_id": "5845A8D4-E737-414C-98E7-B99B8110AE5D",
+      "steps": [
+        {
+          "acknowledgement": "returned",
+          "after_snapshot": 1160,
+          "before_snapshot": 1155,
+          "delta": {
+            "changes": [
+              {
+                "after": {
+                  "actions": [
+                    "AXPress",
+                    "AXScrollToVisible",
+                    "AXCancel",
+                    "AXShowMenu"
+                  ],
+                  "ancestors": [
+                    "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0"
+                  ],
+                  "depth": 1,
+                  "enabled": true,
+                  "focused": false,
+                  "frame": [
+                    821.5,
+                    575.1666564941406,
+                    45,
+                    37.33334350585939
+                  ],
+                  "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Delete play]#3",
+                  "index": 129,
+                  "label": "Delete play",
+                  "offscreen": true,
+                  "role": "AXButton",
+                  "selected": false,
+                  "valueLimited": false
+                },
+                "change": "added",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Delete play]#3"
+              },
+              {
+                "after": {
+                  "actions": [
+                    "AXPress",
+                    "AXScrollToVisible",
+                    "AXCancel",
+                    "AXShowMenu"
+                  ],
+                  "ancestors": [
+                    "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0"
+                  ],
+                  "depth": 1,
+                  "enabled": true,
+                  "focused": false,
+                  "frame": [
+                    821.5,
+                    528.5,
+                    45,
+                    39.66665649414066
+                  ],
+                  "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Duplicate play]#2",
+                  "index": 128,
+                  "label": "Duplicate play",
+                  "offscreen": true,
+                  "role": "AXButton",
+                  "selected": false,
+                  "valueLimited": false
+                },
+                "change": "added",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Duplicate play]#2"
+              },
+              {
+                "after": {
+                  "actions": [
+                    "AXPress",
+                    "AXScrollToVisible",
+                    "AXCancel",
+                    "AXShowMenu"
+                  ],
+                  "ancestors": [
+                    "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0"
+                  ],
+                  "depth": 1,
+                  "enabled": true,
+                  "focused": false,
+                  "frame": [
+                    821.5,
+                    484.4999999999999,
+                    45,
+                    36.99999999999996
+                  ],
+                  "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Edit play]#1",
+                  "index": 127,
+                  "label": "Edit play",
+                  "offscreen": false,
+                  "role": "AXButton",
+                  "selected": false,
+                  "valueLimited": false
+                },
+                "change": "added",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Edit play]#1"
+              },
+              {
+                "after": {
+                  "actions": [
+                    "AXPress",
+                    "AXScrollToVisible",
+                    "AXCancel",
+                    "AXShowMenu"
+                  ],
+                  "ancestors": [
+                    "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0"
+                  ],
+                  "depth": 1,
+                  "enabled": true,
+                  "focused": false,
+                  "frame": [
+                    821.5,
+                    671.5,
+                    45,
+                    45.00000000000003
+                  ],
+                  "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Filter plays]#5",
+                  "index": 131,
+                  "label": "Filter plays",
+                  "offscreen": true,
+                  "role": "AXButton",
+                  "selected": false,
+                  "valueLimited": false
+                },
+                "change": "added",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Filter plays]#5"
+              },
+              {
+                "change": "removed",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Flashcards]#5"
+              },
+              {
+                "change": "removed",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Formations]#3"
+              },
+              {
+                "after": {
+                  "actions": [
+                    "AXPress",
+                    "AXScrollToVisible",
+                    "AXCancel",
+                    "AXShowMenu"
+                  ],
+                  "ancestors": [
+                    "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0"
+                  ],
+                  "depth": 1,
+                  "enabled": true,
+                  "focused": false,
+                  "frame": [
+                    821.5,
+                    827.5,
+                    45,
+                    45.00000000000006
+                  ],
+                  "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Home]#8",
+                  "index": 134,
+                  "label": "Home",
+                  "offscreen": true,
+                  "role": "AXButton",
+                  "selected": false,
+                  "valueLimited": false
+                },
+                "change": "added",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Home]#8"
+              },
+              {
+                "change": "removed",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Import]#6"
+              },
+              {
+                "after": {
+                  "actions": [
+                    "AXPress",
+                    "AXScrollToVisible",
+                    "AXCancel",
+                    "AXShowMenu"
+                  ],
+                  "ancestors": [
+                    "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0"
+                  ],
+                  "depth": 1,
+                  "enabled": true,
+                  "focused": false,
+                  "frame": [
+                    821.5,
+                    432.5,
+                    45,
+                    44.999999999999986
+                  ],
+                  "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[New play]#0",
+                  "index": 126,
+                  "label": "New play",
+                  "offscreen": false,
+                  "role": "AXButton",
+                  "selected": false,
+                  "valueLimited": false
+                },
+                "change": "added",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[New play]#0"
+              },
+              {
+                "after": {
+                  "actions": [
+                    "AXPress",
+                    "AXScrollToVisible",
+                    "AXCancel",
+                    "AXShowMenu"
+                  ],
+                  "ancestors": [
+                    "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0"
+                  ],
+                  "depth": 1,
+                  "enabled": true,
+                  "focused": false,
+                  "frame": [
+                    506,
+                    824,
+                    43.99999999999994,
+                    43.99999999999994
+                  ],
+                  "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Next play]#10",
+                  "index": 137,
+                  "label": "Next play",
+                  "offscreen": true,
+                  "role": "AXButton",
+                  "selected": false,
+                  "valueLimited": false
+                },
+                "change": "added",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Next play]#10"
+              },
+              {
+                "change": "removed",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Playbook: Phone parity]#1"
+              },
+              {
+                "change": "removed",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Playbook]#2"
+              }
+            ],
+            "complete": true,
+            "meaning": "Observed differences, not causal attribution; IDs can churn",
+            "omitted": 10,
+            "totalChanges": 22
+          },
+          "dispatch": "attempted",
+          "execution": "completed",
+          "finished_at": "2026-09-20T15:44:39Z",
+          "id": "0",
+          "index": 0,
+          "started_at": "2026-09-20T15:44:38Z",
+          "type": "action",
+          "verification": "passed"
+        },
+        {
+          "acknowledgement": "returned",
+          "after_snapshot": 1168,
+          "before_snapshot": 1163,
+          "delta": {
+            "changes": [
+              {
+                "change": "removed",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXStaticText[49ERS]#0"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "value": {
+                    "after": "2 of 8",
+                    "before": "1 of 8"
+                  }
+                },
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXStaticText[Active sequence position]#1"
+              },
+              {
+                "after": {
+                  "actions": [
+                    "AXPress",
+                    "AXScrollToVisible",
+                    "AXCancel",
+                    "AXShowMenu"
+                  ],
+                  "ancestors": [
+                    "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0"
+                  ],
+                  "depth": 1,
+                  "enabled": true,
+                  "focused": false,
+                  "frame": [
+                    833.8333333333335,
+                    158,
+                    20.333333333333258,
+                    54
+                  ],
+                  "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXStaticText[KING FLASH 12 \u00b7 4-3]#0",
+                  "index": 139,
+                  "label": "KING FLASH 12 \u00b7 4-3",
+                  "offscreen": false,
+                  "role": "AXStaticText",
+                  "selected": false,
+                  "valueLimited": false
+                },
+                "change": "added",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXStaticText[KING FLASH 12 \u00b7 4-3]#0"
+              }
+            ],
+            "complete": true,
+            "meaning": "Observed differences, not causal attribution; IDs can churn",
+            "omitted": 0,
+            "totalChanges": 3
+          },
+          "dispatch": "attempted",
+          "execution": "completed",
+          "finished_at": "2026-09-20T15:44:41Z",
+          "id": "1",
+          "index": 1,
+          "started_at": "2026-09-20T15:44:39Z",
+          "type": "action",
+          "verification": "passed"
+        },
+        {
+          "acknowledgement": "returned",
+          "after_snapshot": 1176,
+          "before_snapshot": 1171,
+          "delta": {
+            "changes": [
+              {
+                "after": {
+                  "actions": [
+                    "AXPress",
+                    "AXScrollToVisible",
+                    "AXCancel",
+                    "AXScrollDownByPage",
+                    "AXScrollUpByPage",
+                    "AXShowMenu"
+                  ],
+                  "ancestors": [
+                    "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0"
+                  ],
+                  "depth": 1,
+                  "enabled": true,
+                  "focused": false,
+                  "frame": [
+                    272,
+                    169,
+                    46,
+                    342.99999999999994
+                  ],
+                  "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[4-3]#16",
+                  "index": 162,
+                  "label": "4-3",
+                  "offscreen": false,
+                  "role": "AXButton",
+                  "selected": false,
+                  "valueLimited": false
+                },
+                "change": "added",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[4-3]#16"
+              },
+              {
+                "after": {
+                  "actions": [
+                    "AXPress",
+                    "AXScrollToVisible",
+                    "AXCancel",
+                    "AXScrollDownByPage",
+                    "AXScrollUpByPage",
+                    "AXShowMenu"
+                  ],
+                  "ancestors": [
+                    "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0"
+                  ],
+                  "depth": 1,
+                  "enabled": true,
+                  "focused": false,
+                  "frame": [
+                    501.1666564941406,
+                    169.5,
+                    45.00000000000006,
+                    341.99999999999994
+                  ],
+                  "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[49ERS]#11",
+                  "index": 155,
+                  "label": "49ERS",
+                  "offscreen": false,
+                  "role": "AXButton",
+                  "selected": false,
+                  "valueLimited": false
+                },
+                "change": "added",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[49ERS]#11"
+              },
+              {
+                "after": {
+                  "actions": [
+                    "AXPress",
+                    "AXScrollToVisible",
+                    "AXCancel",
+                    "AXShowMenu"
+                  ],
+                  "ancestors": [
+                    "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0"
+                  ],
+                  "depth": 1,
+                  "enabled": true,
+                  "focused": false,
+                  "frame": [
+                    711.5,
+                    169.5,
+                    45,
+                    466.3333740234375
+                  ],
+                  "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Base Plays]#7",
+                  "index": 149,
+                  "label": "Base Plays",
+                  "offscreen": false,
+                  "role": "AXButton",
+                  "selected": true,
+                  "valueLimited": false
+                },
+                "change": "added",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Base Plays]#7"
+              },
+              {
+                "after": {
+                  "actions": [
+                    "AXPress",
+                    "AXScrollToVisible",
+                    "AXCancel",
+                    "AXShowMenu"
+                  ],
+                  "ancestors": [
+                    "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0"
+                  ],
+                  "depth": 1,
+                  "enabled": true,
+                  "focused": false,
+                  "frame": [
+                    763.5,
+                    384.8333435058594,
+                    45,
+                    208.33331298828122
+                  ],
+                  "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Defense]#5",
+                  "index": 146,
+                  "label": "Defense",
+                  "offscreen": false,
+                  "role": "AXButton",
+                  "selected": false,
+                  "valueLimited": false
+                },
+                "change": "added",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Defense]#5"
+              },
+              {
+                "change": "removed",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Delete play]#3"
+              },
+              {
+                "change": "removed",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Duplicate play]#2"
+              },
+              {
+                "change": "removed",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Edit play]#1"
+              },
+              {
+                "change": "removed",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Filter plays]#5"
+              },
+              {
+                "after": {
+                  "actions": [
+                    "AXPress",
+                    "AXScrollToVisible",
+                    "AXCancel",
+                    "AXShowMenu"
+                  ],
+                  "ancestors": [
+                    "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0"
+                  ],
+                  "depth": 1,
+                  "enabled": true,
+                  "focused": false,
+                  "frame": [
+                    821.5,
+                    827.5,
+                    45,
+                    45.00000000000006
+                  ],
+                  "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Home]#3",
+                  "index": 144,
+                  "label": "Home",
+                  "offscreen": true,
+                  "role": "AXButton",
+                  "selected": false,
+                  "valueLimited": false
+                },
+                "change": "added",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Home]#3"
+              },
+              {
+                "change": "removed",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Home]#8"
+              },
+              {
+                "after": {
+                  "actions": [
+                    "AXPress",
+                    "AXScrollToVisible",
+                    "AXCancel",
+                    "AXScrollDownByPage",
+                    "AXScrollUpByPage",
+                    "AXShowMenu"
+                  ],
+                  "ancestors": [
+                    "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0"
+                  ],
+                  "depth": 1,
+                  "enabled": true,
+                  "focused": false,
+                  "frame": [
+                    500.6666564941406,
+                    518,
+                    46,
+                    343.00000000000006
+                  ],
+                  "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[KING]#12",
+                  "index": 156,
+                  "label": "KING",
+                  "offscreen": true,
+                  "role": "AXButton",
+                  "selected": false,
+                  "valueLimited": false
+                },
+                "change": "added",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[KING]#12"
+              },
+              {
+                "change": "removed",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[New play]#0"
+              }
+            ],
+            "complete": true,
+            "meaning": "Observed differences, not causal attribution; IDs can churn",
+            "omitted": 25,
+            "totalChanges": 37
+          },
+          "dispatch": "attempted",
+          "execution": "completed",
+          "finished_at": "2026-09-20T15:44:44Z",
+          "id": "2",
+          "index": 2,
+          "started_at": "2026-09-20T15:44:41Z",
+          "type": "action",
+          "verification": "passed"
+        },
+        {
+          "after_snapshot": 1179,
+          "artifact": {
+            "bytes": 104115,
+            "coordinateSpace": "window_screenshot_pixels",
+            "file": "/Users/ryan/src/claude-leap/.leap/sessions/5845A8D4-E737-414C-98E7-B99B8110AE5D/2AF40A9F-382F-4572-9D0B-6192A922997D.png",
+            "height": 509,
+            "pointsPerPixel": 1,
+            "session_id": "5845A8D4-E737-414C-98E7-B99B8110AE5D",
+            "snapshot": 1179,
+            "type": "screenshot",
+            "width": 888
+          },
+          "before_snapshot": 1179,
+          "delta": {
+            "changes": [],
+            "complete": true,
+            "meaning": "Observed differences, not causal attribution; IDs can churn",
+            "omitted": 0,
+            "totalChanges": 0
+          },
+          "dispatch": "not_sent",
+          "execution": "completed",
+          "finished_at": "2026-09-20T15:44:45Z",
+          "id": "3",
+          "index": 3,
+          "started_at": "2026-09-20T15:44:44Z",
+          "type": "capture",
+          "verification": "not_evaluated"
+        }
+      ],
+      "verification": "passed"
+    },
+    {
+      "deadlineOverrun": false,
+      "duration_ms": 4244,
+      "execution": "completed",
+      "inputReplay": "never",
+      "interaction_id": "8B69CB57-AE66-4E90-8FD6-DD77522006CA",
+      "schemaVersion": 2,
+      "session_id": "5845A8D4-E737-414C-98E7-B99B8110AE5D",
+      "steps": [
+        {
+          "acknowledgement": "returned",
+          "after_snapshot": 1190,
+          "before_snapshot": 1184,
+          "delta": {
+            "changes": [],
+            "complete": true,
+            "meaning": "Observed differences, not causal attribution; IDs can churn",
+            "omitted": 0,
+            "totalChanges": 0
+          },
+          "dispatch": "attempted",
+          "execution": "completed",
+          "finished_at": "2026-09-20T15:45:07Z",
+          "id": "0",
+          "index": 0,
+          "scroll_effect": {
+            "additionalObservations": 1,
+            "after_artifact": {
+              "bytes": 104159,
+              "coordinateSpace": "window_screenshot_pixels",
+              "file": "/Users/ryan/src/claude-leap/.leap/sessions/5845A8D4-E737-414C-98E7-B99B8110AE5D/2C04D316-1F2C-412A-A1C2-DF63E76FA81C.png",
+              "height": 509,
+              "pointsPerPixel": 1,
+              "session_id": "5845A8D4-E737-414C-98E7-B99B8110AE5D",
+              "snapshot": 1190,
+              "type": "screenshot",
+              "width": 888
+            },
+            "after_snapshot": 1190,
+            "basis": "scoped AX displacement in requested direction",
+            "before_artifact": {
+              "bytes": 104170,
+              "coordinateSpace": "window_screenshot_pixels",
+              "file": "/Users/ryan/src/claude-leap/.leap/sessions/5845A8D4-E737-414C-98E7-B99B8110AE5D/44439744-FFDA-40ED-966E-9FF467C489B9.png",
+              "height": 509,
+              "pointsPerPixel": 1,
+              "session_id": "5845A8D4-E737-414C-98E7-B99B8110AE5D",
+              "snapshot": 1184,
+              "type": "screenshot",
+              "width": 888
+            },
+            "before_snapshot": 1184,
+            "boundary": "unknown",
+            "causality": "Observed after input; concurrent user/app changes are possible",
+            "count": 0,
+            "samples": [],
+            "status": "unverified",
+            "visual": {
+              "changedFraction": 0,
+              "meaning": "Visual difference is not proof of scroll displacement or boundary; cursor/animation may contribute",
+              "sampling": "128x128 grayscale; difference >12, more than32 pixels",
+              "scope": "region",
+              "status": "no_visual_change_observed"
+            }
+          },
+          "started_at": "2026-09-20T15:45:04Z",
+          "type": "action",
+          "verification": "not_evaluated"
+        },
+        {
+          "after_snapshot": 1194,
+          "artifact": {
+            "bytes": 104158,
+            "coordinateSpace": "window_screenshot_pixels",
+            "file": "/Users/ryan/src/claude-leap/.leap/sessions/5845A8D4-E737-414C-98E7-B99B8110AE5D/35C7F885-3CF7-4ACC-8D28-5378FADD76DA.png",
+            "height": 509,
+            "pointsPerPixel": 1,
+            "session_id": "5845A8D4-E737-414C-98E7-B99B8110AE5D",
+            "snapshot": 1194,
+            "type": "screenshot",
+            "width": 888
+          },
+          "before_snapshot": 1194,
+          "delta": {
+            "changes": [],
+            "complete": true,
+            "meaning": "Observed differences, not causal attribution; IDs can churn",
+            "omitted": 0,
+            "totalChanges": 0
+          },
+          "dispatch": "not_sent",
+          "execution": "completed",
+          "finished_at": "2026-09-20T15:45:08Z",
+          "id": "1",
+          "index": 1,
+          "started_at": "2026-09-20T15:45:07Z",
+          "type": "capture",
+          "verification": "not_evaluated"
+        }
+      ],
+      "verification": "not_evaluated"
+    },
+    {
+      "deadlineOverrun": false,
+      "duration_ms": 2701,
+      "execution": "completed",
+      "inputReplay": "never",
+      "interaction_id": "0F298C91-290E-4645-B6FB-2DF9E1E022EA",
+      "schemaVersion": 2,
+      "session_id": "5845A8D4-E737-414C-98E7-B99B8110AE5D",
+      "steps": [
+        {
+          "acknowledgement": "returned",
+          "after_snapshot": 1203,
+          "before_snapshot": 1199,
+          "delta": {
+            "changes": [
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      513,
+                      169,
+                      46,
+                      342.99999999999994
+                    ],
+                    "before": [
+                      272,
+                      169,
+                      46,
+                      342.99999999999994
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[4-3]#16"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      742.1666641235352,
+                      169.5,
+                      45.00000000000006,
+                      341.99999999999994
+                    ],
+                    "before": [
+                      501.1666564941406,
+                      169.5,
+                      45.00000000000006,
+                      341.99999999999994
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[49ERS]#11"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      741.6666717529297,
+                      518,
+                      46,
+                      343.00000000000006
+                    ],
+                    "before": [
+                      500.6666564941406,
+                      518,
+                      46,
+                      343.00000000000006
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[KING]#12"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      888.5,
+                      169.5,
+                      45,
+                      341.99999999999994
+                    ],
+                    "before": [
+                      647.5,
+                      169.5,
+                      45,
+                      341.99999999999994
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[RUN]#9"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      690.1666717529297,
+                      169.5,
+                      45.00000000000006,
+                      341.99999999999994
+                    ],
+                    "before": [
+                      449.1666564941406,
+                      169.5,
+                      45.00000000000006,
+                      341.99999999999994
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[SPEED LT HASH]#13"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      690.1666717529297,
+                      518.5,
+                      45.00000000000006,
+                      341.99999999999994
+                    ],
+                    "before": [
+                      449.1666564941406,
+                      518.5,
+                      45.00000000000006,
+                      341.99999999999994
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[SPEED MIDDLE OF FIELD]#14"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      513.5,
+                      518.5,
+                      45,
+                      341.99999999999994
+                    ],
+                    "before": [
+                      272.5,
+                      518.5,
+                      45,
+                      341.99999999999994
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Scout alignment]#17"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      830.5,
+                      169.5,
+                      45,
+                      341.99999999999994
+                    ],
+                    "before": [
+                      589.5,
+                      169.5,
+                      45,
+                      341.99999999999994
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[TEMPO]#10"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      601.3333435058594,
+                      169,
+                      46,
+                      342.99999999999994
+                    ],
+                    "before": [
+                      360.3333435058594,
+                      169,
+                      46,
+                      342.99999999999994
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Unspecified front]#15"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      566,
+                      170,
+                      14.333333333333371,
+                      138.66666666666669
+                    ],
+                    "before": [
+                      325,
+                      170,
+                      14.333333333333371,
+                      138.66666666666669
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXStaticText[DEFENSE ALIGNMENTS]#3"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      654.3333333333335,
+                      170,
+                      14.333333333333314,
+                      107.66666666666666
+                    ],
+                    "before": [
+                      413.3333333333335,
+                      170,
+                      14.333333333333314,
+                      107.66666666666666
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXStaticText[DEFENSE FRONTS]#2"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "frame": {
+                    "after": [
+                      794.6666666666667,
+                      170,
+                      14.333333333333371,
+                      139.33333333333331
+                    ],
+                    "before": [
+                      553.6666666666665,
+                      170,
+                      14.333333333333371,
+                      139.33333333333331
+                    ]
+                  }
+                },
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXStaticText[OFFENSE FORMATIONS]#1"
+              }
+            ],
+            "complete": true,
+            "meaning": "Observed differences, not causal attribution; IDs can churn",
+            "omitted": 0,
+            "totalChanges": 12
+          },
+          "dispatch": "attempted",
+          "execution": "completed",
+          "finished_at": "2026-09-20T15:45:16Z",
+          "id": "0",
+          "index": 0,
+          "started_at": "2026-09-20T15:45:14Z",
+          "type": "action",
+          "verification": "not_evaluated"
+        },
+        {
+          "after_snapshot": 1206,
+          "artifact": {
+            "bytes": 111074,
+            "coordinateSpace": "window_screenshot_pixels",
+            "file": "/Users/ryan/src/claude-leap/.leap/sessions/5845A8D4-E737-414C-98E7-B99B8110AE5D/AA00F114-2E86-4894-880E-255563DE8D9B.png",
+            "height": 509,
+            "pointsPerPixel": 1,
+            "session_id": "5845A8D4-E737-414C-98E7-B99B8110AE5D",
+            "snapshot": 1206,
+            "type": "screenshot",
+            "width": 888
+          },
+          "before_snapshot": 1206,
+          "delta": {
+            "changes": [],
+            "complete": true,
+            "meaning": "Observed differences, not causal attribution; IDs can churn",
+            "omitted": 0,
+            "totalChanges": 0
+          },
+          "dispatch": "not_sent",
+          "execution": "completed",
+          "finished_at": "2026-09-20T15:45:16Z",
+          "id": "1",
+          "index": 1,
+          "started_at": "2026-09-20T15:45:16Z",
+          "type": "capture",
+          "verification": "not_evaluated"
+        }
+      ],
+      "verification": "not_evaluated"
+    },
+    {
+      "deadlineOverrun": false,
+      "duration_ms": 4791,
+      "execution": "stopped",
+      "inputReplay": "never",
+      "interaction_id": "DF855026-29C3-4FA5-A28E-0039E03461D2",
+      "schemaVersion": 2,
+      "session_id": "5845A8D4-E737-414C-98E7-B99B8110AE5D",
+      "steps": [
+        {
+          "acknowledgement": "returned",
+          "after_snapshot": 1216,
+          "before_snapshot": 1211,
+          "delta": {
+            "changes": [
+              {
+                "change": "removed",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[4-3]#16"
+              },
+              {
+                "change": "removed",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[49ERS]#11"
+              },
+              {
+                "change": "removed",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Base Plays]#7"
+              },
+              {
+                "change": "removed",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Defense]#5"
+              },
+              {
+                "after": {
+                  "actions": [
+                    "AXPress",
+                    "AXScrollToVisible",
+                    "AXCancel",
+                    "AXShowMenu"
+                  ],
+                  "ancestors": [
+                    "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0"
+                  ],
+                  "depth": 1,
+                  "enabled": true,
+                  "focused": false,
+                  "frame": [
+                    821.5,
+                    575.1666564941406,
+                    45,
+                    37.33334350585939
+                  ],
+                  "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Delete play]#2",
+                  "index": 167,
+                  "label": "Delete play",
+                  "offscreen": true,
+                  "role": "AXButton",
+                  "selected": false,
+                  "valueLimited": false
+                },
+                "change": "added",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Delete play]#2"
+              },
+              {
+                "after": {
+                  "actions": [
+                    "AXPress",
+                    "AXScrollToVisible",
+                    "AXCancel",
+                    "AXShowMenu"
+                  ],
+                  "ancestors": [
+                    "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0"
+                  ],
+                  "depth": 1,
+                  "enabled": true,
+                  "focused": false,
+                  "frame": [
+                    821.5,
+                    528.5,
+                    45,
+                    39.66665649414066
+                  ],
+                  "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Duplicate play]#1",
+                  "index": 166,
+                  "label": "Duplicate play",
+                  "offscreen": true,
+                  "role": "AXButton",
+                  "selected": false,
+                  "valueLimited": false
+                },
+                "change": "added",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Duplicate play]#1"
+              },
+              {
+                "after": {
+                  "actions": [
+                    "AXPress",
+                    "AXScrollToVisible",
+                    "AXCancel",
+                    "AXShowMenu"
+                  ],
+                  "ancestors": [
+                    "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0"
+                  ],
+                  "depth": 1,
+                  "enabled": true,
+                  "focused": false,
+                  "frame": [
+                    821.5,
+                    484.4999999999999,
+                    45,
+                    36.99999999999996
+                  ],
+                  "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Edit play]#0",
+                  "index": 165,
+                  "label": "Edit play",
+                  "offscreen": false,
+                  "role": "AXButton",
+                  "selected": false,
+                  "valueLimited": false
+                },
+                "change": "added",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Edit play]#0"
+              },
+              {
+                "change": "removed",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Home]#3"
+              },
+              {
+                "after": {
+                  "actions": [
+                    "AXPress",
+                    "AXScrollToVisible",
+                    "AXCancel",
+                    "AXShowMenu"
+                  ],
+                  "ancestors": [
+                    "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0"
+                  ],
+                  "depth": 1,
+                  "enabled": true,
+                  "focused": false,
+                  "frame": [
+                    821.5,
+                    827.5,
+                    45,
+                    45.00000000000006
+                  ],
+                  "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Home]#6",
+                  "index": 172,
+                  "label": "Home",
+                  "offscreen": true,
+                  "role": "AXButton",
+                  "selected": false,
+                  "valueLimited": false
+                },
+                "change": "added",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Home]#6"
+              },
+              {
+                "change": "removed",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[KING]#12"
+              },
+              {
+                "change": "removed",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[Offense]#4"
+              },
+              {
+                "change": "removed",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXButton[RUN]#9"
+              }
+            ],
+            "complete": true,
+            "meaning": "Observed differences, not causal attribution; IDs can churn",
+            "omitted": 25,
+            "totalChanges": 37
+          },
+          "dispatch": "attempted",
+          "execution": "completed",
+          "finished_at": "2026-09-20T15:45:31Z",
+          "id": "0",
+          "index": 0,
+          "started_at": "2026-09-20T15:45:29Z",
+          "type": "action",
+          "verification": "not_evaluated"
+        },
+        {
+          "acknowledgement": "returned",
+          "after_snapshot": 1224,
+          "before_snapshot": 1219,
+          "delta": {
+            "changes": [
+              {
+                "after": {
+                  "actions": [
+                    "AXPress",
+                    "AXScrollToVisible",
+                    "AXCancel",
+                    "AXShowMenu"
+                  ],
+                  "ancestors": [
+                    "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0"
+                  ],
+                  "depth": 1,
+                  "enabled": true,
+                  "focused": false,
+                  "frame": [
+                    833.8333333333335,
+                    158,
+                    20.333333333333258,
+                    54
+                  ],
+                  "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXStaticText[49ERS]#0",
+                  "index": 125,
+                  "label": "49ERS",
+                  "offscreen": false,
+                  "role": "AXStaticText",
+                  "selected": false,
+                  "valueLimited": false
+                },
+                "change": "added",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXStaticText[49ERS]#0"
+              },
+              {
+                "change": "changed",
+                "fields": {
+                  "value": {
+                    "after": "1 of 8",
+                    "before": "2 of 8"
+                  }
+                },
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXStaticText[Active sequence position]#1"
+              },
+              {
+                "change": "removed",
+                "id": "w/AXWindow[iPhone 16 \u2013 iOS 18.0]#0/AXGroup[]#0/AXStaticText[KING FLASH 12 \u00b7 4-3]#0"
+              }
+            ],
+            "complete": true,
+            "meaning": "Observed differences, not causal attribution; IDs can churn",
+            "omitted": 0,
+            "totalChanges": 3
+          },
+          "dispatch": "attempted",
+          "execution": "completed",
+          "finished_at": "2026-09-20T15:45:33Z",
+          "id": "1",
+          "index": 1,
+          "started_at": "2026-09-20T15:45:31Z",
+          "type": "action",
+          "verification": "passed"
+        },
+        {
+          "after_snapshot": 1229,
+          "before_snapshot": 1227,
+          "dispatch": "not_sent",
+          "error": "Selector missing/ambiguous or observation incomplete; no input sent",
+          "execution": "failed",
+          "failure_artifact": {
+            "bytes": 138268,
+            "coordinateSpace": "window_screenshot_pixels",
+            "file": "/Users/ryan/src/claude-leap/.leap/sessions/5845A8D4-E737-414C-98E7-B99B8110AE5D/9267B5CE-70BF-4454-8583-F537A38D1621.png",
+            "height": 509,
+            "pointsPerPixel": 1,
+            "session_id": "5845A8D4-E737-414C-98E7-B99B8110AE5D",
+            "snapshot": 1229,
+            "type": "screenshot",
+            "width": 888
+          },
+          "finished_at": "2026-09-20T15:45:34Z",
+          "id": "2",
+          "index": 2,
+          "started_at": "2026-09-20T15:45:33Z",
+          "type": "action",
+          "verification": "unknown"
+        }
+      ],
+      "verification": "unknown"
+    }
+  ],
+  "raw_artifacts": "Local-only ignored .leap/sessions/5845A8D4-E737-414C-98E7-B99B8110AE5D"
+}

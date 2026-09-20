@@ -53,3 +53,7 @@ When the user asks a question and investigation identifies a concrete, supported
 within Leap's objective, proceed to implement and deliver it under the build/install workflow;
 do not stop at proposing the solution. Distinguish hypotheses from evidence and preserve the
 native acceptance boundary. This standing preference was confirmed on 2026-09-20.
+
+Continue the acceptance campaign across checkpoints without handing back until the objective is
+complete or an installed build requires session restart. After the user confirms restart, resume
+the next native case. Recorded at user request on 2026-09-20.

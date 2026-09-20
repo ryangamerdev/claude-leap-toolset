@@ -1,0 +1,10 @@
+{
+  "installed_at": "2026-09-20T15:48:21.988576+00:00",
+  "sha256": "0f480bff42638e2a18fe6090e47beacf1884a899c9524893110236c9849aca21",
+  "rollback": "/Users/ryan/src/claude-leap/artifacts/backups/20260920-scroll-page/previous.app",
+  "rollback_local_only": true,
+  "skills_synced": true,
+  "native_acceptance": "pending restart",
+  "focused_tests": 5,
+  "registration": "leap unchanged"
+}

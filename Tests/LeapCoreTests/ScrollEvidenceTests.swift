@@ -22,6 +22,16 @@ final class ScrollEvidenceTests:XCTestCase {
         XCTAssertEqual(try ScrollEvidence.pixels(before:before,after:before,region:[25,150,220,540],bounds:[130,99,1006,780])["status"] as? String,"no_visual_change_observed")
         XCTAssertEqual(try ScrollEvidence.pixels(before:before,after:after,region:[25,150,220,540],bounds:[130,99,1006,780])["status"] as? String,"visual_change_observed")
     }
+    func testFullPageScrollWithNoSharedVisibleCenters() {
+        XCTAssertEqual(ScrollEvidence.geometry(before:nodes(100),after:nodes(-360),region:[0,90,100,100],root:"list",direction:"down")["status"] as? String,"movement_observed")
+    }
+    func testScopedScrollbarValueWithoutChildMovement() {
+        let a:[String:Any]=["id":"bar","role":"AXScrollBar","ancestors":["list"],"frame":[90,0,10,200],"value":"0"]
+        var b=a;b["value"]="0.49"
+        XCTAssertEqual(ScrollEvidence.geometry(before:[a],after:[b],region:nil,root:"list",direction:"down")["status"] as? String,"movement_observed")
+        XCTAssertEqual(ScrollEvidence.geometry(before:[a],after:[b],region:nil,root:"other",direction:"down")["status"] as? String,"unverified")
+        XCTAssertEqual(ScrollEvidence.geometry(before:[a],after:[b],region:nil,root:"list",direction:"up")["status"] as? String,"unverified")
+    }
     func testRegionExcludesUnrelatedMovementAndValidatesBounds() {
         XCTAssertEqual(ScrollEvidence.geometry(before:nodes(100),after:nodes(70),region:[300,0,100,400],root:nil,direction:"down")["status"] as? String,"unverified")
         XCTAssertNotNil(ScrollEvidence.region([0,0,100,400],bounds:[130,99,1006,780]))

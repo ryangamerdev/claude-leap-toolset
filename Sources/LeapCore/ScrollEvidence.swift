@@ -22,7 +22,13 @@ enum ScrollEvidence {
             if let root, !(p["ancestors"] as? [String] ?? []).contains(root) {continue}
             if let r=region {
                 let box=CGRect(x:r[0],y:r[1],width:r[2],height:r[3])
-                guard box.contains(CGPoint(x:a[0]+a[2]/2,y:a[1]+a[3]/2)),box.contains(CGPoint(x:b[0]+b[2]/2,y:b[1]+b[3]/2)) else {continue}
+                guard box.intersects(CGRect(x:a[0],y:a[1],width:a[2],height:a[3])) || box.intersects(CGRect(x:b[0],y:b[1],width:b[2],height:b[3])) else {continue}
+            }
+            if n["role"] as? String == "AXScrollBar",p["valueLimited"] as? Bool != true,n["valueLimited"] as? Bool != true,
+               let from=Double(String(describing:p["value"] ?? "")),let to=Double(String(describing:n["value"] ?? "")),from.isFinite,to.isFinite,
+               (a[3]>a[2]) == ["up","down"].contains(direction),
+               (to-from)*(["down","right"].contains(direction) ? 1.0 : -1.0)>0.000001 {
+                return ["status":"movement_observed","basis":"scoped AX scrollbar value in requested direction","samples":[["id":id,"before":from,"after":to]],"count":1,"causality":"Observed after input; concurrent user/app changes are possible"]
             }
             let dx=b[0]-a[0],dy=b[1]-a[1]
             let primary=["up","down"].contains(direction) ? dy:dx

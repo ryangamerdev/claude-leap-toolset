@@ -62,3 +62,7 @@ leap-cli, physical-device provisioning, Android/Windows/browser backends, arbitr
 ## Native scroll-evidence checkpoint
 
 [Iteration](iterations/2026-09-20-scroll-evidence-native.md): **TESTED** scoped negative-case reporting, automatic retained captures, additional observation and nested evidence retrieval on restarted bc78636. Both wheel trials: unverified, boundary unknown, image changedFraction0; explicit foreground did not alter result. Drag visibly scrolled and restored sidebar, with50 observed changes including offscreen. Positive automatic movement detection remains **RECHECK**, not proved by the separate drag action. No wheel delivery fix claimed.
+
+## iPhone comparison and desktop full-page evidence fix
+
+Native on bc78636: iPhone Playbook→Next→Filters passed Leap assertions and Sky semantic actions; Leap foreground drag visibly scrolled filters. Sky coordinate scroll/drag and element scroll raised windowNotFoundAtPosition. Leap wheel/semantic scroll showed no visible effect. Ambiguous Home selector safely rejected (guest and host toolbar share label); first play restored, phone left on Playbook. Desktop sidebar scroll worked with both Sky and Leap. Leap detector falsely returned unverified despite460-point motion and visible change: requiring the same nodes visible before AND after excluded full-page movement. Candidate now accepts target intersection before OR after and scoped directional scrollbar value changes. **RECHECK after restart**, not native pass. [Iteration](iterations/2026-09-20-scroll-page.md).
