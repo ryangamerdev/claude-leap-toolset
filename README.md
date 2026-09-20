@@ -113,9 +113,12 @@ unsigned identity with no grants), so dev runs keep using the grant given to Cla
 python3 scripts/install.py
 ```
 
-This builds and signs the bundle if needed, registers the `leap` MCP server at user scope, and
-symlinks `skills/claude-leap` into `~/.claude/skills/claude-leap`. Restart the Claude Code session
-afterwards. `--uninstall` reverses it.
+This builds and signs the app if needed, then installs a self-contained copy the way unpacking a
+GitHub release would: it copies the signed bundle to `~/Applications/claude-leap.app` (with `ditto`,
+so the code signature and its TCC grants survive), copies each skill under `skills/` to
+`~/.claude/skills/<name>`, and registers the `leap` MCP server at the installed path. After this the
+repo can be moved or deleted and the install keeps working; re-run to update. Restart the Claude Code
+session afterwards. `--uninstall` reverses it.
 
 **Why a skill as well as server instructions.** Claude Code truncates long MCP server
 instructions (the model sees roughly the first 2 KB), so the server's `instructions` string is
