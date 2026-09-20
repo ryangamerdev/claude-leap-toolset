@@ -85,7 +85,7 @@ extension Engine {
                 if let client {try await client.open(app:app)}
                 automationSessions[id]=s
                 let snap=try await automationObserve(s)
-                return try RecordingStore.json(["schemaVersion":2,"session_id":id,"backend":backend,"app":app,"snapshot":snap["snapshot"]!,"file":snap["file"]!,"actions":(backend == "mac_ax" ? Self.macActions:Self.deviceActions).sorted(),"next":"ui_observe(session_id) or ui_perform(session_id, steps)","restart":"Live handles expire at MCP restart; history remains; open a new live session"])
+                return try RecordingStore.json(["schemaVersion":2,"session_id":id,"backend":backend,"app":app,"snapshot":snap["snapshot"]!,"file":snap["file"]!,"actions":(backend == "mac_ax" ? Self.macActions:Self.deviceActions).sorted(),"next":"ui_observe(session_id) or ui_perform(session_id, steps)","insights_enabled":Diagnostics.shared.insightsEnabled,"restart":"Live handles expire at MCP restart; history remains; open a new live session"])
             } catch {
                 automationSessions[id]=nil
                 _ = try? s.save("open_failed",["error":String(describing:error),"lifecycle":"Guest launch/activation may have occurred"],interaction:recordingInteraction)
@@ -290,7 +290,7 @@ extension Engine {
                         let pairs=action == "drag" ? [("from_x","from_y"),("to_x","to_y")]:[("x","y")]
                         for (x,y) in pairs {guard let px=a[x] as? Double,let py=a[y] as? Double,px.isFinite,py.isFinite,px>=0,py>=0,px<b[2],py<b[3] else {throw AutomationModel.fail("Coordinate outside target bounds")}}
                     }
-                    if action == "scroll" {
+                    if action == "scroll", Diagnostics.shared.insightsEnabled {
                         if let raw=a["observation_region"] {
                             guard let region=ScrollEvidence.region(raw,bounds:pre["bounds"]) else {throw AutomationModel.fail("observation_region outside target bounds; no input sent")}
                             scrollRegion=region
@@ -318,8 +318,8 @@ extension Engine {
                     let (v,snap)=try await automationCheck(s,expectation:expectation,timeout:min(wait,max(0,deadline-ProcessInfo.processInfo.systemUptime)))
                     post=snap;r["verification"]=v
                     if v != "passed" {stopped=true;overall=v}
-                } else if type == "action" {post=try await automationObserve(s)}
-                if type == "action",step["action"] as? String == "scroll" {
+                } else if type == "action", Diagnostics.shared.insightsEnabled {post=try await automationObserve(s)}
+                if type == "action",step["action"] as? String == "scroll",Diagnostics.shared.insightsEnabled {
                     let a=AutomationModel.object(step["arguments"])
                     let end=min(deadline,ProcessInfo.processInfo.systemUptime+0.8)
                     var samples=0
@@ -351,22 +351,24 @@ extension Engine {
                     r["scroll_effect"]=effect
                 }
                 if type == "capture" {r["artifact"]=try await automationCapture(s)}
-                r["after_snapshot"]=post["snapshot"]
-                r["delta"]=AutomationModel.delta(pre["nodes"] as? [[String:Any]] ?? [],post["nodes"] as? [[String:Any]] ?? [],complete:pre["complete"] as? Bool == true && post["complete"] as? Bool == true)
+                if !Diagnostics.shared.insightsEnabled && type == "action" && step["expect"] == nil {
+                    r["insights"]="disabled; no automatic post-action observation or delta"
+                } else { r["after_snapshot"]=post["snapshot"] }
+                if Diagnostics.shared.insightsEnabled { r["delta"]=AutomationModel.delta(pre["nodes"] as? [[String:Any]] ?? [],post["nodes"] as? [[String:Any]] ?? [],complete:pre["complete"] as? Bool == true && post["complete"] as? Bool == true) }
                 r["execution"]="completed"
             } catch {
                 stopped=true;overall="unknown";r["execution"]="failed";r["error"]=String(describing:error)
                 if attempted {r["dispatch"]="uncertain"}
                 if r["verification"] as? String == "not_evaluated" {r["verification"]="unknown"}
                 Diagnostics.shared.record(level:"error",kind:"automation_step_failed",detail:String(describing:error))
-                do {
+                if Diagnostics.shared.insightsEnabled { do {
                     let post=try await automationObserve(s);r["after_snapshot"]=post["snapshot"]
                     if attempted,let expectation=step["expect"] as? [String:Any] {
                         r["verification"]=AutomationModel.verdict(nodes:post["nodes"] as? [[String:Any]] ?? [],complete:post["complete"] as? Bool == true,expectation:expectation)
                     }
-                } catch {r["observation_error"]=String(describing:error)}
+                } catch {r["observation_error"]=String(describing:error)} }
             }
-            if stopped {do {r["failure_artifact"]=try await automationCapture(s)} catch {r["capture_error"]=String(describing:error)}}
+            if stopped && Diagnostics.shared.insightsEnabled {do {r["failure_artifact"]=try await automationCapture(s)} catch {r["capture_error"]=String(describing:error)}}
             r["finished_at"]=ISO8601DateFormatter().string(from:Date())
             _ = try s.save("step",r,interaction:interaction)
             results.append(r)

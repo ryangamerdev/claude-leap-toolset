@@ -1,4 +1,5 @@
 import Foundation
+import CoreFoundation
 import SQLite3
 
 /// Separate from UI recordings: usable before project binding and during recorder failure.
@@ -7,10 +8,18 @@ public final class Diagnostics: @unchecked Sendable {
     public static func configured(home:String = NSHomeDirectory()) -> Diagnostics {
         let path=home+"/.config/leap/leap.json"
         var level="info"
+        var insightsEnabled=true
         do {
             if FileManager.default.fileExists(atPath:path) {
                 let raw=try JSONSerialization.jsonObject(with:Data(contentsOf:URL(fileURLWithPath:path)))
                 guard let config=raw as? [String:Any] else {throw LeapError.unsupported("leap.json must be an object")}
+                if let insights=config["insights"] {
+                    guard let object=insights as? [String:Any] else {throw LeapError.unsupported("insights must be an object")}
+                    if let supplied=object["enabled"] {
+                        guard let value=supplied as? Bool, CFGetTypeID(supplied as CFTypeRef) == CFBooleanGetTypeID() else {throw LeapError.unsupported("insights.enabled must be a boolean")}
+                        insightsEnabled=value
+                    }
+                }
                 if let logging=config["logging"] {
                     guard let object=logging as? [String:Any] else {throw LeapError.unsupported("logging must be an object")}
                     if let supplied=object["level"] {
@@ -19,10 +28,10 @@ public final class Diagnostics: @unchecked Sendable {
                     }
                 }
             }
-            return Diagnostics(directory:home+"/.leap/logs",level:level)
+            return Diagnostics(directory:home+"/.leap/logs",level:level,insightsEnabled:insightsEnabled)
         } catch {
             let result=Diagnostics(directory:home+"/.leap/logs")
-            result.failure="Invalid logging configuration at \(path): \(error). Correct it and restart; tool dispatch blocked."
+            result.failure="Invalid Leap configuration at \(path): \(error). Correct it and restart; tool dispatch blocked."
             result.configurationInvalid=true
             FileHandle.standardError.write(Data((result.failure!+"\n").utf8))
             return result
@@ -37,7 +46,8 @@ public final class Diagnostics: @unchecked Sendable {
     private var configurationInvalid=false
     private var warnings:[String]=[]
     public let level:String
-    public init(directory:String,level:String = "info") {self.directory=directory;self.level=level}
+    public let insightsEnabled:Bool
+    public init(directory:String,level:String = "info",insightsEnabled:Bool = true) {self.directory=directory;self.level=level;self.insightsEnabled=insightsEnabled}
     deinit {sqlite3_close(db)}
     public func setContext(_ value:[String:String]) {lock.lock();defer{lock.unlock()};context=value;warnings=[]}
     private func open() throws {

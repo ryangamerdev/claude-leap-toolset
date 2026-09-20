@@ -3,6 +3,7 @@ import ApplicationServices
 
 extension Engine {
     public func startRecording(app: String, project: String, window: String?) async throws -> String {
+        guard Diagnostics.shared.insightsEnabled else {throw LeapError.unsupported("Recording disabled by insights.enabled=false; enable it and restart to subscribe. History remains available.")}
         try requireAX()
         let s=try await session(for:app)
         if let old=recordings[s.pid] { return "Already recording: session \(old.id), project \(old.store.root). Stop before rebinding." }
@@ -116,6 +117,7 @@ extension Engine {
         return "Project bound. App observations/actions now retain evidence automatically. Existing history preserved. recording_sessions lists retained captures/storage; recording_group starts or resumes a named task across apps/restarts. Query tools can omit project."
     }
     func autoRecord(_ s:AppSession) throws {
+        guard Diagnostics.shared.insightsEnabled else {return}
         guard let root=boundProject,recordings[s.pid]==nil,!recordingSuppressed.contains(s.pid),let store=recordingStores[root] else {return}
         let r=try AXRecording(store:store,app:s.displayName,pid:s.pid)
         r.setInteraction(recordingInteraction);recordings[s.pid]=r

@@ -1,0 +1,12 @@
+{
+  "installed_at": "2026-09-20T17:12:51.402888+00:00",
+  "sha256": "b315975890dfc5cd0b704c7179c6aa5abacdf86d31b1907d3b6ee4214c63c49f",
+  "rollback": "/Users/ryan/src/claude-leap/artifacts/backups/20260920-foreground-acceptance/previous.app",
+  "rollback_local_only": true,
+  "skills_synced": true,
+  "native_acceptance": "pending restart",
+  "registration": "leap unchanged",
+  "build": "passed",
+  "focused_tests": "4 DiagnosticsTests passed",
+  "scope": "insights disabled controlled experiment; keyboard unchanged"
+}

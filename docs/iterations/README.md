@@ -71,3 +71,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-20 — Keyboard event sequence](2026-09-20-keyboard-sequence.md): modifier events/timestamps/session posting matched to reference; multiline refusal passed native; keyboard candidate awaits restart.
 
 - [2026-09-20 — Physical text-key translation after native aa failure](2026-09-20-text-key-plan.md)
+
+- [2026-09-20 — Foreground typing failure, scoped persistence pass, whole-text preparation](2026-09-20-foreground-acceptance.md)

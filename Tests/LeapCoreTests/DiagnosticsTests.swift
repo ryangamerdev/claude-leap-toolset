@@ -37,6 +37,19 @@ final class DiagnosticsTests:XCTestCase {
         XCTAssertNotNil(invalid.health())
         XCTAssertNil(invalid.record(level:"info",kind:"attempt",detail:"must block"))
     }
+    func testInsightsSwitchDefaultsAndValidation() throws {
+        let home=directory()
+        XCTAssertTrue(Diagnostics.configured(home:home).insightsEnabled)
+        try FileManager.default.createDirectory(atPath:home+"/.config/leap",withIntermediateDirectories:true)
+        let file=URL(fileURLWithPath:home+"/.config/leap/leap.json")
+        try Data(#"{"insights":{"enabled":false},"logging":{"level":"warning"}}"#.utf8).write(to:file)
+        let disabled=Diagnostics.configured(home:home)
+        XCTAssertFalse(disabled.insightsEnabled)
+        XCTAssertEqual(disabled.level,"warning")
+        XCTAssertNil(disabled.health())
+        try Data(#"{"insights":{"enabled":0}}"#.utf8).write(to:file)
+        XCTAssertNotNil(Diagnostics.configured(home:home).health())
+    }
     func testUnavailableStoreIsExplicit() throws {
         let path=directory();try FileManager.default.createDirectory(atPath:path,withIntermediateDirectories:true)
         let blocker=path+"/file";try Data("blocked".utf8).write(to:URL(fileURLWithPath:blocker))

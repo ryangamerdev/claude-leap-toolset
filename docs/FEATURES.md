@@ -94,3 +94,9 @@ See [cross-cutting comparison](research/sky-leap-consolidated-review.md). **IMPL
 ### Literal-text physical key translation
 
 **FAILED native on cc5e90a:** foreground typing unchanged; background Unicode chunks became aa. Sky text insertion observed working despite observation error. **IMPLEMENTED / RECHECK:** current-layout physical key translation with Unicode payload, whole-plan Simulator unsupported-character rejection, CRLF normalization;11 focused tests passed. Single-key follow-up inconclusive due user Escape input. See [iteration](iterations/2026-09-20-text-key-plan.md). No Save attempt this iteration.
+
+### Foreground acceptance — 2026-09-20
+
+Foreground physical typing/Select All **TESTED scoped** (Foreground42. and visual selection). Longer Read flat defender. became Red flat defender.: **FAILED** exact typing. Save/reopen retained actual Red flat defender.: **TESTED scoped persistence**. Sky comparison also unchanged/unknown. CPU sample does not establish app stall. Whole-text event preparation with frozen restoration state **IMPLEMENTED / RECHECK**. See [iteration](iterations/2026-09-20-foreground-acceptance.md). Foreground accepted as campaign baseline; background parity deferred.
+
+User steering supersedes pending whole-text candidate: **insights-off experiment** installed next. Keyboard patch retained/deferred; no keyboard changes in this build. insights.enabled=false disables automatic subscriptions, post-action observations/deltas, scroll analysis and failure capture. Explicit reads/checks and pre-action validation remain. Test foreground input without expect, then explicitly observe; compare load/outcome before deciding whether insights cause trouble. Existing history preserved.
