@@ -1,4 +1,16 @@
-> **PAUSED by user, 2026-09-20.** Leap MCP removed from Codex configuration. Do not resume or reinstall without user direction. Desktop recheck results and unresolved gaps: [pause checkpoint](iterations/2026-09-20-paused.md).
+> **RESUMED 2026-09-28.** The current handoff is this first section; earlier handoffs follow unchanged.
+
+# Current handoff — 2026-09-28
+
+Read AGENTS.md (Sky-first rule, forward-only commits), docs/PLAN.md status, and the 2026-09-28
+iteration entries in order: resume-review, node-scoped-observation, native-desktop-workflow,
+sky-referenced-review, coordinates-observe, and the newest entry. `make install` builds, signs,
+installs and syncs skills; restart the session to load it. Use native MCP calls for acceptance; a
+separate git project (e.g. .leap/tmp/harness-project) lets scripts/mcp-call.py run the dev build while
+the installed server holds the repo's writer lock. Test non-test apps only in new documents/windows.
+
+
+> Earlier banner (2026-09-20, superseded 2026-09-28): **PAUSED by user, 2026-09-20.** Leap MCP removed from Codex configuration. Do not resume or reinstall without user direction. Desktop recheck results and unresolved gaps: [pause checkpoint](iterations/2026-09-20-paused.md).
 
 # Current handoff — foreground-first acceptance
 

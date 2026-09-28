@@ -145,6 +145,8 @@ public enum AutomationModel {
                         fields[k]=["before":old[id]![k] ?? NSNull(),"after":new[id]![k] ?? NSNull()]
                     }
                 }
+                // Geometry of elements whose coordinates are unreliable (offscreen/rotated) is noise.
+                if old[id]!["offscreen"] as? Bool == true && new[id]!["offscreen"] as? Bool == true {fields["frame"]=nil}
                 if !fields.isEmpty {changes.append(["id":id,"change":"changed","fields":fields])}
             }
         }

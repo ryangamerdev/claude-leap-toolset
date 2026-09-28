@@ -321,6 +321,12 @@ extension Engine {
                 }
                 var post=pre
                 if let expectation=step["expect"] as? [String:Any] {
+                    // A pass on a condition that already held says nothing about the action's effect
+                    // (e.g. a disabled inactive view still contains the target screen's controls).
+                    if type == "action", AutomationModel.verdict(nodes:pre["nodes"] as? [[String:Any]] ?? [],complete:pre["complete"] as? Bool == true,expectation:expectation) == "passed" {
+                        r["expectation_met_before"]=true
+                        r["note"]="Expectation already held before input; a pass does not show the action's effect. Use a condition that distinguishes the new state (e.g. enabled, value, a unique label)."
+                    }
                     let wait=type == "assert" ? 0:min(30,max(0,step["timeout"] as? Double ?? 5))
                     let (v,snap)=try await automationCheck(s,expectation:expectation,timeout:min(wait,max(0,deadline-ProcessInfo.processInfo.systemUptime)))
                     post=snap;r["verification"]=v
@@ -368,6 +374,11 @@ extension Engine {
                     r["insights"]="disabled; no automatic post-action observation or delta"
                 } else { r["after_snapshot"]=post["snapshot"] }
                 if Diagnostics.shared.insightsEnabled { r["delta"]=AutomationModel.delta(pre["nodes"] as? [[String:Any]] ?? [],post["nodes"] as? [[String:Any]] ?? [],complete:pre["complete"] as? Bool == true && post["complete"] as? Bool == true) }
+                if type == "action", r["verification"] as? String == "failed", (r["delta"] as? [String:Any])?["totalChanges"] as? Int == 0,
+                   AutomationModel.object(step["arguments"])["foreground"] as? Bool != true,
+                   ["drag","scroll"].contains(step["action"] as? String ?? "") || (r["input_result"] as? String ?? "").contains("clicked") {
+                    r["hint"]="Pointer input was dispatched in the background but no UI change was observed. Some apps (e.g. SwiftUI) ignore background pointer events; foreground:true activates the app first. Not replayed automatically."
+                }
                 r["execution"]="completed"
             } catch {
                 stopped=true;overall="unknown";r["execution"]="failed";r["error"]=String(describing:error)

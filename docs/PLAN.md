@@ -1,4 +1,24 @@
-> **PAUSED by user, 2026-09-20.** Leap MCP removed from Codex configuration. Do not resume or reinstall without user direction. Desktop recheck results and unresolved gaps: [pause checkpoint](iterations/2026-09-20-paused.md).
+> **RESUMED 2026-09-28** with a reset objective. Status below supersedes the 2026-09-20 plan text,
+> which is preserved after this section.
+
+# Leap plan — current status (2026-09-28)
+
+Objective: general-purpose x-ray vision for agents into any desktop application — complete, compact,
+fast observation and reliable, verified actions. Gameday is one test app. Minor typing glitches are
+accepted (Sky shows the same). Reference Sky first for every issue (AGENTS.md).
+
+Native passes on 2026-09-28 (see docs/iterations/2026-09-28-*):
+- Desktop Gameday: edit notes → Save → reopen → exact value (49a3213 era builds).
+- iPad Simulator (mac_ax, landscape): New play → title (AX) + coaching notes (keystrokes, exact) →
+  Save → search → reopen → title and notes `value_equals` (94d2992).
+- TextEdit, Notes, Finder observation/actions (general-app checks).
+
+Open, in order: background pointer delivery to SwiftUI apps (Sky focus-enforcer research in progress);
+duplicate labels via AXServesAsTitleForUIElements; iPhone create/save/reopen; paired Blender
+Mickey-head modeling/save/reopen gate.
+
+
+> Earlier banner (2026-09-20, superseded 2026-09-28): **PAUSED by user, 2026-09-20.** Leap MCP removed from Codex configuration. Do not resume or reinstall without user direction. Desktop recheck results and unresolved gaps: [pause checkpoint](iterations/2026-09-20-paused.md).
 
 # Leap completion plan
 

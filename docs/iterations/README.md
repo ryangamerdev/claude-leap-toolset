@@ -91,3 +91,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-28 — Checkpoint 3 native pass; Sky reference for every issue](2026-09-28-sky-referenced-review.md): disabled Save visible, stable ids verified; key collision fixed; `within` selector; Sky-first rule.
 
 - [2026-09-28 — Coordinates, observe items, compact deltas](2026-09-28-coordinates-observe.md): checkpoint 4 native pass; Sky-referenced relaxations; TextEdit restore note.
+
+- [2026-09-28 — iPad create/save/reopen gate, pre-met expectations](2026-09-28-ipad-gate-verification.md): iPad gate passed natively; background SwiftUI pointer gap found; false-pass guard.
