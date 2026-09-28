@@ -36,3 +36,5 @@ awaits the other agent's native rerun.
 
 `swift test`: 64 tests, 0 failures (new: unique keys, root prefix, named selector errors). Skill updated
 (intent-workflows reference). Install identity below; native verification by the other agent pending.
+
+Installed 2026-09-28T23:11:42Z via `make install` from 641be0b. SHA256 `5b2b1683c3e2d8e7b48b5b2f14ed6af3f52f9d2cea26b652f040cf0932bf3883`. Signature verified; skills match; registration unchanged. Restart pending.
