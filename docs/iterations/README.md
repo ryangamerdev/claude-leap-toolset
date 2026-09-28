@@ -99,3 +99,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-28 — Blender modeling/save; hover move before clicks](2026-09-28-blender-hover.md): UI-built Mickey head saved and verified; hover-driven UIs need a move before click.
 
 - [2026-09-28 — Native gates: Blender reopen, background Command-clicks, iPhone persistence](2026-09-28-native-gates-complete.md): Blender gate complete; Command-clicks verified on Gameday and Calculator; Blender API-first direction.
+
+- [2026-09-28 — Agent follow-up resolved](2026-09-28-agent-followup.md): unique keys + dispatch identity check, sheet/topmost disambiguation, transition re-observe, named validation errors, root prefix, unchanged set_value.

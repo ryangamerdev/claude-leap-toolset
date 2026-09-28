@@ -895,6 +895,11 @@ public actor Engine {
         let s = try await actionSession(query, needsElements: true)
         let rec = try s.element(elementIndex)
         defer { s.lastActionAt = Date() }
+        // Writing the same value changes nothing app-side (no binding fires), so an expectation that
+        // depends on a change would fail; say so instead of claiming a set.
+        if let current = AX.string(AX.attr(rec.node.element, kAXValueAttribute) as CFTypeRef?), current == value {
+            return "value unchanged: [\(elementIndex)] already holds this value; nothing sent (the app sees no edit)"
+        }
         // 1. Text elements: replace the selection through the text system (fires change notifications,
         //    so SwiftUI/AppKit bindings update — a raw kAXValue write often does not).
         switch AX.insertText(rec.node.element, value, replaceAll: true) {

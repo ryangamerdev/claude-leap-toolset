@@ -196,12 +196,17 @@ extension Engine {
         guard let steps=args["steps"] as? [[String:Any]],!steps.isEmpty,steps.count<=50 else {throw AutomationModel.fail("steps must contain 1–50 objects")}
         // Validate every step before any input. Backend-specific capabilities are explicit.
         let allowed=s.backend == "mac_ax" ? Self.macActions:Self.deviceActions
-        for step in steps {
-            guard Set(step.keys).isSubset(of:["id","type","action","selector","arguments","before","expect","timeout"]) else {throw AutomationModel.fail("Unknown step field; no input sent")}
+        for (stepIndex,step) in steps.enumerated() {
+            let stepKeys:Set<String>=["id","type","action","selector","arguments","before","expect","timeout","fields"]
+            let unknown=Set(step.keys).subtracting(stepKeys)
+            guard unknown.isEmpty else {throw AutomationModel.fail("Step \(stepIndex): unknown field(s) \(unknown.sorted()); allowed: \(stepKeys.sorted()). No input sent")}
+            if step["fields"] != nil, step["type"] as? String != "observe" {throw AutomationModel.fail("Step \(stepIndex): fields applies to observe steps only. No input sent")}
             if let raw=step["selector"],!(raw is [String:Any]) {throw AutomationModel.fail("Selector must be object")}
             if let raw=step["arguments"],!(raw is [String:Any]) {throw AutomationModel.fail("Arguments must be object")}
             guard let type=step["type"] as? String,["action","assert","wait","observe","capture"].contains(type) else {throw AutomationModel.fail("Invalid step type")}
-            if let selector=step["selector"] as? [String:Any] {try AutomationModel.validateSelector(selector)}
+            if let selector=step["selector"] as? [String:Any] {
+                do {try AutomationModel.validateSelector(selector)} catch {throw AutomationModel.fail("Step \(stepIndex): \(error)")}
+            }
             for key in ["before","expect"] {if let value=step[key] {guard let e=value as? [String:Any] else {throw AutomationModel.fail("Expectation must be object")};try AutomationModel.validateExpectation(e)}}
             if ["assert","wait"].contains(type),step["expect"] == nil {throw AutomationModel.fail("assert/wait requires expect")}
             if type == "action" {
@@ -261,6 +266,18 @@ extension Engine {
                 if let health=s.store.health() {throw AutomationModel.fail("Recording unavailable: \(health)")}
                 let type=step["type"] as! String
                 var pre=try await automationObserve(s)
+                // Like Sky's post-transition wait (~1 s + up to 5 s while state changes): a screen that is
+                // still being built gives incomplete reads. Re-observe until complete within the step's
+                // timeout; input is still never sent on an incomplete observation.
+                if pre["complete"] as? Bool != true, step["selector"] != nil {
+                    let settle=min(deadline,ProcessInfo.processInfo.systemUptime+min(10,max(1,step["timeout"] as? Double ?? 5)))
+                    var reads=0
+                    while pre["complete"] as? Bool != true,ProcessInfo.processInfo.systemUptime<settle {
+                        try await Task.sleep(nanoseconds:250_000_000)
+                        pre=try await automationObserve(s);reads+=1
+                    }
+                    r["observation_retries"]=reads
+                }
                 r["before_snapshot"]=pre["snapshot"]
                 if let before=step["before"] as? [String:Any] {
                     let (v,snap)=try await automationCheck(s,expectation:before,timeout:min(5,max(0,deadline-ProcessInfo.processInfo.systemUptime)))
@@ -273,7 +290,20 @@ extension Engine {
                     let nodes=pre["nodes"] as? [[String:Any]] ?? []
                     var node:[String:Any]?
                     if let selector=step["selector"] as? [String:Any] {
-                        let hits=nodes.filter{AutomationModel.matches($0,selector)}
+                        var hits=nodes.filter{AutomationModel.matches($0,selector)}
+                        if hits.count>1 {
+                            // Sky shows only the sheet while one is up; input cannot reach the window under
+                            // a modal sheet, so prefer matches inside it.
+                            let inSheet=hits.filter{($0["id"] as? String ?? "").contains("/AXSheet[")}
+                            if !inSheet.isEmpty,inSheet.count<hits.count {hits=inSheet;r["disambiguated"]="modal sheet"}
+                        }
+                        if hits.count>1,s.wda == nil {
+                            // Hidden SwiftUI layers stay in the tree; keep the one element actually on top at its own point.
+                            let indices=hits.compactMap{$0["index"] as? Int}
+                            let top=await topmostIndices(s.app,indices)
+                            let kept=hits.filter{top.contains($0["index"] as? Int ?? -1)}
+                            if kept.count==1 {hits=kept;r["disambiguated"]="topmost (hit-test)"}
+                        }
                         guard hits.count<=1 else {
                             let sample=hits.prefix(5).map{"\($0["role"] as? String ?? "?") \"\($0["label"] as? String ?? "")\" id=\($0["id"] as? String ?? "")"}.joined(separator:"; ")
                             throw AutomationModel.fail("Selector matches \(hits.count) elements (\(sample)); add role/id/root to make it unique. No input sent")
@@ -368,7 +398,8 @@ extension Engine {
                 if type == "observe", let selector=step["selector"] as? [String:Any] {
                     let hits=(pre["nodes"] as? [[String:Any]] ?? []).filter{AutomationModel.matches($0,selector)}
                     r["matched"]=hits.count
-                    r["items"]=hits.prefix(20).map{$0.filter{["index","id","role","label","value","enabled","selected","focused","frame","omittedChildren"].contains($0.key)}}
+                    let wanted=Set((step["fields"] as? [String]) ?? ["index","id","role","label","value","enabled","selected","focused","frame","omittedChildren"])
+                    r["items"]=hits.prefix(20).map{$0.filter{wanted.contains($0.key)}}
                 }
                 if !Diagnostics.shared.insightsEnabled && type == "action" && step["expect"] == nil {
                     r["insights"]="disabled; no automatic post-action observation or delta"
@@ -409,9 +440,37 @@ extension Engine {
         return try JSONSerialization.jsonObject(with:Data(payload.utf8)) as? [String:Any]
     }
 
+    /// Indices whose element is what the window actually shows at the element's center: the hit-test
+    /// result is the element itself or one of its descendants. Unreliable geometry is never judged.
+    func topmostIndices(_ app:String,_ indices:[Int]) async -> Set<Int> {
+        guard let native=try? await session(for:app,launch:false) else {return []}
+        var top=Set<Int>()
+        for index in indices {
+            guard let rec=try? native.element(index),!rec.node.offscreen,!rec.node.untransformedFrame,
+                  let frame=AX.frame(rec.node.element),frame.width>0,frame.height>0 else {continue}
+            var hit:AXUIElement?
+            guard AXUIElementCopyElementAtPosition(native.axApp,Float(frame.midX),Float(frame.midY),&hit) == .success,var current=hit else {continue}
+            for _ in 0..<40 {
+                if CFEqual(current,rec.node.element) {top.insert(index);break}
+                guard let parent:AXUIElement=AX.attr(current,kAXParentAttribute) else {break}
+                current=parent
+            }
+        }
+        return top
+    }
+
     func automationInput(_ s:AutomationSession,action:String,node:[String:Any]?,args:[String:Any]) async throws -> String {
         if let wda=s.wda {var a=args;a["app"]=s.app;try await wda.action(action,node:node,args:a);return "WebDriverAgent acknowledged \(action); effect requires verification"}
         let index=node?["index"] as? Int
+        // The element behind the index must be the observed target: same identity key and label.
+        if let index,let node,s.wda == nil {
+            let native=try await session(for:s.app,launch:false)
+            let rec=try native.element(index)
+            let label=rec.node.title ?? rec.node.description ?? rec.node.placeholder ?? ""
+            guard rec.node.key == node["id"] as? String, label == node["label"] as? String ?? "" else {
+                throw AutomationModel.fail("Target identity changed between observation and dispatch: selected \"\(node["label"] as? String ?? "")\" (\(node["id"] as? String ?? "")) but index \(index) is \"\(label)\" (\(rec.node.key)). No input sent; observe again")
+            }
+        }
         let target=Target(elementIndex:index,x:(args["x"] as? Double).map { CGFloat($0) },y:(args["y"] as? Double).map { CGFloat($0) })
         let mode=InputMode(foreground:args["foreground"] as? Bool ?? false)
         switch action {

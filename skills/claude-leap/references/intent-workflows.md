@@ -74,3 +74,21 @@ App keyboard routing is independent of foreground policy: foreground=true activa
 Current development campaign scope: insights restored to enabled (host restart required after config changes). Simulator typing acceptance is deferred at user request; use Simulator clicks/navigation and desktop Gameday editing for the next gates. Do not repeat unresolved Simulator typing trials. This scope decision does not imply typing parity.
 
 Observe steps with a selector return `matched` and up to 20 `items`. Coordinate steps need the referenced snapshot's window, bounds, orientation and coordinate space to still hold; screen content may change (as with Sky's coordinate clicks), so pair them with an expectation.
+
+Follow-up behaviors (2026-09-28):
+- `root` scopes by id-path prefix, so any container id (rendered or elided) works; `within` scopes by an
+  ancestor's own label.
+- When a selector matches several elements, Leap prefers the match inside a modal sheet (as Sky shows only
+  the sheet), then the single element actually on top at its own center (hidden SwiftUI layers stay in the
+  tree). Results report `disambiguated`. Otherwise the step fails and lists the matches.
+- Before input, the element behind the index must still have the observed id and label; if not, nothing is
+  sent ("Target identity changed…"). Prefer label selectors for alert buttons: SwiftUI `action-button-N`
+  identifiers are not stable across alerts.
+- Action steps with a selector re-observe (up to the step timeout) while a new screen is still loading;
+  input is never sent on an incomplete observation. `observation_retries` reports the extra reads.
+- Validation names the offending step index and key. Observe steps accept `fields`.
+- `set_value` with the current value reports "value unchanged" and sends nothing.
+- Canvases: the first click often only focuses the canvas; the second acts. Plan for it rather than retrying
+  blindly.
+- Simulator host trees omit some SwiftUI controls on canvases (e.g. iPad field player buttons; Sky shows the
+  same). Use another route (a list) or the WDA backend.

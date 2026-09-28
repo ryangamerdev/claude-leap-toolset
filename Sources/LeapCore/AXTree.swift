@@ -25,7 +25,7 @@ public struct AXNode {
     /// is perfectly visible and pressable via accessibility actions.
     public let offscreen: Bool
     public let depth: Int
-    public let key: String
+    public var key: String
     public var capturedValue: String? = nil
     public var valueLimited: Bool = false
     public var unavailableFields: [String] = []
@@ -340,6 +340,20 @@ public struct AXWalker {
         "AXSecureTextField", "AXSwitch", "AXToggle", "AXStepper",
     ]
 
+    /// Keys index the element table; two nodes sharing a key would share an index and an action on
+    /// one would reach the other (reported: an alert press labelled Cancel pressed Create). Keys are
+    /// unique by construction; this makes that an invariant even when a provider breaks the pattern.
+    static func makeKeysUnique(_ nodes: inout [AXNode]) {
+        var seen: [String: Int] = [:]
+        for i in nodes.indices {
+            let k = nodes[i].key
+            if let n = seen[k] {
+                seen[k] = n + 1
+                nodes[i].key = k + "~\(n + 1)"
+                Diagnostics.shared.record(level: "warning", kind: "duplicate_key", detail: "Two elements produced one key; the later is \(nodes[i].key)")
+            } else { seen[k] = 1 }
+        }
+    }
     static let visibleRowsThreshold = 60
     static let rowContainerRoles: Set<String> = ["AXTable", "AXOutline", "AXList", "AXBrowser", "AXGrid"]
     static let batchAttributes = [
@@ -373,6 +387,7 @@ public struct AXWalker {
         if let bar: AXUIElement = AX.attr(app, kAXMenuBarAttribute) {
             walkMenuBar(bar, nodes: &nodes, count: &count, truncated: &truncated)
         }
+        AXWalker.makeKeysUnique(&nodes)
         return AXWindowSnapshot(window: window, title: title, frame: frame, focusedElement: focused,
                                 nodes: nodes, truncated: truncated, readFailures:budget.failures, advisoryReadFailures:budget.advisoryFailures, batchReadRetries:budget.batchRetries, batchReadRecoveries:budget.batchRecoveries, readFailureDetails:budget.failureDetails, readFailureDetailsOmitted:max(0,budget.failures-budget.failureDetails.count), deadlineExceeded:budget.expired, captureStarted:budget.started, captureEnded:ProcessInfo.processInfo.systemUptime)
     }

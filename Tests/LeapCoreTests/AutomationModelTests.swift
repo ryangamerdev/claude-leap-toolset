@@ -66,6 +66,20 @@ final class AutomationModelTests:XCTestCase {
         XCTAssertTrue(AutomationModel.ownLabel(of:"a/AXGroup[Tag #1]#12",is:"Tag #1"))
         XCTAssertNoThrow(try AutomationModel.validateSelector(["within":"Coaching notes"]))
     }
+    func testRootMatchesElidedContainerIdsByPathPrefix() {
+        let node:[String:Any]=["id":"w/AXWindow[G]#0/AXGroup[]#0/AXButton[Save]#0","role":"AXButton","label":"Save","ancestors":["w/AXWindow[G]#0"]]
+        XCTAssertTrue(AutomationModel.matches(node,["label":"Save","root":"w/AXWindow[G]#0/AXGroup[]#0"]))
+        XCTAssertFalse(AutomationModel.matches(node,["label":"Save","root":"w/AXWindow[G]#0/AXGroup[]#1"]))
+        XCTAssertFalse(AutomationModel.matches(node,["label":"Save","root":"w/AXWindow[G]#0/AXGroup[]"]))
+    }
+    func testSelectorErrorsNameTheOffendingKey() {
+        XCTAssertThrowsError(try AutomationModel.validateSelector(["label":"Save","match":"x"])) { error in
+            XCTAssertTrue("\(error)".contains("match"))
+        }
+        XCTAssertThrowsError(try AutomationModel.validateSelector(["label":1])) { error in
+            XCTAssertTrue("\(error)".contains("label"))
+        }
+    }
     func testIncompleteDeltaDoesNotClaimRemoval() {
         let d=AutomationModel.delta([["id":"a"]],[],complete:false)
         XCTAssertEqual((d["changes"] as? [[String:Any]])?.count,0)

@@ -21,9 +21,10 @@ public enum AutomationModel {
     }
     static let selectorKeys: Set<String> = ["id","identifier","role","label","contains","root","within"]
     static func validateSelector(_ selector: [String:Any]) throws {
-        guard Set(selector.keys).isSubset(of: selectorKeys), selector.values.allSatisfy({$0 is String}) else {
-            throw fail("Invalid selector: use string id, identifier, role, label, contains, root (ancestor id) or within (ancestor label)")
-        }
+        let unknown=Set(selector.keys).subtracting(selectorKeys)
+        guard unknown.isEmpty else {throw fail("Invalid selector key(s) \(unknown.sorted()); use id, identifier, role, label, contains, root (ancestor id) or within (ancestor label)")}
+        let nonString=selector.filter{!($0.value is String)}.keys.sorted()
+        guard nonString.isEmpty else {throw fail("Selector values must be strings: \(nonString)")}
     }
     /// True when an id's final component is "Role[label]#ordinal" with exactly this label.
     static func ownLabel(of id:String,is label:String) -> Bool {
@@ -38,7 +39,9 @@ public enum AutomationModel {
         if let r=selector["role"] as? String, role(node["role"] as? String ?? "") != role(r) {return false}
         if let text=selector["contains"] as? String,
            !((node["label"] as? String ?? "")+" "+(node["value"] as? String ?? "")).localizedCaseInsensitiveContains(text) {return false}
+        // Ids are paths, so any container id (rendered or elided) scopes by prefix.
         if let root=selector["root"] as? String, node["id"] as? String != root,
+           !(node["id"] as? String ?? "").hasPrefix(root+"/"),
            !(node["ancestors"] as? [String] ?? []).contains(root) {return false}
         // Scope by an ancestor's own label (ids end in "[label]#ordinal") so agents need not
         // reconstruct full-path ids: {"role":"AXTextArea","within":"Coaching notes"}.
