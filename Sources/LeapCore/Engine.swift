@@ -142,6 +142,8 @@ public actor Engine {
     /// list refreshes). Sky's runtime waits ~1 s plus up to 5 s more "if the app has a loading
     /// indicator or other signs of state changes" (its plugin skill says so); we poll for stability.
     public var maxSettleAfterAction: TimeInterval = 5.0
+    /// Smallest budget worth starting a settle re-scan with (a full Gameday scan takes ~0.15 s).
+    static let minSettleScan: TimeInterval = 0.75
 
     public func state(session s: AppSession, _ opts: StateOptions = .init()) async throws -> State {
         try requireAX()
@@ -164,7 +166,12 @@ public actor Engine {
             var stable = false
             while Date() < deadline {
                 try await Task.sleep(nanoseconds: 300_000_000)
-                guard let again = walker.snapshot(window: window, app: s.axApp, timeout:max(0.01,deadline.timeIntervalSinceNow)) else { break }
+                // A scan started with only milliseconds left is truncated by construction
+                // and would mark the whole (otherwise complete) observation incomplete.
+                // Stop settling instead; the header still reports "not stable".
+                let remaining = deadline.timeIntervalSinceNow
+                guard remaining >= Self.minSettleScan else { break }
+                guard let again = walker.snapshot(window: window, app: s.axApp, timeout: remaining) else { break }
                 let now = Self.fingerprint(again)
                 let busy = again.nodes.contains { $0.role == "AXProgressIndicator" || $0.role == "AXBusyIndicator" }
                 // Do not replace a usable observation with a sparse deadline scan.
@@ -213,6 +220,9 @@ public actor Engine {
         }
         if !snap.supportsStateChecks {
             text += "\nObservation incomplete: readFailures=\(snap.readFailures), deadline=\(snap.deadlineExceeded), captureTruncated=\(snap.truncated). Missing controls do not prove absence."
+        }
+        if snap.nodes.contains(where: \.untransformedFrame) {
+            text += "\n[rotated]: this Simulator device is landscape but reports portrait-space frames. Click those elements by index/label (AXPress) or type_text/set_value with element_index; coordinates from their frames are refused. Screenshot coordinates remain valid; the wda backend handles rotation."
         }
         if snap.advisoryReadFailures > 0 {
             text += "\nOptional metadata unavailable: \(snap.advisoryReadFailures) reads; labels/state checks remain usable if no blocking capture errors. Details retained in snapshot."
@@ -284,9 +294,15 @@ public actor Engine {
 
     /// Resolve a target to a screen point. Window-relative coordinates are offset by the
     /// window frame captured in the latest state.
-    func screenPoint(_ s: AppSession, _ t: Target) throws -> (CGPoint, ElementRecord?) {
+    static func requireTransformedFrame(_ rec: ElementRecord) throws {
+        guard rec.node.untransformedFrame else { return }
+        throw LeapError.unsupported("Element [\(rec.index)] is inside a landscape Simulator device, whose accessibility frames are reported in unrotated portrait space; a coordinate derived from them would hit a different control. No pointer input was sent. Use an accessibility route (click without foreground uses AXPress; type_text/set_value with element_index insert through accessibility), a window coordinate read from a screenshot, or the wda backend.")
+    }
+
+    func screenPoint(_ s: AppSession, _ t: Target, allowUntransformed: Bool = false) throws -> (CGPoint, ElementRecord?) {
         if let i = t.elementIndex {
             let rec = try s.element(i)
+            if !allowUntransformed { try Engine.requireTransformedFrame(rec) }
             guard let f = rec.node.frame else { throw LeapError.unsupported("element \(i) has no frame; use coordinates") }
             var p = CGPoint(x: f.midX, y: f.midY)
             if let x = t.x, let y = t.y { p = CGPoint(x: f.minX + x, y: f.minY + y) }
@@ -473,15 +489,18 @@ public actor Engine {
                       modifiers: String? = nil, mode: InputMode = .init()) async throws -> String {
         try requireAX()
         let s = try await actionSession(query, needsElements: target.elementIndex != nil)
-        let (initialPoint, rec) = try screenPoint(s, target)
+        // Rotated Simulator elements resolve here but may only use AXPress below.
+        let (initialPoint, rec) = try screenPoint(s, target, allowUntransformed: true)
         var p = initialPoint
         let flags = try modifierFlags(modifiers)
         defer { s.lastActionAt = Date() }
         // Prefer the AX action: no synthesized events, no focus change, works for background apps.
         // Text elements are excluded: AXPress does not place the caret, so a later ⌘A / type
         // would act on the wrong first responder.
-        if let rec, button == .left, count == 1, flags.isEmpty, target.x == nil, !mode.foreground,
-           !AXWalker.textRoles.contains(rec.node.role),
+        // Inside a rotated Simulator device AXPress is the only correct route (for iOS text
+        // fields it is the activation tap that focuses them), so take it in any mode.
+        if let rec, button == .left, count == 1, flags.isEmpty, target.x == nil,
+           rec.node.untransformedFrame || (!mode.foreground && !AXWalker.textRoles.contains(rec.node.role)),
            rec.node.actions.contains(kAXPressAction) {
             // AXPress needs no screen coordinate. Validate only its cosmetic marker,
             // before the action can remove the target or change the window.
@@ -551,6 +570,7 @@ public actor Engine {
     private func visibleClickPoint(_ s: AppSession, _ target: Target) throws -> CGPoint? {
         guard let index = target.elementIndex else { return nil }
         let record = try s.element(index)
+        try Engine.requireTransformedFrame(record)
         // Reveal/scroll can move a control without rebuilding the indexed tree.
         // Resolve its live geometry instead of retaining the pre-reveal rectangle.
         guard let frame = AX.frame(record.node.element) else { return nil }

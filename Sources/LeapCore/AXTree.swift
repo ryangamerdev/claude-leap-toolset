@@ -29,6 +29,10 @@ public struct AXNode {
     public var capturedValue: String? = nil
     public var valueLimited: Bool = false
     public var unavailableFields: [String] = []
+    /// Inside a landscape iOS Simulator device, the host reports descendant frames in
+    /// the device's unrotated portrait space: they can land inside the window on the
+    /// wrong control. Coordinates are unusable; AX actions still work.
+    public var untransformedFrame: Bool = false
 }
 
 public struct AXWindowSnapshot {
@@ -395,7 +399,8 @@ public struct AXWalker {
     }
 
     private func walk(_ el: AXUIElement, depth: Int, parentKey: String, siblingOrdinal: Int,
-                      windowFrame: CGRect, nodes: inout [AXNode], count: inout Int, truncated: inout Bool) {
+                      windowFrame: CGRect, untransformed: Bool = false,
+                      nodes: inout [AXNode], count: inout Int, truncated: inout Bool) {
         if AX.budget?.expired == true || count >= maxNodes || depth > maxDepth { truncated = true; return }
         count += 1
         let a = AX.attrs(el, AXWalker.batchAttributes)
@@ -418,10 +423,12 @@ public struct AXWalker {
 
         // Zero-size subtrees are skipped (hidden tabs, collapsed panes). Off-window elements are
         // kept and flagged: their coordinates are untrustworthy but AX actions on them work.
-        var offscreen = false
+        var offscreen = untransformed
+        // The device content group itself carries true screen geometry.
+        let rotatedDevice = subrole == "iOSContentGroup" && frame.map { $0.width > $0.height } == true
         if clipToWindow, let f = frame, depth > 0 {
             if f.width <= 0 || f.height <= 0 { return }
-            offscreen = !f.intersects(windowFrame.insetBy(dx: -1, dy: -1))
+            offscreen = untransformed || !f.intersects(windowFrame.insetBy(dx: -1, dy: -1))
             // Do not prune subtrees based on hit-testing. SwiftUI overlays can
             // intercept every sampled point while the underlying controls remain
             // visible and accessible (e.g. Gameday's zoomed Sideline field).
@@ -449,7 +456,7 @@ public struct AXWalker {
                                 frame: frame, enabled: enabled, focused: focused, selected: selected,
                                 actions: actions, settable: settable, offscreen: offscreen, depth: depth, key: key,
                                 capturedValue: role == "AXSecureTextField" ? nil : (a[kAXValueAttribute] as? String).map {String($0.prefix(65536))},
-                                valueLimited: role != "AXSecureTextField" && ((a[kAXValueAttribute] as? String)?.count ?? 0)>65536, unavailableFields:unavailableFields))
+                                valueLimited: role != "AXSecureTextField" && ((a[kAXValueAttribute] as? String)?.count ?? 0)>65536, unavailableFields:unavailableFields, untransformedFrame: untransformed))
             childDepth = depth + 1
         }
 
@@ -464,7 +471,7 @@ public struct AXWalker {
             let ordinal = ordinals[sig, default: 0]
             ordinals[sig] = ordinal + 1
             walk(child, depth: childDepth, parentKey: key, siblingOrdinal: ordinal, windowFrame: windowFrame,
-                 nodes: &nodes, count: &count, truncated: &truncated)
+                 untransformed: untransformed || rotatedDevice, nodes: &nodes, count: &count, truncated: &truncated)
             if truncated { return }
         }
     }

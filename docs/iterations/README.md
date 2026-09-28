@@ -81,3 +81,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-20 — Restore insights and narrow Simulator acceptance](2026-09-20-restore-insights.md): user stops Simulator typing; desktop workflows and Simulator clicks continue after insights restart.
 
 - [2026-09-20 — Desktop checkpoint and user pause](2026-09-20-paused.md): scoped desktop pass, MCP registration removed, campaign paused.
+
+- [2026-09-28 — Resume: objective reset, first review checkpoint](2026-09-28-resume-review.md): desktop x-ray objective, typing glitches accepted; keycode-0 modifier events, rotated Simulator geometry, truncated settle scans, compact deltas; `make install`.

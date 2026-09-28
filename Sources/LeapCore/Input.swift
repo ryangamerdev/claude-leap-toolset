@@ -265,30 +265,48 @@ public enum Input {
         event.type == .keyDown || event.type == .keyUp || event.type == .flagsChanged
     }
 
-    /// Sky's key factory (0x10071b150) brackets key events with flagsChanged.
-    /// Allocate the complete sequence before dispatch so construction failure
-    /// cannot leave a modifier/key held. Preserve the observed session flags.
+    /// Modifier masks with the physical key that produces each (Carbon kVK_* codes).
+    static let modifierKeys: [(CGEventFlags, CGKeyCode)] = [
+        (.maskCommand, 55), (.maskShift, 56), (.maskAlternate, 58), (.maskControl, 59), (.maskSecondaryFn, 63),
+    ]
+
+    /// Emit what a hardware keyboard emits: one flagsChanged per modifier actually
+    /// pressed or released, each carrying that modifier's own keycode, around the
+    /// key's down/up. Unmodified keys get no flagsChanged at all.
+    /// Keycode 0 is kVK_ANSI_A: flagsChanged events left at keycode 0 made
+    /// hardware-forwarding hosts (Simulator) see phantom A presses, dropping or
+    /// inserting the letter a. Allocate the complete sequence before dispatch so
+    /// construction failure cannot leave a modifier/key held.
     static func keyboardSequence(code: CGKeyCode, flags: CGEventFlags,
                                  unicode: [UniChar]? = nil,
                                  restoring restore: CGEventFlags? = nil) throws -> [CGEvent] {
         let restoredFlags = restore ?? CGEventSource.flagsState(.combinedSessionState)
         guard let keyboardSource = CGEventSource(stateID: .hidSystemState),
-              let begin = CGEvent(source: keyboardSource),
               let down = CGEvent(keyboardEventSource: keyboardSource, virtualKey: code, keyDown: true),
-              let up = CGEvent(keyboardEventSource: keyboardSource, virtualKey: code, keyDown: false),
-              let end = CGEvent(source: keyboardSource) else {
+              let up = CGEvent(keyboardEventSource: keyboardSource, virtualKey: code, keyDown: false) else {
             throw LeapError.unsupported("Could not construct complete keyboard sequence; no keyboard events sent")
         }
-        begin.type = .flagsChanged; begin.flags = flags
+        func modifierEvent(_ key: CGKeyCode, _ state: CGEventFlags) throws -> CGEvent {
+            guard let event = CGEvent(keyboardEventSource: keyboardSource, virtualKey: key, keyDown: true) else {
+                throw LeapError.unsupported("Could not construct complete keyboard sequence; no keyboard events sent")
+            }
+            event.type = .flagsChanged; event.flags = state
+            return event
+        }
+        let pressed = modifierKeys.filter { flags.contains($0.0) && !restoredFlags.contains($0.0) }
+        var state = restoredFlags
+        var begin: [CGEvent] = []
+        for (mask, key) in pressed { state.insert(mask); begin.append(try modifierEvent(key, state)) }
+        var end: [CGEvent] = []
+        for (mask, key) in pressed.reversed() { state.remove(mask); end.append(try modifierEvent(key, state)) }
         down.flags = flags; up.flags = flags
-        end.type = .flagsChanged; end.flags = restoredFlags
         if let unicode {
             unicode.withUnsafeBufferPointer { buffer in
                 down.keyboardSetUnicodeString(stringLength: buffer.count, unicodeString: buffer.baseAddress)
                 up.keyboardSetUnicodeString(stringLength: buffer.count, unicodeString: buffer.baseAddress)
             }
         }
-        return [begin, down, up, end]
+        return begin + [down, up] + end
     }
 
     /// Types literal text. Newlines are sent as Return, tabs as Tab.

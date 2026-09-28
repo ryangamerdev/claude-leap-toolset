@@ -59,7 +59,15 @@ final class AutomationModelTests:XCTestCase {
     }
     func testIncompleteDeltaDoesNotClaimRemoval() {
         let d=AutomationModel.delta([["id":"a"]],[],complete:false)
-        XCTAssertEqual((d["changes"] as? [[String:Any]])?.first?["change"] as? String,"not_observed")
+        XCTAssertEqual((d["changes"] as? [[String:Any]])?.count,0)
+        XCTAssertEqual(d["notObserved"] as? Int,1)
+    }
+    func testDeltaSummarizesAddedNodesWithoutAncestry() {
+        let d=AutomationModel.delta([],[["id":"b","role":"AXButton","label":"Save","ancestors":["w","w/x"],"actions":["AXPress"],"depth":3]],complete:true)
+        let after=(d["changes"] as? [[String:Any]])?.first?["after"] as? [String:Any]
+        XCTAssertEqual(after?["label"] as? String,"Save")
+        XCTAssertNil(after?["ancestors"])
+        XCTAssertNil(after?["actions"])
     }
     func testWholeResponseBudgetRetainsReference() throws {
         let result=try AutomationModel.bounded(["session_id":"s","steps":String(repeating:"x",count:30000)],budget:2048,file:"/repo/.leap/result.json")

@@ -102,7 +102,8 @@ public final class AppSession {
         return ElementRecord(index: index, node: AXNode(element: n.element, role: n.role, subrole: n.subrole, title: n.title,
             value: n.value, description: n.description, identifier: n.identifier, placeholder: n.placeholder, frame: frame,
             enabled: n.enabled, focused: n.focused, selected: n.selected, actions: n.actions, settable: n.settable,
-            offscreen: n.offscreen, depth: n.depth, key: n.key))
+            offscreen: n.offscreen, depth: n.depth, key: n.key, capturedValue: n.capturedValue,
+            valueLimited: n.valueLimited, unavailableFields: n.unavailableFields, untransformedFrame: n.untransformedFrame))
     }
 
     /// Re-read the window's frame (it may have been moved since the last state).
@@ -251,7 +252,8 @@ public final class AppSession {
             parts.append("@\(Int(f.minX - windowFrame.minX)),\(Int(f.minY - windowFrame.minY)) \(Int(f.width))x\(Int(f.height))")
         }
         if n.settable { parts.append("[settable]") }
-        if n.offscreen { parts.append("[offscreen: coords unreliable, use element_index/label]") }
+        if n.untransformedFrame { parts.append("[rotated]") }
+        else if n.offscreen { parts.append("[offscreen: coords unreliable, use element_index/label]") }
         if !n.enabled { parts.append("[disabled]") }
         if n.selected { parts.append("[selected]") }
         if n.focused || (focused != nil && CFEqual(focused, n.element)) { parts.append("[focused]") }

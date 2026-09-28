@@ -19,9 +19,9 @@ final class TextKeyPlanTests: XCTestCase {
     func testWholeTextSequenceUsesOneRestorationState() throws {
         let plan: [TextKeyPlan.Stroke] = [.init(code: 0, flags: .maskShift, text: "A"), .init(code: 0, flags: [], text: "a")]
         let events = try Input.textEvents(plan, restoring: .maskAlternate)
-        XCTAssertEqual(events.count, 8)
+        XCTAssertEqual(events.map(\.type), [.flagsChanged, .keyDown, .keyUp, .flagsChanged, .keyDown, .keyUp])
+        XCTAssertEqual(events[0].flags, [.maskAlternate, .maskShift])
         XCTAssertEqual(events[3].flags, .maskAlternate)
-        XCTAssertEqual(events[7].flags, .maskAlternate)
         XCTAssertEqual(events[4].flags, [])
         XCTAssertEqual(events[5].flags, [])
     }

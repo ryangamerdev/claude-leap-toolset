@@ -101,10 +101,19 @@ public enum AutomationModel {
             return result
         }
         let old=keyed(before), new=keyed(after)
+        // Deltas are read on every action: carry what identifies and describes a node,
+        // not its ancestry/action lists (those stay in the retained snapshot).
+        func summary(_ n:[String:Any]) -> [String:Any] {
+            n.filter { ["index","role","label","value","enabled","selected","focused","frame","offscreen"].contains($0.key) }
+        }
         var changes:[[String:Any]]=[]
+        var notObserved=0
         for id in Set(old.keys).union(new.keys).sorted() {
-            if old[id] == nil {changes.append(["id":id,"change":"added","after":new[id]!])}
-            else if new[id] == nil {changes.append(["id":id,"change":complete ? "removed":"not_observed"])}
+            if old[id] == nil {changes.append(["id":id,"change":"added","after":summary(new[id]!)])}
+            else if new[id] == nil {
+                // An incomplete scan cannot prove removal; count instead of listing noise.
+                if complete {changes.append(["id":id,"change":"removed"])} else {notObserved += 1}
+            }
             else {
                 var fields:[String:Any]=[:]
                 for k in ["label","value","enabled","selected","focused","frame","offscreen"] {
@@ -115,7 +124,9 @@ public enum AutomationModel {
                 if !fields.isEmpty {changes.append(["id":id,"change":"changed","fields":fields])}
             }
         }
-        return ["changes":Array(changes.prefix(12)),"totalChanges":changes.count,"omitted":max(0,changes.count-12),"complete":complete,"meaning":"Observed differences, not causal attribution; IDs can churn"]
+        var result:[String:Any]=["changes":Array(changes.prefix(12)),"totalChanges":changes.count,"omitted":max(0,changes.count-12),"complete":complete,"meaning":"Observed differences, not causal attribution; IDs can churn"]
+        if notObserved > 0 {result["notObserved"]=notObserved}
+        return result
     }
     /// Budget applies to the complete envelope. A full retained object is available by file.
     static func bounded(_ value: [String:Any], budget: Int, file: String) throws -> String {
