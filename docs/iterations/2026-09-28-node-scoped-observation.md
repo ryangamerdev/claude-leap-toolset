@@ -55,3 +55,5 @@ Native: Gameday Playbook targeting and failed-vs-unknown verdicts; Notes/Finder 
 action; confirm row counts render sensibly. Next review items: coordinate provenance requires the entire
 prior node list to be byte-identical (coordinates unusable on any changing screen); result size of
 deltas (~3 KB per step); settle/fingerprint behavior on continuously changing screens.
+
+Installed 2026-09-28T21:22:37Z via `make install` from d1f995e. Binary SHA256 `d9414ef16350d25b314c9ace45e77cd761cc4b54f58875bf0713f8929cc0b8b6`. Signature verified; source/installed skills match; registration `leap` unchanged. Restart pending.
