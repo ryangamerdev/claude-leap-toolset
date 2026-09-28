@@ -43,3 +43,5 @@ this build pending restart.
 
 Native: single `[11]`/`[12]` Sideline elements; `within` selector on Coaching notes. Then (Sky first):
 coordinate provenance strictness, observe step output, duplicate labels via AXServesAsTitleForUIElements.
+
+Installed 2026-09-28T21:32:30Z via `make install` from 26cab3f. SHA256 `fbdeddc6d5e8921337280511dacedbce7d5cf0333ad56b53892112e2e6e6334a`. Signature verified; skills match; registration unchanged. Restart pending.
