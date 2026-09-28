@@ -33,6 +33,8 @@ public struct AXNode {
     /// the device's unrotated portrait space: they can land inside the window on the
     /// wrong control. Coordinates are unusable; AX actions still work.
     public var untransformedFrame: Bool = false
+    /// Rows of a long table/list that were not read (off screen); absence cannot be claimed for them.
+    public var omittedChildren: Int = 0
 }
 
 public struct AXWindowSnapshot {
@@ -83,12 +85,16 @@ enum AX {
         AXUIElementSetMessagingTimeout(el,Float(min(0.25,max(0.01,budget.deadline-ProcessInfo.processInfo.systemUptime))))
         return true
     }
+    /// Attributes that describe only the element itself. A provider failure on one of these
+    /// makes that node's field unknown (reported as unavailableFields, so selectors that
+    /// depend on it become uncertain) without blinding the whole observation.
+    /// Role, children and transport errors (timeouts, invalid elements) stay blocking:
+    /// they can hide structure, so absence could not be established.
+    static let nodeScopedAttributes: Set<String> = [kAXSubroleAttribute, kAXTitleAttribute,
+        kAXDescriptionAttribute, kAXIdentifierAttribute, kAXPlaceholderValueAttribute, kAXValueAttribute,
+        kAXEnabledAttribute, kAXFocusedAttribute, kAXSelectedAttribute, kAXPositionAttribute, kAXSizeAttribute]
     static func advisoryFailure(attribute: String, role: String?) -> Bool {
-        // Subroles refine these non-text controls but do not determine their label/state
-        // or child traversal. Unknown and text roles remain conservative (secure fields).
-        if role == "AXTextArea", [kAXIdentifierAttribute,kAXDescriptionAttribute].contains(attribute) {return true}
-        return attribute == kAXSubroleAttribute && ["AXButton", "AXCheckBox", "AXScrollArea",
-            "AXToolbar", "AXMenuBar", "AXMenuBarItem", "AXImage"].contains(role ?? "")
+        nodeScopedAttributes.contains(attribute)
     }
     static func note(_ result: AXError, attribute: String, element: AXUIElement, role: String? = nil) {
         // Unsupported/missing attributes are legitimate; transport/element failures are not absence.
@@ -97,7 +103,7 @@ enum AX {
             let advisory = result == .failure && advisoryFailure(attribute: attribute, role: role)
             if advisory {
                 budget.advisoryFailures += 1
-                if role == "AXTextArea" {budget.metadataFailures[CFHash(element),default:[]].insert(attribute)}
+                budget.metadataFailures[CFHash(element),default:[]].insert(attribute)
             }
             // No diagnostic AX reads: they could block or recursively add failures.
             // This hash correlates reads within an observation, never a durable target identity.
@@ -327,6 +333,8 @@ public struct AXWalker {
         "AXSecureTextField", "AXSwitch", "AXToggle", "AXStepper",
     ]
 
+    static let visibleRowsThreshold = 60
+    static let rowContainerRoles: Set<String> = ["AXTable", "AXOutline", "AXList", "AXBrowser", "AXGrid"]
     static let batchAttributes = [
         kAXRoleAttribute, kAXSubroleAttribute, kAXTitleAttribute, kAXValueAttribute,
         kAXDescriptionAttribute, kAXIdentifierAttribute, kAXPlaceholderValueAttribute,
@@ -399,17 +407,24 @@ public struct AXWalker {
     }
 
     private func walk(_ el: AXUIElement, depth: Int, parentKey: String, siblingOrdinal: Int,
-                      windowFrame: CGRect, untransformed: Bool = false,
+                      windowFrame: CGRect, untransformed: Bool = false, prefetched: [String: CFTypeRef]? = nil,
                       nodes: inout [AXNode], count: inout Int, truncated: inout Bool) {
         if AX.budget?.expired == true || count >= maxNodes || depth > maxDepth { truncated = true; return }
         count += 1
-        let a = AX.attrs(el, AXWalker.batchAttributes)
+        let a = prefetched ?? AX.attrs(el, AXWalker.batchAttributes)
         let role = (a[kAXRoleAttribute] as? String) ?? "AXUnknown"
         let subrole = a[kAXSubroleAttribute] as? String
         let title = AX.string(a[kAXTitleAttribute])
         // Never surface what is typed into a password field.
         let value = role == "AXSecureTextField" ? (AX.string(a[kAXValueAttribute]) == nil ? nil : "••••••") : AX.string(a[kAXValueAttribute])
-        let description = AX.string(a[kAXDescriptionAttribute])
+        var description = AX.string(a[kAXDescriptionAttribute])
+        // Controls labelled by a separate element (form rows, SwiftUI Toggle/LabeledContent)
+        // expose it as AXTitleUIElement; screen readers use it as the label. Some providers
+        // fail AXDescription outright for such controls.
+        if title == nil, description == nil, let labelElement: AXUIElement = AX.attr(el, kAXTitleUIElementAttribute) {
+            let l = AX.attrs(labelElement, [kAXTitleAttribute, kAXDescriptionAttribute, kAXValueAttribute])
+            description = AX.string(l[kAXTitleAttribute]) ?? AX.string(l[kAXDescriptionAttribute]) ?? AX.string(l[kAXValueAttribute])
+        }
         let identifier = AX.usefulIdentifier(AX.string(a[kAXIdentifierAttribute], limit: 200))
         let placeholder = AX.string(a[kAXPlaceholderValueAttribute])
         var frame: CGRect?
@@ -419,7 +434,20 @@ public struct AXWalker {
         let enabled = (a[kAXEnabledAttribute] as? Bool) ?? true
         let focused = (a[kAXFocusedAttribute] as? Bool) ?? false
         let selected = (a[kAXSelectedAttribute] as? Bool) ?? false
-        let children = (a[kAXChildrenAttribute] as? [AXUIElement]) ?? []
+        var children = (a[kAXChildrenAttribute] as? [AXUIElement]) ?? []
+        // Long tables/outlines/lists (mail, notes, file lists) can hold thousands of rows that
+        // take tens of seconds to read. Read the rows on screen, keep headers/columns, and
+        // record how many rows were not read so absence is never claimed for them.
+        var omittedChildren = 0
+        if children.count > AXWalker.visibleRowsThreshold, AXWalker.rowContainerRoles.contains(role) {
+            let rows: [AXUIElement] = AX.attr(el, kAXRowsAttribute) ?? children
+            let visible: [AXUIElement]? = AX.attr(el, kAXVisibleRowsAttribute) ?? AX.attr(el, kAXVisibleChildrenAttribute)
+            if let visible, visible.count < rows.count {
+                let rowSet = Set(rows.map(CFHash)), visibleSet = Set(visible.map(CFHash))
+                children = children.filter { !rowSet.contains(CFHash($0)) || visibleSet.contains(CFHash($0)) }
+                omittedChildren = rows.count - visible.count
+            }
+        }
 
         // Zero-size subtrees are skipped (hidden tabs, collapsed panes). Off-window elements are
         // kept and flagged: their coordinates are untrustworthy but AX actions on them work.
@@ -448,7 +476,15 @@ public struct AXWalker {
         var unavailableFields:[String]=[]
         let missing=AX.budget?.metadataFailures[CFHash(el)] ?? []
         if missing.contains(kAXIdentifierAttribute) {unavailableFields.append("identifier")}
-        if missing.contains(kAXDescriptionAttribute),title == nil {unavailableFields.append("label")}
+        // The label is title ?? description ?? placeholder: unknown if a failed read could have supplied it.
+        if missing.contains(kAXTitleAttribute)
+            || (title == nil && description == nil && missing.contains(kAXDescriptionAttribute))
+            || (title == nil && description == nil && missing.contains(kAXPlaceholderValueAttribute)) {unavailableFields.append("label")}
+        if missing.contains(kAXValueAttribute) {unavailableFields.append("value")}
+        if missing.contains(kAXEnabledAttribute) {unavailableFields.append("enabled")}
+        if missing.contains(kAXSelectedAttribute) {unavailableFields.append("selected")}
+        if missing.contains(kAXFocusedAttribute) {unavailableFields.append("focused")}
+        if missing.contains(kAXPositionAttribute) || missing.contains(kAXSizeAttribute) {unavailableFields.append("frame")}
         var childDepth = depth
         if render {
             nodes.append(AXNode(element: el, role: role, subrole: subrole, title: title, value: value,
@@ -456,7 +492,7 @@ public struct AXWalker {
                                 frame: frame, enabled: enabled, focused: focused, selected: selected,
                                 actions: actions, settable: settable, offscreen: offscreen, depth: depth, key: key,
                                 capturedValue: role == "AXSecureTextField" ? nil : (a[kAXValueAttribute] as? String).map {String($0.prefix(65536))},
-                                valueLimited: role != "AXSecureTextField" && ((a[kAXValueAttribute] as? String)?.count ?? 0)>65536, unavailableFields:unavailableFields, untransformedFrame: untransformed))
+                                valueLimited: role != "AXSecureTextField" && ((a[kAXValueAttribute] as? String)?.count ?? 0)>65536, unavailableFields:unavailableFields, untransformedFrame: untransformed, omittedChildren: omittedChildren))
             childDepth = depth + 1
         }
 
@@ -464,14 +500,15 @@ public struct AXWalker {
         // when unrelated siblings are inserted or removed.
         var ordinals: [String: Int] = [:]
         for child in children {
-            let ca = AX.attrs(child, [kAXRoleAttribute, kAXIdentifierAttribute, kAXTitleAttribute])
+            // Read each child's full batch once: it keys the ordinal here and is reused by the child.
+            let ca = AX.attrs(child, AXWalker.batchAttributes)
             let crole = (ca[kAXRoleAttribute] as? String) ?? "AXUnknown"
             let clabel = AX.usefulIdentifier(AX.string(ca[kAXIdentifierAttribute], limit: 200)) ?? AX.string(ca[kAXTitleAttribute]) ?? ""
             let sig = "\(crole)[\(clabel)]"
             let ordinal = ordinals[sig, default: 0]
             ordinals[sig] = ordinal + 1
             walk(child, depth: childDepth, parentKey: key, siblingOrdinal: ordinal, windowFrame: windowFrame,
-                 untransformed: untransformed || rotatedDevice, nodes: &nodes, count: &count, truncated: &truncated)
+                 untransformed: untransformed || rotatedDevice, prefetched: ca, nodes: &nodes, count: &count, truncated: &truncated)
             if truncated { return }
         }
     }

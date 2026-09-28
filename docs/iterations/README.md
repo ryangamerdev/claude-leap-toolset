@@ -83,3 +83,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-20 — Desktop checkpoint and user pause](2026-09-20-paused.md): scoped desktop pass, MCP registration removed, campaign paused.
 
 - [2026-09-28 — Resume: objective reset, first review checkpoint](2026-09-28-resume-review.md): desktop x-ray objective, typing glitches accepted; keycode-0 modifier events, rotated Simulator geometry, truncated settle scans, compact deltas; `make install`.
+
+- [2026-09-28 — Node-scoped read failures, labelled-by resolution, visible rows](2026-09-28-node-scoped-observation.md): one unreadable label no longer blinds a window; Notes 3.0 s truncated → 0.05 s complete; Finder 1.9 s → 0.3 s.

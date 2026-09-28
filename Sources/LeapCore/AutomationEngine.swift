@@ -132,7 +132,7 @@ extension Engine {
             let nodes:[[String:Any]]=snap.nodes.map {n in
                 while let last=ancestors.last,last.0>=n.depth {ancestors.removeLast()}
                 var node:[String:Any]=["id":n.key,"role":n.role,"label":n.title ?? n.description ?? n.placeholder ?? "","enabled":n.enabled,"selected":n.selected,"focused":n.focused,"offscreen":n.offscreen,"depth":n.depth,"ancestors":ancestors.map{$0.1},"actions":n.actions,"valueLimited":n.valueLimited]
-                node["unavailableFields"]=n.unavailableFields;node["identifier"]=n.identifier;node["value"]=n.capturedValue ?? n.value;node["index"]=native.indexByKey[n.key]
+                node["unavailableFields"]=n.unavailableFields;node["identifier"]=n.identifier;if n.omittedChildren>0 {node["omittedChildren"]=n.omittedChildren};node["value"]=n.capturedValue ?? n.value;node["index"]=native.indexByKey[n.key]
                 if let f=n.frame {node["frame"]=[f.minX-snap.frame.minX,f.minY-snap.frame.minY,f.width,f.height]}
                 ancestors.append((n.depth,n.key));return node
             }
@@ -274,7 +274,13 @@ extension Engine {
                     var node:[String:Any]?
                     if let selector=step["selector"] as? [String:Any] {
                         let hits=nodes.filter{AutomationModel.matches($0,selector)}
-                        guard pre["complete"] as? Bool == true,AutomationModel.selectionReliable(nodes,selector),hits.count==1 else {throw AutomationModel.fail("Selector missing/ambiguous or observation incomplete; no input sent")}
+                        guard hits.count<=1 else {
+                            let sample=hits.prefix(5).map{"\($0["role"] as? String ?? "?") \"\($0["label"] as? String ?? "")\" id=\($0["id"] as? String ?? "")"}.joined(separator:"; ")
+                            throw AutomationModel.fail("Selector matches \(hits.count) elements (\(sample)); add role/id/root to make it unique. No input sent")
+                        }
+                        guard pre["complete"] as? Bool == true else {throw AutomationModel.fail("Observation incomplete (blocking read failures, deadline or truncation), so a unique match cannot be established; no input sent. Inspect ui_observe or the retained snapshot")}
+                        guard AutomationModel.selectionReliable(nodes,selector) else {throw AutomationModel.fail("An element whose selector fields could not be read might also match; use id, role or root to disambiguate. No input sent")}
+                        guard hits.count==1 else {throw AutomationModel.fail("No element matches the selector in a complete observation; no input sent")}
                         node=hits[0]
                         guard node?["enabled"] as? Bool != false else {throw AutomationModel.fail("Target disabled; no input sent")}
                     }

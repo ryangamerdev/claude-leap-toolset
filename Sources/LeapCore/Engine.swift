@@ -105,7 +105,11 @@ public actor Engine {
             let left=deadline-ProcessInfo.processInfo.systemUptime
             if left>0 {try await Task.sleep(nanoseconds:UInt64(min(0.2,left)*1_000_000_000))}
         }
-        throw LeapError.unsupported("Observation unknown: selected window unavailable before deadline")
+        let titles = windows(s).map { "\"\($0.1)\"" }
+        if let pin = s.pinnedWindow {
+            throw LeapError.unsupported("No window of \(s.displayName) matches \"\(pin)\". Windows: \(titles.isEmpty ? "none" : titles.joined(separator: ", ")). Pass window=\"\" for the key window.")
+        }
+        throw LeapError.unsupported("\(s.displayName) exposes no accessible window (closed, minimized, on another Space, or full-screen elsewhere). Open or reveal a window, then observe again. No input was sent.")
     }
 
     // MARK: - State
@@ -142,7 +146,7 @@ public actor Engine {
     /// list refreshes). Sky's runtime waits ~1 s plus up to 5 s more "if the app has a loading
     /// indicator or other signs of state changes" (its plugin skill says so); we poll for stability.
     public var maxSettleAfterAction: TimeInterval = 5.0
-    /// Smallest budget worth starting a settle re-scan with (a full Gameday scan takes ~0.15 s).
+    /// Smallest budget worth starting a settle re-scan with (a typical full window scan takes 0.1–0.2 s).
     static let minSettleScan: TimeInterval = 0.75
 
     public func state(session s: AppSession, _ opts: StateOptions = .init()) async throws -> State {

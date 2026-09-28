@@ -62,14 +62,24 @@ public enum AutomationModel {
         let condition=expectation["condition"] as? String ?? ""
         // Incomplete reads cannot establish exhaustive counts, uniqueness or absence.
         if !complete || !selectionReliable(nodes,object(expectation["selector"])) {return "unknown"}
+        // Rows of long lists that were not read could hold a match: no absence/count claims there.
+        let unread=nodes.contains {n in
+            guard (n["omittedChildren"] as? Int ?? 0)>0 else {return false}
+            guard let root=object(expectation["selector"])["root"] as? String else {return true}
+            return n["id"] as? String == root || (n["ancestors"] as? [String] ?? []).contains(root)
+        }
         switch condition {
-        case "exists": return hits.isEmpty ? "failed":"passed"
-        case "absent": return hits.isEmpty ? "passed":"failed"
-        case "count": return hits.count == expectation["value"] as? Int ? "passed":"failed"
+        case "exists": return hits.isEmpty ? (unread ? "unknown":"failed"):"passed"
+        case "absent": return hits.isEmpty ? (unread ? "unknown":"passed"):"failed"
+        case "count": return unread ? "unknown" : (hits.count == expectation["value"] as? Int ? "passed":"failed")
         default: break
         }
         guard hits.count == 1 else {return hits.isEmpty ? "failed":"unknown"}
         let n=hits[0]
+        // A field whose read failed defaults in the tree (e.g. enabled=true); never judge it.
+        let missing=Set(n["unavailableFields"] as? [String] ?? [])
+        let field=condition.hasPrefix("value_") ? "value" : (condition == "disabled" ? "enabled" : condition)
+        if missing.contains(field) {return "unknown"}
         switch condition {
         case "enabled","disabled","selected":
             guard let value=n[condition == "disabled" ? "enabled":condition] as? Bool else {return "unknown"}

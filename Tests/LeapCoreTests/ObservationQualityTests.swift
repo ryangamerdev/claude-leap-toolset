@@ -3,24 +3,37 @@ import ApplicationServices
 @testable import LeapCore
 
 final class ObservationQualityTests: XCTestCase {
-    func testOnlyKnownNonTextSubrolesAreAdvisory() {
-        XCTAssertTrue(AX.advisoryFailure(attribute: "AXSubrole", role: "AXCheckBox"))
-        for role in ["AXTextField", "AXSecureTextField", "AXUnknown", "AXGroup"] {
-            XCTAssertFalse(AX.advisoryFailure(attribute: "AXSubrole", role: role))
+    func testNodeOwnFieldsAreScopedButStructureIsBlocking() {
+        for role in ["AXCheckBox", "AXTextField", "AXGroup", "AXUnknown"] {
+            for a in ["AXSubrole","AXDescription","AXTitle","AXIdentifier","AXValue","AXEnabled"] {
+                XCTAssertTrue(AX.advisoryFailure(attribute: a, role: role), "\(a) on \(role)")
+            }
         }
-        XCTAssertFalse(AX.advisoryFailure(attribute: "AXSubrole", role: nil))
-        for attribute in ["AXChildren", "AXRole", "AXValue", "AXEnabled", "AXTitle"] {
-            XCTAssertFalse(AX.advisoryFailure(attribute: attribute, role: "AXButton"))
+        for a in ["AXChildren", "AXRole"] { XCTAssertFalse(AX.advisoryFailure(attribute: a, role: "AXButton")) }
+    }
+    func testTransportFailuresRemainBlockingAndScopedFailuresAreRecordedPerElement() {
+        let el=AXUIElementCreateApplication(0)
+        AX.withBudget(1) {
+            AX.note(.cannotComplete,attribute:"AXDescription",element:el,role:"AXCheckBox")
+            XCTAssertEqual(AX.budget?.advisoryFailures,0)
+            AX.note(.failure,attribute:"AXDescription",element:el,role:"AXCheckBox")
+            XCTAssertEqual(AX.budget?.advisoryFailures,1)
+            XCTAssertEqual(AX.budget?.metadataFailures[CFHash(el)],["AXDescription"])
         }
     }
-    func testTextAreaMetadataIsAdvisoryButStateAndTransportRemainBlocking() {
-        XCTAssertTrue(AX.advisoryFailure(attribute:"AXIdentifier",role:"AXTextArea"))
-        XCTAssertTrue(AX.advisoryFailure(attribute:"AXDescription",role:"AXTextArea"))
-        for a in ["AXValue","AXChildren","AXSubrole","AXEnabled"] {XCTAssertFalse(AX.advisoryFailure(attribute:a,role:"AXTextArea"))}
-        AX.withBudget(1) {
-            AX.note(.cannotComplete,attribute:"AXDescription",element:AXUIElementCreateApplication(0),role:"AXTextArea")
-            XCTAssertEqual(AX.budget?.advisoryFailures,0)
-        }
+    func testUnreadListRowsBlockAbsenceButNotPresence() {
+        let nodes:[[String:Any]]=[["id":"list","role":"AXTable","label":"","omittedChildren":3000],
+                                   ["id":"list/row","role":"AXRow","label":"Groceries","ancestors":["list"]],
+                                   ["id":"side","role":"AXButton","label":"New","ancestors":[]]]
+        XCTAssertEqual(AutomationModel.verdict(nodes:nodes,complete:true,expectation:["selector":["label":"Groceries"],"condition":"exists"]),"passed")
+        XCTAssertEqual(AutomationModel.verdict(nodes:nodes,complete:true,expectation:["selector":["label":"Taxes"],"condition":"exists"]),"unknown")
+        XCTAssertEqual(AutomationModel.verdict(nodes:nodes,complete:true,expectation:["selector":["label":"Taxes"],"condition":"absent"]),"unknown")
+        XCTAssertEqual(AutomationModel.verdict(nodes:nodes,complete:true,expectation:["selector":["label":"Taxes","root":"side"],"condition":"absent"]),"passed")
+    }
+    func testFailedStateFieldIsNeverJudged() {
+        let nodes:[[String:Any]]=[["id":"b","role":"AXButton","label":"Save","enabled":true,"unavailableFields":["enabled"]]]
+        XCTAssertEqual(AutomationModel.verdict(nodes:nodes,complete:true,expectation:["selector":["label":"Save"],"condition":"enabled"]),"unknown")
+        XCTAssertEqual(AutomationModel.verdict(nodes:nodes,complete:true,expectation:["selector":["label":"Save"],"condition":"exists"]),"passed")
     }
     func testMissingMetadataCannotProveSelectorAbsenceOrUniqueness() {
         let nodes:[[String:Any]]=[
