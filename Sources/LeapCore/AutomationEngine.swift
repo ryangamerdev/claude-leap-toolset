@@ -290,8 +290,9 @@ extension Engine {
                               prior["coordinateSpace"] as? String == pre["coordinateSpace"] as? String,
                               AutomationModel.sameOrientation(prior,pre),
                               AutomationModel.sameBounds(prior["bounds"],pre["bounds"]),
-                              try RecordingStore.json(prior["nodes"] ?? []) == RecordingStore.json(pre["nodes"] ?? []),
-                              prior["window"] as? String == pre["window"] as? String else {throw AutomationModel.fail("Coordinates require snapshot and space with unchanged target bounds; no input sent")}
+                              prior["window"] as? String == pre["window"] as? String else {throw AutomationModel.fail("Coordinates require snapshot and space with unchanged window, bounds and orientation; no input sent")}
+                        // Like Sky's click([x,y]), content may have changed since the snapshot (clocks,
+                        // animations); only the geometric mapping must hold. The expectation judges the outcome.
                         guard let b=AutomationModel.coordinateBounds(pre["bounds"]) else {throw AutomationModel.fail("Coordinate bounds unavailable")}
                         let pairs=action == "drag" ? [("from_x","from_y"),("to_x","to_y")]:[("x","y")]
                         for (x,y) in pairs {guard let px=a[x] as? Double,let py=a[y] as? Double,px.isFinite,py.isFinite,px>=0,py>=0,px<b[2],py<b[3] else {throw AutomationModel.fail("Coordinate outside target bounds")}}
@@ -357,6 +358,12 @@ extension Engine {
                     r["scroll_effect"]=effect
                 }
                 if type == "capture" {r["artifact"]=try await automationCapture(s)}
+                // An observe step answers "what is there": return the matched elements themselves.
+                if type == "observe", let selector=step["selector"] as? [String:Any] {
+                    let hits=(pre["nodes"] as? [[String:Any]] ?? []).filter{AutomationModel.matches($0,selector)}
+                    r["matched"]=hits.count
+                    r["items"]=hits.prefix(20).map{$0.filter{["index","id","role","label","value","enabled","selected","focused","frame","omittedChildren"].contains($0.key)}}
+                }
                 if !Diagnostics.shared.insightsEnabled && type == "action" && step["expect"] == nil {
                     r["insights"]="disabled; no automatic post-action observation or delta"
                 } else { r["after_snapshot"]=post["snapshot"] }

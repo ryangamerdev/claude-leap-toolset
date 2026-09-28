@@ -89,3 +89,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-28 — Native desktop workflow pass and observation-quality fixes](2026-09-28-native-desktop-workflow.md): Gameday edit/save/reopen passed natively; disabled controls kept, stable ids, compact results.
 
 - [2026-09-28 — Checkpoint 3 native pass; Sky reference for every issue](2026-09-28-sky-referenced-review.md): disabled Save visible, stable ids verified; key collision fixed; `within` selector; Sky-first rule.
+
+- [2026-09-28 — Coordinates, observe items, compact deltas](2026-09-28-coordinates-observe.md): checkpoint 4 native pass; Sky-referenced relaxations; TextEdit restore note.

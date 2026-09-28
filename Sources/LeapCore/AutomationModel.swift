@@ -123,8 +123,12 @@ public enum AutomationModel {
         let old=keyed(before), new=keyed(after)
         // Deltas are read on every action: carry what identifies and describes a node,
         // not its ancestry/action lists (those stay in the retained snapshot).
+        // Like Sky's "+ 153 button Cancel": identity plus only non-default state.
         func summary(_ n:[String:Any]) -> [String:Any] {
-            n.filter { ["index","role","label","value","enabled","selected","focused","frame","offscreen"].contains($0.key) }
+            var out=n.filter { ["index","role","label","value"].contains($0.key) }
+            if n["enabled"] as? Bool == false {out["enabled"]=false}
+            for k in ["selected","focused","offscreen"] where n[k] as? Bool == true {out[k]=true}
+            return out
         }
         var changes:[[String:Any]]=[]
         var notObserved=0

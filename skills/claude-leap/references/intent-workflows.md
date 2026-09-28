@@ -72,3 +72,5 @@ Text input prebuilds/routs the whole event sequence and freezes restoration flag
 App keyboard routing is independent of foreground policy: foreground=true activates first, then keys/text/paste use the selected app PID and validate window ownership. No system-wide fallback. This does not establish full hosted-process or same-app responder isolation; inspect actual outcome. Native acceptance pending.
 
 Current development campaign scope: insights restored to enabled (host restart required after config changes). Simulator typing acceptance is deferred at user request; use Simulator clicks/navigation and desktop Gameday editing for the next gates. Do not repeat unresolved Simulator typing trials. This scope decision does not imply typing parity.
+
+Observe steps with a selector return `matched` and up to 20 `items`. Coordinate steps need the referenced snapshot's window, bounds, orientation and coordinate space to still hold; screen content may change (as with Sky's coordinate clicks), so pair them with an expectation.
