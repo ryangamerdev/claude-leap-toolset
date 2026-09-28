@@ -40,3 +40,5 @@ Input.click prepends a routed mouseMoved at the click point (same flags, clickGa
 Native after restart: Blender reopen through the UI (Cmd+O, directory + filename via hover-armed clicks)
 and visual check; filename-field click reliability; iPhone reopen; background Command-click on Gameday and
 a second app; one Sideline element.
+
+Installed 2026-09-28T21:54:37Z via `make install` from db83c8d. SHA256 `6fe767f7d90e0b04be77996ca29108383f7e28dd5e7235283fe411170b3e480e`. Signature verified; skills match; registration unchanged. Restart pending.
