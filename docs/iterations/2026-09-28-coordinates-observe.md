@@ -36,3 +36,5 @@ binary contains the new text and the server started after install):
 Native: observe items; delta size on Gameday navigation; coordinate click from a snapshot on a changing
 screen. Open (Sky first): duplicate labels via AXServesAsTitleForUIElements; Simulator iPad/iPhone
 play creation/save/reopen; Blender gate.
+
+Installed 2026-09-28T21:35:26Z via `make install` from 94d2992. SHA256 `1237fd1c876d4717dfecf767814c16f67af1bb5cb3b73dc46e9e58e42d4e06b5`. Signature verified; skills match; registration unchanged. Restart pending.
