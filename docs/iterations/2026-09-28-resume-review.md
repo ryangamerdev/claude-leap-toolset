@@ -62,3 +62,7 @@ AXPress focused the iPad and iPhone search fields. Install identity recorded at 
 Restart, then native checks with the user's agreement on timing: desktop Gameday ui_perform
 navigate/expect (verification should be passed/failed, not unknown), delta size, rotated-Simulator
 click by label. Then churn review of the 20 Sep commits for desktop regressions/simplification.
+
+Installed 2026-09-28T21:12:18Z via `make install` from be4609c. Binary SHA256 `3c5e4168c9239778992a9a6e54a47be5e8d00270b1d61a07e9e4a694d8881eb7`.
+Signature verified; source and installed claude-leap skill trees match; registration `leap` unchanged.
+Loaded MCP not yet restarted onto this build; native checks pending.
