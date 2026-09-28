@@ -97,3 +97,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-28 — Sky-traced background clicks and title association](2026-09-28-sky-command-click.md): Command-flag background clicks (Sky sendClick); associateTitleUIElements; Blender gate in progress.
 
 - [2026-09-28 — Blender modeling/save; hover move before clicks](2026-09-28-blender-hover.md): UI-built Mickey head saved and verified; hover-driven UIs need a move before click.
+
+- [2026-09-28 — Native gates: Blender reopen, background Command-clicks, iPhone persistence](2026-09-28-native-gates-complete.md): Blender gate complete; Command-clicks verified on Gameday and Calculator; Blender API-first direction.

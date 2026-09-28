@@ -33,3 +33,12 @@ Save the `.blend`, scripts, and required textures. Pack assets or preserve a doc
 For render completion, inspect process exit/logs and the produced image/frame sequence. For long UI jobs use observable progress/completion and a bounded timeout. Report partial render ranges or missing dependencies explicitly.
 
 Reference: [Blender Python API](https://docs.blender.org/api/current/). Select the documentation matching the installed release.
+
+## Leap notes (2026-09-28)
+
+- Build and render through Blender's Python API; use Leap for viewport/visual inspection and for the few
+  UI-only tasks. Blender exposes no accessibility content beyond window chrome.
+- Blender arms a control only after the pointer moves onto it; Leap now moves the (process-directed)
+  pointer before each click. Shortcuts act on the region under the last pointer position.
+- Leap's window screenshot of Blender's secondary windows (file browser) can show the main window's
+  surface; confirm dialogs with a screen-region capture or avoid them via the API.

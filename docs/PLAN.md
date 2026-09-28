@@ -13,9 +13,14 @@ Native passes on 2026-09-28 (see docs/iterations/2026-09-28-*):
   Save → search → reopen → title and notes `value_equals` (94d2992).
 - TextEdit, Notes, Finder observation/actions (general-app checks).
 
-Open, in order: background pointer delivery to SwiftUI apps (Sky focus-enforcer research in progress);
-duplicate labels via AXServesAsTitleForUIElements; iPhone create/save/reopen; paired Blender
-Mickey-head modeling/save/reopen gate.
+Also passed on 2026-09-28: background Command-clicks (Gameday, Calculator); Blender UI-only capability
+trial (model, save, reopen); iPhone create/save with database-confirmed persistence.
+
+Direction (user, 2026-09-28): Blender work is API-first (Python for construction/rendering), Leap for
+inspection and UI-only tasks; the earlier "no construction script" gate wording is superseded.
+
+Open: iPhone UI reopen (list scrolling for laid-out iOS rows); Blender secondary-window capture;
+continued general-app coverage.
 
 
 > Earlier banner (2026-09-20, superseded 2026-09-28): **PAUSED by user, 2026-09-20.** Leap MCP removed from Codex configuration. Do not resume or reinstall without user direction. Desktop recheck results and unresolved gaps: [pause checkpoint](iterations/2026-09-20-paused.md).
