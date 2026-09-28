@@ -206,6 +206,13 @@ enum AX {
         return arr
     }
 
+    /// Custom accessibility actions arrive as "Name:pin\nTarget:0x0\nSelector:(null)".
+    /// Show the name; performAction accepts either form.
+    static func actionName(_ raw: String) -> String {
+        guard raw.hasPrefix("Name:") else { return raw.hasPrefix("AX") ? String(raw.dropFirst(2)) : raw }
+        return String(raw.dropFirst(5).prefix { $0 != "\n" })
+    }
+
     enum InsertOutcome {
         case verified          // the field now holds exactly the expected result
         case unchanged         // nothing happened; a fallback may try
@@ -475,10 +482,11 @@ public struct AXWalker {
 
         var unavailableFields:[String]=[]
         let missing=AX.budget?.metadataFailures[CFHash(el)] ?? []
-        if missing.contains(kAXIdentifierAttribute) {unavailableFields.append("identifier")}
-        // The label is title ?? description ?? placeholder: unknown if a failed read could have supplied it.
+        // Description/identifier failures that persist through the individual retry are how
+        // several providers (SwiftUI TextEditor, unlabeled switches) report "none"; treating
+        // them as unknown made every label-only absence check on such screens unknowable.
+        // They stay in diagnostics. A failed title/placeholder/state read remains unknown.
         if missing.contains(kAXTitleAttribute)
-            || (title == nil && description == nil && missing.contains(kAXDescriptionAttribute))
             || (title == nil && description == nil && missing.contains(kAXPlaceholderValueAttribute)) {unavailableFields.append("label")}
         if missing.contains(kAXValueAttribute) {unavailableFields.append("value")}
         if missing.contains(kAXEnabledAttribute) {unavailableFields.append("enabled")}
@@ -503,7 +511,11 @@ public struct AXWalker {
             // Read each child's full batch once: it keys the ordinal here and is reused by the child.
             let ca = AX.attrs(child, AXWalker.batchAttributes)
             let crole = (ca[kAXRoleAttribute] as? String) ?? "AXUnknown"
-            let clabel = AX.usefulIdentifier(AX.string(ca[kAXIdentifierAttribute], limit: 200)) ?? AX.string(ca[kAXTitleAttribute]) ?? ""
+            // Same label as the child's own key: SwiftUI puts button labels in AXDescription, so
+            // title-only signatures made every such sibling share one ordinal sequence and ids
+            // shifted whenever an unrelated button appeared.
+            let clabel = AX.usefulIdentifier(AX.string(ca[kAXIdentifierAttribute], limit: 200)) ?? AX.string(ca[kAXTitleAttribute])
+                ?? AX.string(ca[kAXDescriptionAttribute]) ?? AX.string(ca[kAXPlaceholderValueAttribute]) ?? ""
             let sig = "\(crole)[\(clabel)]"
             let ordinal = ordinals[sig, default: 0]
             ordinals[sig] = ordinal + 1

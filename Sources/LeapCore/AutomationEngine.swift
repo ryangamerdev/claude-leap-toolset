@@ -131,7 +131,7 @@ extension Engine {
             var ancestors:[(Int,String)]=[]
             let nodes:[[String:Any]]=snap.nodes.map {n in
                 while let last=ancestors.last,last.0>=n.depth {ancestors.removeLast()}
-                var node:[String:Any]=["id":n.key,"role":n.role,"label":n.title ?? n.description ?? n.placeholder ?? "","enabled":n.enabled,"selected":n.selected,"focused":n.focused,"offscreen":n.offscreen,"depth":n.depth,"ancestors":ancestors.map{$0.1},"actions":n.actions,"valueLimited":n.valueLimited]
+                var node:[String:Any]=["id":n.key,"role":n.role,"label":n.title ?? n.description ?? n.placeholder ?? "","enabled":n.enabled,"selected":n.selected,"focused":n.focused,"offscreen":n.offscreen,"depth":n.depth,"ancestors":ancestors.map{$0.1},"actions":n.actions.map(AX.actionName),"valueLimited":n.valueLimited]
                 node["unavailableFields"]=n.unavailableFields;node["identifier"]=n.identifier;if n.omittedChildren>0 {node["omittedChildren"]=n.omittedChildren};node["value"]=n.capturedValue ?? n.value;node["index"]=native.indexByKey[n.key]
                 if let f=n.frame {node["frame"]=[f.minX-snap.frame.minX,f.minY-snap.frame.minY,f.width,f.height]}
                 ancestors.append((n.depth,n.key));return node
@@ -223,7 +223,7 @@ extension Engine {
                     if ["click","double_click"].contains(action) {keys.insert("button")}
                     if action == "scroll" {keys.formUnion(["pages","x","y","snapshot","space"])}
                 }
-                guard Set(a.keys).isSubset(of:keys) else {throw AutomationModel.fail("Unsupported arguments for \(s.backend) \(action); no input sent")}
+                guard Set(a.keys).isSubset(of:keys) else {throw AutomationModel.fail("Unsupported arguments \(Set(a.keys).subtracting(keys).sorted()) for \(s.backend) \(action); accepted: \(keys.sorted()). No input sent")}
                 for (key,value) in a {
                     if ["x","y","from_x","from_y","to_x","to_y","snapshot","pages"].contains(key) {
                         guard let number=value as? NSNumber,CFGetTypeID(number) != CFBooleanGetTypeID(),number.doubleValue.isFinite else {throw AutomationModel.fail("\(key) must be a finite number")}

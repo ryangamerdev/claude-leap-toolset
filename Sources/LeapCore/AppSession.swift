@@ -260,7 +260,7 @@ public final class AppSession {
         if n.selected { parts.append("[selected]") }
         if n.focused || (focused != nil && CFEqual(focused, n.element)) { parts.append("[focused]") }
         let extra = n.actions.filter { !AXWalker.hiddenActions.contains($0) }
-            .map { $0.hasPrefix("AX") ? String($0.dropFirst(2)) : $0 }
+            .map(AX.actionName)
         if !extra.isEmpty { parts.append("actions=" + extra.joined(separator: ",")) }
         return parts.joined(separator: " ")
     }

@@ -941,8 +941,9 @@ public actor Engine {
         guard let name = rec.node.actions.first(where: {
             let n = $0.lowercased()
             return n == wanted || n == "ax" + wanted || n.dropFirst(2) == wanted
+                || AX.actionName($0).lowercased().replacingOccurrences(of: " ", with: "") == wanted
         }) else {
-            throw LeapError.unsupported("element [\(elementIndex)] does not expose \"\(action)\"; available: \(rec.node.actions.joined(separator: ", "))")
+            throw LeapError.unsupported("element [\(elementIndex)] does not expose \"\(action)\"; available: \(rec.node.actions.map(AX.actionName).joined(separator: ", "))")
         }
         defer { s.lastActionAt = Date() }
         let err = AXUIElementPerformAction(rec.node.element, name as CFString)

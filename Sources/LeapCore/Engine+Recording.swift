@@ -125,8 +125,24 @@ extension Engine {
     }
     func compactObservation(_ text:String) -> String {
         var out:[String]=[];var used=0;var omitted=0
-        for line in text.components(separatedBy:"\n") {
-            if line.contains("[disabled]") && !line.hasPrefix("~") {omitted+=1;continue}
+        // Runs of disabled lines are usually an inactive view kept alive in the tree (a previous
+        // tab or sheet): summarize them in one line. Individually disabled controls (a greyed
+        // Save) are state the agent needs, so short runs stay visible.
+        var lines:[String]=[]
+        let all=text.components(separatedBy:"\n")
+        var i=0
+        while i<all.count {
+            var j=i
+            while j<all.count, all[j].contains("[disabled]"), !all[j].hasPrefix("~") {j+=1}
+            if j-i>=5 {
+                let indent=String(all[i].prefix{$0==" "})
+                let names=all[i..<j].compactMap{line -> String? in line.range(of:"\"[^\"]+\"",options:.regularExpression).map{String(line[$0])}}.prefix(3).joined(separator:", ")
+                lines.append("\(indent)… \(j-i) disabled elements (inactive view?\(names.isEmpty ? "" : "; e.g. \(names)")) collapsed; ui_to_text for detail")
+                i=j;continue
+            }
+            if j==i {lines.append(all[i]);i+=1} else {lines.append(contentsOf:all[i..<j]);i=j}
+        }
+        for line in lines {
             if used+line.utf8.count>10000 {omitted+=1;continue}
             out.append(line);used+=line.utf8.count+1
         }

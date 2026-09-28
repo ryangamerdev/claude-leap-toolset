@@ -123,6 +123,14 @@ public final class Evidence {
         return try RecordingStore.json(result)
     }
     /// Bracket inputs by record order; never use a previous interaction's displayed baseline.
+    /// What an agent needs to judge an observation; full capture metadata stays in the store.
+    static func qualitySummary(_ m:[String:Any]) -> [String:Any] {
+        let blocking=(m["readFailures"] as? Int ?? 0)-(m["advisoryReadFailures"] as? Int ?? 0)
+        let complete=blocking<=0 && !(m["truncated"] as? Bool ?? false) && !(m["deadlineExceeded"] as? Bool ?? false)
+        var out:[String:Any]=["complete":complete,"nodes":m["nodeCount"] ?? NSNull()]
+        if !complete {out["blockingReadFailures"]=max(0,blocking);out["truncated"]=m["truncated"] ?? false;out["deadlineExceeded"]=m["deadlineExceeded"] ?? false}
+        return out
+    }
     public func interactionDelta(_ id: String) throws -> String {
         let intents = try rows("SELECT MIN(seq) AS first,MAX(seq) AS last FROM records WHERE interaction=? AND kind='action_intent'", [id])
         guard let first = intents.first?["first"] as? String,
@@ -136,7 +144,7 @@ public final class Evidence {
         }
         let (bm,_)=try snapshot(b), (am,_)=try snapshot(a)
         var result: [String:Any] = ["beforeSnapshot":b,"afterSnapshot":a,
-            "beforeQuality":bm,"afterQuality":am,
+            "beforeQuality":Self.qualitySummary(bm),"afterQuality":Self.qualitySummary(am),
             "next":"ui_diff(before: beforeSnapshot, after_snapshot: afterSnapshot) for more changes; ui_to_text(snapshot: ...) for full controls"]
         do {
             let raw=try diff(before:b,after:a,cursor:0,limit:10,maxBytes:4000)
@@ -212,7 +220,8 @@ public final class Evidence {
                 return a != b
             }
             if prior == nil || !changed.isEmpty {
-                var item:[String:Any]=["change":prior == nil ? "added":"changed","key":k,"fields":changed,"afterOrdinal":i+1,"label":String((n["label"] as? String ?? "").prefix(160))]
+                var item:[String:Any]=["change":prior == nil ? "added":"changed","key":k,"label":String((n["label"] as? String ?? "").prefix(160))]
+                if prior != nil {item["fields"]=changed}
                 func projection(_ node: [String:Any]?) -> [String:Any] {
                     var out:[String:Any]=[:]
                     for field in changed {
@@ -224,7 +233,9 @@ public final class Evidence {
                     }
                     return out
                 }
-                item["beforeValues"]=projection(prior);item["afterValues"]=projection(n)
+                // Added elements: their state, not their geometry (ui_to_text has frames).
+                if prior == nil {item["afterValues"]=projection(n).filter{$0.key != "screenFrame" && $0.key != "label"}}
+                else {item["beforeValues"]=projection(prior);item["afterValues"]=projection(n)}
                 if k.utf8.count>256 {item["key"]=Self.assetRef(snapshot:after,ordinal:i+1,field:"key",value:k)}
                 changes.append(item)
             }
@@ -233,7 +244,9 @@ public final class Evidence {
         for i in changes.indices {changes[i]["ordinal"]=i+1}
         let candidates=changes.filter {($0["ordinal"] as? Int ?? 0)>cursor};let proposed=Array(candidates.prefix(max(1,min(100,limit))))
         let(page,cut,next)=try Self.page(proposed,budget:maxBytes,after:cursor)
-        let partial=(bm["truncated"] as? Bool ?? false)||(am["truncated"] as? Bool ?? false)||(bm["readFailures"] as? Int ?? 0)>0||(am["readFailures"] as? Int ?? 0)>0||(bm["deadlineExceeded"] as? Bool ?? false)||(am["deadlineExceeded"] as? Bool ?? false)
+        // Node-scoped (advisory) read failures do not make the tree partial.
+        func blocking(_ m:[String:Any]) -> Bool {(m["readFailures"] as? Int ?? 0)-(m["advisoryReadFailures"] as? Int ?? 0)>0}
+        let partial=(bm["truncated"] as? Bool ?? false)||(am["truncated"] as? Bool ?? false)||blocking(bm)||blocking(am)||(bm["deadlineExceeded"] as? Bool ?? false)||(am["deadlineExceeded"] as? Bool ?? false)
         return try RecordingStore.json(["before":before,"after":after,"changes":page,"total":changes.count,"hasMore":cut || candidates.count>page.count,"nextCursor":next,"incomplete":partial,"meaning":"Observed differences, not causal proof. Removal from a partial tree does not prove disappearance. Content-based keys can change when labels change."])
     }
 }
