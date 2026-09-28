@@ -205,6 +205,13 @@ public enum Input {
     public static func click(at p: CGPoint, button: MouseButton = .left, count: Int = 1,
                              flags: CGEventFlags = [], _ delivery: Delivery) throws {
         var events:[(CGEvent,UInt32)]=[]
+        // Hover-driven UIs (Blender, games, web hover menus) only arm a control after the pointer
+        // moves onto it; Sky's click builder sends no mouseMoved, which leaves such controls cold.
+        // A process-directed move does not move the user's cursor.
+        if let move=CGEvent(mouseEventSource:source,mouseType:.mouseMoved,mouseCursorPosition:p,mouseButton:button.cgButton) {
+            move.flags=flags
+            events.append((try routedEvent(move,delivery),clickGap))
+        }
         for i in 1...max(1,count) {
             for type in [button.down,button.up] {
                 guard let event=CGEvent(mouseEventSource:source,mouseType:type,mouseCursorPosition:p,mouseButton:button.cgButton) else {

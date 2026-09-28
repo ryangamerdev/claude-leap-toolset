@@ -95,3 +95,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-28 — iPad create/save/reopen gate, pre-met expectations](2026-09-28-ipad-gate-verification.md): iPad gate passed natively; background SwiftUI pointer gap found; false-pass guard.
 
 - [2026-09-28 — Sky-traced background clicks and title association](2026-09-28-sky-command-click.md): Command-flag background clicks (Sky sendClick); associateTitleUIElements; Blender gate in progress.
+
+- [2026-09-28 — Blender modeling/save; hover move before clicks](2026-09-28-blender-hover.md): UI-built Mickey head saved and verified; hover-driven UIs need a move before click.
