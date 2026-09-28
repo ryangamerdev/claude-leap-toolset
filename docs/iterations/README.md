@@ -101,3 +101,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-28 — Native gates: Blender reopen, background Command-clicks, iPhone persistence](2026-09-28-native-gates-complete.md): Blender gate complete; Command-clicks verified on Gameday and Calculator; Blender API-first direction.
 
 - [2026-09-28 — Agent follow-up resolved](2026-09-28-agent-followup.md): unique keys + dispatch identity check, sheet/topmost disambiguation, transition re-observe, named validation errors, root prefix, unchanged set_value.
+
+- [2026-09-28 — Agent retest: alert windows, disambiguation limits](2026-09-28-agent-retest.md): pointer events go to the window at the point; sessions follow the key window; hit-test disambiguation removed (SwiftUI hit-tests hidden layers).

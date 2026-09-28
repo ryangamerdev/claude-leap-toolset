@@ -434,6 +434,7 @@ public actor Engine {
     /// Native pointer transport is independent of foreground policy. Both modes
     /// resolve the same window and use the same scoped process-directed delivery.
     func withPointerInput<T>(_ s: AppSession, _ mode: InputMode, background: Input.BackgroundPointer = .activateWindow,
+                             at point: CGPoint? = nil,
                              _ body: (Delivery, CGEventFlags) throws -> T) async throws -> T {
         let originalFrame = s.lastWindowFrame
         let wantsForeground = mode.foreground || (hold?.session.pid == s.pid && hold?.mode.foreground == true)
@@ -447,7 +448,14 @@ public actor Engine {
               window.bounds.approximatelyEquals(s.lastWindowFrame) else {
             throw LeapError.unsupported("Could not resolve the selected window for pointer delivery. No pointer input was sent; read get_app_state and retry.")
         }
-        let delivery = Delivery.app(s.pid, window: window)
+        // Sky resolves the target window at the event point from the app's ordered windows
+        // (target(forMouseEventAt:with: orderedWindows)). An alert sheet is its own window above the
+        // main one; routing its clicks to the main window made them hit nothing.
+        var target = window
+        if let point, let front = WindowInfo.onScreen().first(where: { $0.pid == s.pid && $0.layer == 0 && $0.bounds.contains(point) }) {
+            target = front
+        }
+        let delivery = Delivery.app(s.pid, window: target)
         return try Input.withPointerGesture(delivery, background: background) { try body(delivery, $0) }
     }
 
@@ -586,7 +594,7 @@ public actor Engine {
             }
         }
         let background = Self.backgroundPointer(role: rec?.node.role ?? Self.roleAt(s, p))
-        try await withPointerInput(s, mode, background: background) { d, extra in
+        try await withPointerInput(s, mode, background: background, at: p) { d, extra in
             // Caller-requested modifiers win; otherwise the background preparation's flags apply.
             try Input.click(at: p, button: button, count: count, flags: flags.isEmpty ? extra : flags, d)
         }
@@ -634,7 +642,7 @@ public actor Engine {
         let steps = max(1, min(steps, 200))
         defer { s.lastActionAt = Date() }
         let background = Self.backgroundPointer(role: Self.roleAt(s, a))
-        try await withPointerInput(s, mode, background: background) { d, extra in
+        try await withPointerInput(s, mode, background: background, at: a) { d, extra in
             try Input.drag(from: a, to: b, flags: flags.isEmpty ? extra : flags, steps: steps, d)
         }
         await MainActor.run { Overlay.shared.signalDrag(from: a, to: b) }
@@ -692,7 +700,7 @@ public actor Engine {
             }
         }
         Diagnostics.shared.record(level:"warning",kind:"scroll_pointer_route",detail:"Using wheel events; semantic page scrolling unavailable or unsuitable for requested scroll. Movement requires verification.")
-        try await withPointerInput(s, mode) { d, _ in try Input.scroll(at: p, dx: dx, dy: dy, d) }
+        try await withPointerInput(s, mode, at: p) { d, _ in try Input.scroll(at: p, dx: dx, dy: dy, d) }
         await signal(p, .scroll)
         return "dispatched scroll \(direction) (wheel events; verify movement in the returned state)"
     }

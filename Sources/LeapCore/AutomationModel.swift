@@ -170,12 +170,16 @@ public enum AutomationModel {
 final class AutomationSession {
     let id:String, app:String, backend:String, store:RecordingStore
     var window:String?
+    /// Opened with an explicit window: identity is enforced. Otherwise the session follows the key
+    /// window like Sky's app handle (a sheet opening/closing is reported, not an error).
+    let explicitWindow:Bool
     var windowIdentity:AXUIElement?
     let pid:pid_t?
     var wda:WDAClient?
     var latest:[String:Any]?
     init(id:String,app:String,backend:String,window:String?,store:RecordingStore,pid:pid_t?) {
         self.id=id; self.app=app; self.backend=backend; self.window=window; self.store=store; self.pid=pid
+        self.explicitWindow=window != nil
     }
     func save(_ kind:String,_ value:[String:Any],interaction:String?) throws -> (Int,String) {
         let seq=try store.append(session:id,interaction:interaction,kind:"automation_"+kind,payload:value)

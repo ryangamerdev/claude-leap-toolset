@@ -79,8 +79,13 @@ Follow-up behaviors (2026-09-28):
 - `root` scopes by id-path prefix, so any container id (rendered or elided) works; `within` scopes by an
   ancestor's own label.
 - When a selector matches several elements, Leap prefers the match inside a modal sheet (as Sky shows only
-  the sheet), then the single element actually on top at its own center (hidden SwiftUI layers stay in the
-  tree). Results report `disambiguated`. Otherwise the step fails and lists the matches.
+  the sheet), then the only enabled match. Results report `disambiguated`. Otherwise the step fails and lists
+  the matches. Leap does not infer occlusion: SwiftUI keeps hidden layers in the tree and its AX hit-test can
+  report hidden elements at visible points, so scope with `within`, `root` or `role`, and use expectations that
+  only the new state satisfies (`expectation_met_before` flags ones that already held).
+- Sessions opened without `window` follow the key window (a sheet opening or closing sets `windowChanged`);
+  with an explicit `window`, a change is an error. While a sheet/alert is the key window, observation
+  coordinates are relative to it, and pointer events go to the front-most app window containing the point.
 - Before input, the element behind the index must still have the observed id and label; if not, nothing is
   sent ("Target identity changed…"). Prefer label selectors for alert buttons: SwiftUI `action-button-N`
   identifiers are not stable across alerts.

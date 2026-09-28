@@ -1,0 +1,6 @@
+[
+ {"name":"session_open","arguments":{"project":"/Users/ryan/src/leap-mcp/.leap/tmp/harness-project","app":"Gameday"}},
+ {"name":"@capture","arguments":{"pattern":"\"session_id\":\"([A-F0-9-]+)\"","var":"sid"}},
+ {"name":"ui_perform","arguments":{"session_id":"$sid","steps":[
+   {"type":"observe","selector":{"within":"alert"},"fields":["index","role","label","value","enabled"]}]}}
+]

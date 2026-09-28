@@ -125,9 +125,12 @@ extension Engine {
             guard native.pid == s.pid else {throw AutomationModel.fail("Target process changed; open a new session")}
             _ = try await state(app:s.app,window:s.window)
             guard let snap=native.automationSnapshot else {throw AutomationModel.fail("AX snapshot unavailable")}
-            if let identity=s.windowIdentity,!CFEqual(identity,snap.window) {throw AutomationModel.fail("Selected window changed; open a new explicitly targeted session")}
+            var windowChanged=false
+            if let identity=s.windowIdentity,!CFEqual(identity,snap.window) {
+                guard !s.explicitWindow else {throw AutomationModel.fail("Selected window changed; open a new explicitly targeted session")}
+                windowChanged=true
+            }
             s.windowIdentity=snap.window
-            if s.window == nil {s.window=snap.title}
             var ancestors:[(Int,String)]=[]
             let nodes:[[String:Any]]=snap.nodes.map {n in
                 while let last=ancestors.last,last.0>=n.depth {ancestors.removeLast()}
@@ -136,7 +139,7 @@ extension Engine {
                 if let f=n.frame {node["frame"]=[f.minX-snap.frame.minX,f.minY-snap.frame.minY,f.width,f.height]}
                 ancestors.append((n.depth,n.key));return node
             }
-            observation=["nodes":nodes,"complete":snap.supportsStateChecks && !snap.retainedEarlierObservation,"coordinateSpace":"window_points","bounds":[snap.frame.minX,snap.frame.minY,snap.frame.width,snap.frame.height],"window":snap.title ?? "","pid":native.pid,"blockingReadFailures":snap.blockingReadFailures,"advisoryReadFailures":snap.advisoryReadFailures,"limitations":["AX acquisition is not atomic; frame intersection is not occlusion","Simulator host AX geometry can be invalid; prefer device backend"]]
+            observation=["nodes":nodes,"complete":snap.supportsStateChecks && !snap.retainedEarlierObservation,"windowChanged":windowChanged,"coordinateSpace":"window_points","bounds":[snap.frame.minX,snap.frame.minY,snap.frame.width,snap.frame.height],"window":snap.title ?? "","pid":native.pid,"blockingReadFailures":snap.blockingReadFailures,"advisoryReadFailures":snap.advisoryReadFailures,"limitations":["AX acquisition is not atomic; frame intersection is not occlusion","Simulator host AX geometry can be invalid; prefer device backend"]]
         }
         observation["schemaVersion"]=2;observation["session_id"]=s.id;observation["backend"]=s.backend
         observation["started_at"]=started;observation["finished_at"]=ISO8601DateFormatter().string(from:Date())
@@ -207,7 +210,10 @@ extension Engine {
             if let selector=step["selector"] as? [String:Any] {
                 do {try AutomationModel.validateSelector(selector)} catch {throw AutomationModel.fail("Step \(stepIndex): \(error)")}
             }
-            for key in ["before","expect"] {if let value=step[key] {guard let e=value as? [String:Any] else {throw AutomationModel.fail("Expectation must be object")};try AutomationModel.validateExpectation(e)}}
+            for key in ["before","expect"] {if let value=step[key] {
+                guard let e=value as? [String:Any] else {throw AutomationModel.fail("Step \(stepIndex): \(key) must be an object. No input sent")}
+                do {try AutomationModel.validateExpectation(e)} catch {throw AutomationModel.fail("Step \(stepIndex) \(key): \(error)")}
+            }}
             if ["assert","wait"].contains(type),step["expect"] == nil {throw AutomationModel.fail("assert/wait requires expect")}
             if type == "action" {
                 guard let action=step["action"] as? String,allowed.contains(action) else {throw AutomationModel.fail("Unsupported action for \(s.backend); no steps sent")}
@@ -297,13 +303,14 @@ extension Engine {
                             let inSheet=hits.filter{($0["id"] as? String ?? "").contains("/AXSheet[")}
                             if !inSheet.isEmpty,inSheet.count<hits.count {hits=inSheet;r["disambiguated"]="modal sheet"}
                         }
-                        if hits.count>1,s.wda == nil {
-                            // Hidden SwiftUI layers stay in the tree; keep the one element actually on top at its own point.
-                            let indices=hits.compactMap{$0["index"] as? Int}
-                            let top=await topmostIndices(s.app,indices)
-                            let kept=hits.filter{top.contains($0["index"] as? Int ?? -1)}
-                            if kept.count==1 {hits=kept;r["disambiguated"]="topmost (hit-test)"}
+                        if hits.count>1 {
+                            // Sky prunes empty disabled elements; a disabled match cannot be the target of an action.
+                            let enabled=hits.filter{$0["enabled"] as? Bool != false}
+                            if enabled.count==1 {hits=enabled;r["disambiguated"]=(r["disambiguated"] as? String).map{$0+", only enabled match"} ?? "only enabled match"}
                         }
+                        // No occlusion inference: probes showed SwiftUI's AX hit-test returns hidden-layer elements
+                        // at visible controls (a hidden "Route library" at the editor's Cancel), so it can pick the
+                        // wrong duplicate. Sky likewise leaves duplicates to the agent. Scope with within/root/role.
                         guard hits.count<=1 else {
                             let sample=hits.prefix(5).map{"\($0["role"] as? String ?? "?") \"\($0["label"] as? String ?? "")\" id=\($0["id"] as? String ?? "")"}.joined(separator:"; ")
                             throw AutomationModel.fail("Selector matches \(hits.count) elements (\(sample)); add role/id/root to make it unique. No input sent")
@@ -438,25 +445,6 @@ extension Engine {
         let e=try Evidence(project:s.store.root)
         guard let row=try e.rows("SELECT payload FROM records WHERE seq=? AND session=? AND kind='automation_snapshot'",[String(seq),s.id]).first,let payload=row["payload"] as? String else {return nil}
         return try JSONSerialization.jsonObject(with:Data(payload.utf8)) as? [String:Any]
-    }
-
-    /// Indices whose element is what the window actually shows at the element's center: the hit-test
-    /// result is the element itself or one of its descendants. Unreliable geometry is never judged.
-    func topmostIndices(_ app:String,_ indices:[Int]) async -> Set<Int> {
-        guard let native=try? await session(for:app,launch:false) else {return []}
-        var top=Set<Int>()
-        for index in indices {
-            guard let rec=try? native.element(index),!rec.node.offscreen,!rec.node.untransformedFrame,
-                  let frame=AX.frame(rec.node.element),frame.width>0,frame.height>0 else {continue}
-            var hit:AXUIElement?
-            guard AXUIElementCopyElementAtPosition(native.axApp,Float(frame.midX),Float(frame.midY),&hit) == .success,var current=hit else {continue}
-            for _ in 0..<40 {
-                if CFEqual(current,rec.node.element) {top.insert(index);break}
-                guard let parent:AXUIElement=AX.attr(current,kAXParentAttribute) else {break}
-                current=parent
-            }
-        }
-        return top
     }
 
     func automationInput(_ s:AutomationSession,action:String,node:[String:Any]?,args:[String:Any]) async throws -> String {
