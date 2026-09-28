@@ -42,3 +42,5 @@ inference, leaving duplicates to the agent.
 ## Validation and delivery
 
 `swift test`: 64 tests, 0 failures. Skill intent-workflows reference corrected. Install identity below.
+
+Installed 2026-09-28T23:38:11Z via `make install` from a0bd013. SHA256 `ab3a61d6a091878bd348ca8cc7edcd35222da17a9ba95f436dabb75124877615`. Signature verified; skills match; registration unchanged. Restart pending.
