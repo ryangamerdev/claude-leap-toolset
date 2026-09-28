@@ -61,3 +61,12 @@ the next native case. Recorded at user request on 2026-09-20.
 Gameday data in this acceptance campaign is test data. The user authorizes saving and changing
 it freely; restoration to the original state is unnecessary. Repeat desktop and iPad play
 creation/save/reopen before the remaining Blender gate (2026-09-20 steering).
+
+## Reference Sky first
+
+For every issue, first establish how Sky handles it (docs/SKY-BEHAVIOR.md, docs/research/sky-*,
+/Users/ryan/src/sky strings/disassembly) and record that reference in the iteration entry before
+choosing a fix. Leap may deliberately differ where it has a better approach; state the difference and
+why. Leap is a general-purpose any-application tool; Gameday is one test app. Recorded at user request
+on 2026-09-28. Minor typing glitches are accepted (Sky shows them too); prioritize observation and
+reliable actions. Commit and push frequently; evolve forward, never revert history.

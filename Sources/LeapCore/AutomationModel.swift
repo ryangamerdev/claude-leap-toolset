@@ -19,11 +19,17 @@ public enum AutomationModel {
     static func role(_ value: String) -> String {
         value.replacingOccurrences(of:"XCUIElementType",with:"").replacingOccurrences(of:"AX",with:"").lowercased()
     }
-    static let selectorKeys: Set<String> = ["id","identifier","role","label","contains","root"]
+    static let selectorKeys: Set<String> = ["id","identifier","role","label","contains","root","within"]
     static func validateSelector(_ selector: [String:Any]) throws {
         guard Set(selector.keys).isSubset(of: selectorKeys), selector.values.allSatisfy({$0 is String}) else {
-            throw fail("Invalid selector: use string id, identifier, role, label, contains or root")
+            throw fail("Invalid selector: use string id, identifier, role, label, contains, root (ancestor id) or within (ancestor label)")
         }
+    }
+    /// True when an id's final component is "Role[label]#ordinal" with exactly this label.
+    static func ownLabel(of id:String,is label:String) -> Bool {
+        guard let r=id.range(of:"[\(label)]#",options:.backwards) else {return false}
+        let rest=id[r.upperBound...]
+        return !rest.isEmpty && rest.allSatisfy(\.isNumber)
     }
     static func matches(_ node: [String:Any], _ selector: [String:Any]) -> Bool {
         for key in ["id","identifier","label"] {
@@ -34,6 +40,10 @@ public enum AutomationModel {
            !((node["label"] as? String ?? "")+" "+(node["value"] as? String ?? "")).localizedCaseInsensitiveContains(text) {return false}
         if let root=selector["root"] as? String, node["id"] as? String != root,
            !(node["ancestors"] as? [String] ?? []).contains(root) {return false}
+        // Scope by an ancestor's own label (ids end in "[label]#ordinal") so agents need not
+        // reconstruct full-path ids: {"role":"AXTextArea","within":"Coaching notes"}.
+        if let within=selector["within"] as? String,
+           !(node["ancestors"] as? [String] ?? []).contains(where:{ownLabel(of:$0,is:within)}) {return false}
         return true
     }
     /// Missing optional metadata must not block unrelated controls or prove absence.

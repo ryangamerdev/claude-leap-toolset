@@ -4,7 +4,7 @@ Installed candidate; native acceptance is pending. Capabilities are not certific
 
 Open one `session_open(project, app, backend:mac_ax, window?)`. `project` is an existing absolute directory. The response provides session_id. Use `target_list` for discovery. For Simulator guest apps use backend:wda and endpoint from the repo-local WDA runner; app is the guest bundle ID, not Simulator. Opening WDA may launch/activate the guest app but does not reset its data. Unavailable backends fail explicitly.
 
-`ui_observe(session_id)` returns a snapshot ID, complete flag, coordinateSpace, bounds and bounded normalized nodes. Exact selector fields are identifier, label, role and id; contains is explicit; root scopes descendants by observed ID. Fields, depth, after, limit and max_bytes control output. Paginate with snapshot fixed. A returned file is retained JSON, not a request to repeat input. Historical reads after restart also require project. IDs are observation handles, not durable locators.
+`ui_observe(session_id)` returns a snapshot ID, complete flag, coordinateSpace, bounds and bounded normalized nodes. Exact selector fields are identifier, label, role and id; contains is explicit; root scopes descendants by observed ID; within scopes by an ancestor's own label (for example `{"role":"AXTextArea","within":"Coaching notes"}`), so full-path IDs need not be copied. Fields, depth, after, limit and max_bytes control output. Paginate with snapshot fixed. A returned file is retained JSON, not a request to repeat input. Historical reads after restart also require project. IDs are observation handles, not durable locators.
 
 Example verified workflow:
 

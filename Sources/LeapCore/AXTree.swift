@@ -425,10 +425,14 @@ public struct AXWalker {
         // Never surface what is typed into a password field.
         let value = role == "AXSecureTextField" ? (AX.string(a[kAXValueAttribute]) == nil ? nil : "••••••") : AX.string(a[kAXValueAttribute])
         var description = AX.string(a[kAXDescriptionAttribute])
+        let ownDescription = description
         // Controls labelled by a separate element (form rows, SwiftUI Toggle/LabeledContent)
         // expose it as AXTitleUIElement; screen readers use it as the label. Some providers
         // fail AXDescription outright for such controls.
-        if title == nil, description == nil, let labelElement: AXUIElement = AX.attr(el, kAXTitleUIElementAttribute) {
+        // Sky's service reads the same relations (AXTitleUIElement, AXLabelUIElements).
+        if title == nil, description == nil,
+           let labelElement: AXUIElement = AX.attr(el, kAXTitleUIElementAttribute)
+               ?? (AX.attr(el, "AXLabelUIElements") as [AXUIElement]?)?.first {
             let l = AX.attrs(labelElement, [kAXTitleAttribute, kAXDescriptionAttribute, kAXValueAttribute])
             description = AX.string(l[kAXTitleAttribute]) ?? AX.string(l[kAXDescriptionAttribute]) ?? AX.string(l[kAXValueAttribute])
         }
@@ -470,7 +474,9 @@ public struct AXWalker {
             // Returning extra inactive-tab nodes is preferable to losing live UI.
         }
 
-        let label = identifier ?? title ?? description ?? placeholder ?? ""
+        // Keys use the element's own attributes, exactly as the parent computed its ordinal;
+        // a labelled-by title is for display and matching only, never identity.
+        let label = identifier ?? title ?? ownDescription ?? placeholder ?? ""
         if role == "AXMenuItem" && title == nil && description == nil && value == nil { return } // separator
         let key = "\(parentKey)/\(role)[\(label)]#\(siblingOrdinal)"
         let actions = AX.actions(el)

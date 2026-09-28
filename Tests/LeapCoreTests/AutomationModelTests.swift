@@ -57,6 +57,15 @@ final class AutomationModelTests:XCTestCase {
         XCTAssertTrue(AutomationModel.matches(node,["contains":"Save","role":"button","root":"root"]))
         XCTAssertThrowsError(try AutomationModel.validateSelector(["lable":"Save"]))
     }
+    func testWithinScopesByAncestorLabel() {
+        let node:[String:Any]=["id":"w/AXWindow[App]#0/AXScrollArea[Coaching notes]#1/AXTextArea[]#0","role":"AXTextArea","label":"",
+                               "ancestors":["w/AXWindow[App]#0","w/AXWindow[App]#0/AXScrollArea[Coaching notes]#1"]]
+        XCTAssertTrue(AutomationModel.matches(node,["role":"AXTextArea","within":"Coaching notes"]))
+        XCTAssertFalse(AutomationModel.matches(node,["role":"AXTextArea","within":"Player notes"]))
+        XCTAssertFalse(AutomationModel.matches(node,["role":"AXTextArea","within":"notes"]))
+        XCTAssertTrue(AutomationModel.ownLabel(of:"a/AXGroup[Tag #1]#12",is:"Tag #1"))
+        XCTAssertNoThrow(try AutomationModel.validateSelector(["within":"Coaching notes"]))
+    }
     func testIncompleteDeltaDoesNotClaimRemoval() {
         let d=AutomationModel.delta([["id":"a"]],[],complete:false)
         XCTAssertEqual((d["changes"] as? [[String:Any]])?.count,0)

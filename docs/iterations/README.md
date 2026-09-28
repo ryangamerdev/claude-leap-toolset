@@ -87,3 +87,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-28 — Node-scoped read failures, labelled-by resolution, visible rows](2026-09-28-node-scoped-observation.md): one unreadable label no longer blinds a window; Notes 3.0 s truncated → 0.05 s complete; Finder 1.9 s → 0.3 s.
 
 - [2026-09-28 — Native desktop workflow pass and observation-quality fixes](2026-09-28-native-desktop-workflow.md): Gameday edit/save/reopen passed natively; disabled controls kept, stable ids, compact results.
+
+- [2026-09-28 — Checkpoint 3 native pass; Sky reference for every issue](2026-09-28-sky-referenced-review.md): disabled Save visible, stable ids verified; key collision fixed; `within` selector; Sky-first rule.
