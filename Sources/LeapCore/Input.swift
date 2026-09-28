@@ -144,16 +144,31 @@ public enum Input {
         }
     }
 
-    /// Shared preparation/cleanup for a complete native pointer gesture.
-    /// Real activation is managed separately by Engine; delivery stays process-directed.
-    static func withPointerGesture<T>(_ delivery: Delivery, _ body: () throws -> T) throws -> T {
+    /// How a background (non-frontmost) app is prepared for a pointer gesture.
+    enum BackgroundPointer {
+        /// Sky's default (sendClick 0x1006e98a8): hold Command on the gesture and send no
+        /// activation — Command-clicking an inactive window operates its controls without
+        /// bringing it forward, while a plain first click is often consumed as activation
+        /// (observed: SwiftUI buttons ignored background clicks).
+        case commandClick
+        /// Synthetic window activation around the gesture: for targets where a Command-click
+        /// would change meaning (selection, links, text) and for wheel events.
+        case activateWindow
+    }
+
+    /// Shared preparation/cleanup for a complete native pointer gesture. The body receives the
+    /// extra modifier flags the gesture needs. Real activation is managed separately by Engine.
+    static func withPointerGesture<T>(_ delivery: Delivery, background: BackgroundPointer = .activateWindow,
+                                      _ body: (CGEventFlags) throws -> T) throws -> T {
         guard case .app(let pid, let window) = delivery, let window else {
             throw LeapError.unsupported("Pointer input requires a resolved target window. Read get_app_state and retry.")
         }
         guard setWindowLocation != nil else {
             throw LeapError.unsupported("This macOS version does not provide window-targeted pointer routing. No input was sent.")
         }
-        let needsSyntheticFocus = NSWorkspace.shared.frontmostApplication?.processIdentifier != pid
+        let isBackground = NSWorkspace.shared.frontmostApplication?.processIdentifier != pid
+        if isBackground, case .commandClick = background { return try body(.maskCommand) }
+        let needsSyntheticFocus = isBackground
         if needsSyntheticFocus {
             let activation = try activationEvent(windowID: window.id, active: true)
             activation.postToPid(pid)
@@ -166,7 +181,7 @@ public enum Input {
                 catch { Diagnostics.shared.record(level:"error",kind:"synthetic_focus_cleanup_failed",detail:String(describing:error)) }
             }
         }
-        return try body()
+        return try body([])
     }
 
     public static func moveMouse(to p: CGPoint, _ delivery: Delivery) throws {

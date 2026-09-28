@@ -346,7 +346,7 @@ public struct AXWalker {
         kAXRoleAttribute, kAXSubroleAttribute, kAXTitleAttribute, kAXValueAttribute,
         kAXDescriptionAttribute, kAXIdentifierAttribute, kAXPlaceholderValueAttribute,
         kAXPositionAttribute, kAXSizeAttribute, kAXEnabledAttribute, kAXFocusedAttribute,
-        kAXSelectedAttribute, kAXChildrenAttribute,
+        kAXSelectedAttribute, kAXChildrenAttribute, "AXServesAsTitleForUIElements",
     ]
 
     /// The key window of `app`, falling back to main / first window.
@@ -513,9 +513,25 @@ public struct AXWalker {
         // Ordinal among siblings that would produce the same key prefix keeps keys stable
         // when unrelated siblings are inserted or removed.
         var ordinals: [String: Int] = [:]
-        for child in children {
-            // Read each child's full batch once: it keys the ordinal here and is reused by the child.
-            let ca = AX.attrs(child, AXWalker.batchAttributes)
+        // Read each child's full batch once: it keys the ordinal here and is reused by the child.
+        var batches = children.map { AX.attrs($0, AXWalker.batchAttributes) }
+        // Sky's associateTitleUIElements (transform 0x100645230): an element that only titles
+        // sibling controls is removed and its text moves onto them, so a labelled control and its
+        // label do not render as two elements with one label.
+        var skip = Set<Int>()
+        for (i, batch) in batches.enumerated() {
+            guard let targets = batch["AXServesAsTitleForUIElements"] as? [AXUIElement], !targets.isEmpty else { continue }
+            let siblingIndices = targets.compactMap { t in children.firstIndex { CFEqual($0, t) } }
+            guard siblingIndices.count == targets.count, !siblingIndices.contains(i) else { continue }
+            let text = AX.string(batch[kAXTitleAttribute]) ?? AX.string(batch[kAXDescriptionAttribute]) ?? AX.string(batch[kAXValueAttribute])
+            guard let text else { continue }
+            for j in siblingIndices where AX.string(batches[j][kAXTitleAttribute]) == nil && AX.string(batches[j][kAXDescriptionAttribute]) == nil {
+                batches[j][kAXDescriptionAttribute] = text as CFString
+            }
+            skip.insert(i)
+        }
+        for (i, child) in children.enumerated() where !skip.contains(i) {
+            let ca = batches[i]
             let crole = (ca[kAXRoleAttribute] as? String) ?? "AXUnknown"
             // Same label as the child's own key: SwiftUI puts button labels in AXDescription, so
             // title-only signatures made every such sibling share one ordinal sequence and ids

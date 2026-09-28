@@ -433,8 +433,8 @@ public actor Engine {
 
     /// Native pointer transport is independent of foreground policy. Both modes
     /// resolve the same window and use the same scoped process-directed delivery.
-    func withPointerInput<T>(_ s: AppSession, _ mode: InputMode,
-                             _ body: (Delivery) throws -> T) async throws -> T {
+    func withPointerInput<T>(_ s: AppSession, _ mode: InputMode, background: Input.BackgroundPointer = .activateWindow,
+                             _ body: (Delivery, CGEventFlags) throws -> T) async throws -> T {
         let originalFrame = s.lastWindowFrame
         let wantsForeground = mode.foreground || (hold?.session.pid == s.pid && hold?.mode.foreground == true)
         if wantsForeground { try await activate(s) }
@@ -448,7 +448,7 @@ public actor Engine {
             throw LeapError.unsupported("Could not resolve the selected window for pointer delivery. No pointer input was sent; read get_app_state and retry.")
         }
         let delivery = Delivery.app(s.pid, window: window)
-        return try Input.withPointerGesture(delivery) { try body(delivery) }
+        return try Input.withPointerGesture(delivery, background: background) { try body(delivery, $0) }
     }
 
     /// Activate the app and *verify* it became frontmost. Never returns normally while another
@@ -487,6 +487,21 @@ public actor Engine {
             AXUIElementPerformAction(window, kAXRaiseAction as CFString)
         }
         app.activate()
+    }
+
+    /// Sky activates instead of Command-clicking when a click may change a selection, in web
+    /// content and on Catalyst menu buttons; the role under the point is the available signal.
+    static let selectionSensitiveRoles: Set<String> = ["AXRow", "AXCell", "AXOutline", "AXTable", "AXList",
+        "AXLink", "AXWebArea", "AXMenuButton", "AXTextField", "AXTextArea", "AXSearchField", "AXComboBox"]
+    static func backgroundPointer(role: String?) -> Input.BackgroundPointer {
+        guard let role else { return .activateWindow }
+        return selectionSensitiveRoles.contains(role) ? .activateWindow : .commandClick
+    }
+    /// Role of the element under a screen point in the target app (Sky's target(forMouseEventAt:)).
+    static func roleAt(_ s: AppSession, _ p: CGPoint) -> String? {
+        var hit: AXUIElement?
+        guard AXUIElementCopyElementAtPosition(s.axApp, Float(p.x), Float(p.y), &hit) == .success, let hit else { return nil }
+        return AX.attr(hit, kAXRoleAttribute)
     }
 
     public func click(app query: String, target: Target, button: MouseButton = .left, count: Int = 1,
@@ -570,7 +585,11 @@ public actor Engine {
                 p = finalPoint
             }
         }
-        try await withPointerInput(s, mode) { d in try Input.click(at: p, button: button, count: count, flags: flags, d) }
+        let background = Self.backgroundPointer(role: rec?.node.role ?? Self.roleAt(s, p))
+        try await withPointerInput(s, mode, background: background) { d, extra in
+            // Caller-requested modifiers win; otherwise the background preparation's flags apply.
+            try Input.click(at: p, button: button, count: count, flags: flags.isEmpty ? extra : flags, d)
+        }
         await signal(p, .click)
         return "clicked \(button.rawValue)×\(count) at window (\(Int(p.x - s.lastWindowFrame.minX)),\(Int(p.y - s.lastWindowFrame.minY)))" + (rec.map { " on [\($0.index)]" } ?? "")
     }
@@ -614,7 +633,10 @@ public actor Engine {
         let flags = try modifierFlags(modifiers)
         let steps = max(1, min(steps, 200))
         defer { s.lastActionAt = Date() }
-        try await withPointerInput(s, mode) { d in try Input.drag(from: a, to: b, flags: flags, steps: steps, d) }
+        let background = Self.backgroundPointer(role: Self.roleAt(s, a))
+        try await withPointerInput(s, mode, background: background) { d, extra in
+            try Input.drag(from: a, to: b, flags: flags.isEmpty ? extra : flags, steps: steps, d)
+        }
         await MainActor.run { Overlay.shared.signalDrag(from: a, to: b) }
         return "dragged"
     }
@@ -670,7 +692,7 @@ public actor Engine {
             }
         }
         Diagnostics.shared.record(level:"warning",kind:"scroll_pointer_route",detail:"Using wheel events; semantic page scrolling unavailable or unsuitable for requested scroll. Movement requires verification.")
-        try await withPointerInput(s, mode) { d in try Input.scroll(at: p, dx: dx, dy: dy, d) }
+        try await withPointerInput(s, mode) { d, _ in try Input.scroll(at: p, dx: dx, dy: dy, d) }
         await signal(p, .scroll)
         return "dispatched scroll \(direction) (wheel events; verify movement in the returned state)"
     }

@@ -93,3 +93,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-28 — Coordinates, observe items, compact deltas](2026-09-28-coordinates-observe.md): checkpoint 4 native pass; Sky-referenced relaxations; TextEdit restore note.
 
 - [2026-09-28 — iPad create/save/reopen gate, pre-met expectations](2026-09-28-ipad-gate-verification.md): iPad gate passed natively; background SwiftUI pointer gap found; false-pass guard.
+
+- [2026-09-28 — Sky-traced background clicks and title association](2026-09-28-sky-command-click.md): Command-flag background clicks (Sky sendClick); associateTitleUIElements; Blender gate in progress.

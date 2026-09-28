@@ -16,6 +16,9 @@ its coordinates are device points, not host-window points. No silent backend fal
 mac_ax on a landscape Simulator device tags guest elements `[rotated]`: their AX frames are portrait-space.
 Click them by label/index (AXPress, also focuses text fields); coordinates from their frames are refused.
 Explicit foreground input can change focus; app keyboard events remain process-directed with no system-wide fallback.
+Background clicks/drags are sent as Command-clicks without activation (as Sky does); selection-sensitive targets
+(rows, cells, links, text inputs, web content) use window activation instead. Blender window screenshots of
+secondary windows (file browser) can show the wrong surface; verify dialogs visually with care.
 
 Read execution, dispatch and verification separately. Never replay uncertain input. A partial
 observation cannot prove absence. Long tables/lists read only on-screen rows (`[N more rows off screen, not read]`);
