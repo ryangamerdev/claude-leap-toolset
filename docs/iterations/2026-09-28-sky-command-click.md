@@ -48,3 +48,5 @@ secondary windows as unreliable (open).
 Native: background coordinate + index clicks on Gameday and another app (Finder sidebar item, a
 non-selection button in System Settings or TextEdit toolbar in a new document); Sideline single element.
 Finish Blender save to artifacts/test-runs/20260928-blender/ and reopen. iPhone reopen via navigation.
+
+Installed 2026-09-28T21:50:07Z via `make install` from 4b742c1. SHA256 `4d11a8e917f8325033bad4bb23d306ac6b1fa00c6d9d7141c39a6179e0878215`. Signature verified; skills match; registration unchanged. Restart pending.
