@@ -53,3 +53,5 @@ Native: disabled Save visible in editor before edit; Edit play absent → passed
 size; Flashcards id stable across editor open/close. Review next: coordinate provenance strictness,
 observe-step output (returns delta only, not matched items), duplicate labels from labelled-by, id
 usability (agents cannot guess root ids; consider label-based ancestor selectors).
+
+Installed 2026-09-28T21:28:57Z via `make install` from 49a3213. SHA256 `94742a142aa5b21c4798cb4f867eac9c162d070515846a6bf02ea58f97c386ca`. Signature verified; skills match; registration unchanged. Restart pending.
