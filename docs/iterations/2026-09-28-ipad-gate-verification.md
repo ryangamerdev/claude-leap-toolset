@@ -40,3 +40,20 @@ background pointer delivery changes join this checkpoint).
 ## Remaining work
 
 Background pointer delivery (Sky trace); duplicate labels; iPhone gate; Blender gate.
+
+## Addendum (same day) — iPhone flow, scroll-before-press, case-sensitive labels
+
+iPhone (mac_ax, landscape) native: Home (identifier `house`, unambiguous vs Simulator chrome Home) →
+Playbook → New play → Offense → Play name dialog (set_value, Done) → editor → Play details → Coaching
+notes. AXPress on the off-screen notes area acknowledged but did not focus; type_text correctly refused
+("focus could not be verified; no keyboard input sent"). Manual AXScrollToVisible then AXPress focused
+it (delta focused false→true). Typing produced "Lap iPhone note: attack the flat." — the character
+after a shifted key was dropped (accepted glitch; same pattern Sky shows). Save succeeded; reopen via
+search is pending because the iPhone playbook view shows no search field after Save.
+
+Sky reference: clickablePoint(scrollToVisible:) (0x1007833a4) scrolls before interacting; Sky also
+errors on multiple matches ("multiple elements were found that match the criteria").
+
+Changes: AXPress on rotated Simulator elements performs AXScrollToVisible first when supported.
+Legacy label resolution prefers a unique exact-case match before the actionable filter (a "COACHING
+NOTES" heading no longer collides with the "Coaching notes" text area). 61 tests pass.

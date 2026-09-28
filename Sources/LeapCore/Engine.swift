@@ -509,6 +509,13 @@ public actor Engine {
             // AXPress needs no screen coordinate. Validate only its cosmetic marker,
             // before the action can remove the target or change the window.
             let marker = indicatorPoint(s, rec.index)
+            // Like Sky's clickablePoint(scrollToVisible:): bring a rotated Simulator element into
+            // view first; an off-screen iOS text area acknowledges AXPress without taking focus.
+            if rec.node.untransformedFrame, rec.node.actions.contains("AXScrollToVisible") {
+                if AXUIElementPerformAction(rec.node.element, "AXScrollToVisible" as CFString) == .success {
+                    try await Task.sleep(nanoseconds: 300_000_000)
+                }
+            }
             let err = AXUIElementPerformAction(rec.node.element, kAXPressAction as CFString)
             if err == .success {
                 if marker == nil {
@@ -1104,6 +1111,11 @@ public actor Engine {
         // A button "Playbook" and a heading "PLAYBOOK" both match exactly; the one that can be
         // acted on is what a caller giving a label means.
         if exact.count > 1 {
+            // "Coaching notes" vs a "COACHING NOTES" heading: an exact-case match is the stronger signal.
+            let raw = label.trimmingCharacters(in: .whitespaces)
+            let cased = exact.filter { [$0.node.title, $0.node.description, $0.node.value, $0.node.placeholder].contains(raw) }
+            if cased.count == 1 { return cased[0].index }
+            if !cased.isEmpty { exact = cased }
             let actionable = exact.filter { $0.node.actions.contains(kAXPressAction) || $0.node.settable }
             if actionable.count == 1 { return actionable[0].index }
             if !actionable.isEmpty { exact = actionable }
