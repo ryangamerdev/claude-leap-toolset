@@ -34,3 +34,5 @@ already-true, 7 s for timeout 5). Items 1, 2 and 4 need the other agent's Gameda
 ## Validation and delivery
 
 `swift test`: 65 tests, 0 failures (new: partial-observation positive evidence). Install identity below.
+
+Installed 2026-09-29T00:39:16Z via `make install` from b00a8f4. SHA256 `bd30a68915df58071987e5b175d059d5660ec06fea1dea18ca57e98dab2fc5c6`. Signature verified; skills match; registration unchanged. Restart pending.
