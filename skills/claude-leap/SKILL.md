@@ -21,7 +21,7 @@ Background clicks/drags are sent as Command-clicks without activation (as Sky do
 secondary windows (file browser) can show the wrong surface; verify dialogs visually with care.
 
 Read execution, dispatch and verification separately. Never replay uncertain input. A partial
-observation cannot prove absence. Long tables/lists read only on-screen rows (`[N more rows off screen, not read]`);
+observation cannot prove absence. `ui_inspect` shows raw attributes for app-vs-tool triage. Long tables/lists read only on-screen rows (`[N more rows off screen, not read]`);
 search or scroll to reach others, and expect `unknown` for absence/count checks over unread rows.
 Runs of disabled elements (often an inactive view kept alive) are collapsed to one line; lone disabled controls stay listed. Unsupported direct value writes are refused; use focused normal text input for such editors.
 A satisfied current-state check does not prove saving:

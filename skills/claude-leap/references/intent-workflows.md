@@ -97,3 +97,12 @@ Follow-up behaviors (2026-09-28):
   blindly.
 - Simulator host trees omit some SwiftUI controls on canvases (e.g. iPad field player buttons; Sky shows the
   same). Use another route (a list) or the WDA backend.
+
+Combining methods (2026-09-28):
+- Selector actions re-resolve the target from a fresh walk just before input; a vanished target sends nothing.
+- `ax_result: cannotComplete (-25204)` with `dispatch: uncertain` means the press may have applied (SwiftUI
+  often replaces a control while acting). Let the expectation decide; never press again blindly; look for side
+  effects such as unexpected navigation.
+- Waits poll a cheap read every 250 ms and record one full observation when they resolve.
+- `ui_inspect(session_id, selector)` shows raw, unnormalized accessibility attributes, actions and parents.
+  Use it to decide whether odd behavior is the app's (e.g. swapped alert labels) or Leap's. Read-only.

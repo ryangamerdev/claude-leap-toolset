@@ -20,6 +20,8 @@ public final class AppSession {
     var lastOrder: [Int] = []
     var lastWindowTitle: String?
     public private(set) var elements: [Int: ElementRecord] = [:]
+    /// Replace one element's record with a fresh read (resolve-before-press), keeping its index.
+    func refresh(_ index: Int, with node: AXNode) { elements[index] = ElementRecord(index: index, node: node) }
     public private(set) var lastWindow: AXUIElement?
     public private(set) var lastWindowFrame: CGRect = .zero
     public var lastActionAt: Date = .distantPast

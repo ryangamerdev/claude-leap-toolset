@@ -67,3 +67,11 @@ Team libraries is only presented by the app's header "Team library" button, top-
 Suggestions:
 - When AXPress on a Simulator element returns cannot-complete, or the element vanishes, surface a warning that a stray activation may have occurred, and include a post-action check.
 - Offer a "pointer-preferred" mode for controls known to dismiss their container, when screenshot geometry is available.
+
+## Update: Gameday fixed the Mac alert name swap (commit 13fa475)
+The swapped Create/Cancel names came from SwiftUI text-field alerts on macOS: accessibility names are applied in declaration order while AppKit orders buttons default-first. Gameday now declares the primary action first. The Mac Route Info, Create scenario and Create variation alerts map correctly, so Leap needs no change for this case.
+
+## New observations (Mac session `46983CA2-4027-42C5-BC93-66DDF51A54D0`, 23:36–23:40Z)
+1. **An AXPress inside a SwiftUI sheet was acknowledged but had no effect.** `{"role":"AXButton","label":"New playbook"}` inside the Playbooks sheet returned `pressed [749] via accessibility`, but no alert appeared: the screenshot was byte-identical, and the delta showed only a focus change. A foreground pointer click at its frame center (346,704) also had no effect. An independent `AXUIElementPerformAction(kAXPressAction)` on the same element, from gameday `scripts/ui-ax.swift` about 30 s later, opened the alert at once. Possibly Leap pressed a stale element reference, or the press landed during the sheet's focus transition. Worth a native repro.
+2. **`press_key` with `foreground: true` still refused.** It returned "the app refused to make it key from the background… Use … foreground=true", although `arguments.foreground: true` was set. The message contradicts the argument. Either the flag isn't read for `press_key`, or activation failed and the message should say so.
+3. **ui_observe dumps.** An `AXSheet` with an empty label is easy to miss. Gameday's own helper filtered it out, which is a Gameday tooling issue; noting it in case Leap's compact outputs also drop unlabeled containers.

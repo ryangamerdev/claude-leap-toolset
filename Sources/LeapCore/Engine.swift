@@ -551,6 +551,13 @@ public actor Engine {
             // can finish and destroy its button before the AX reply arrives.
             // Only an explicitly unsupported action permits pointer fallback;
             // otherwise a second click could repeat an already-applied action.
+            // kAXErrorCannotComplete: SwiftUI commonly replaces a control while its action runs (a toggle
+            // swapping icon, Save closing an editor), so the press often applied. Sky's timeouts likewise
+            // "had already applied". Report the raw result as uncertain and let the caller verify; never re-press.
+            if err == .cannotComplete {
+                await signal(marker, .click)
+                return "pressed [\(rec.index)] via accessibility; AX returned cannotComplete (-25204): uncertain — the action may have applied. Verify the state; do not press again"
+            }
             guard err == .actionUnsupported else {
                 throw LeapError.unsupported("Outcome uncertain: accessibility Press was sent to [\(rec.index)] but returned \(err) (code \(err.rawValue)). The action may already have completed. No coordinate fallback was sent. Read get_app_state and verify the result before deciding whether to retry.")
             }

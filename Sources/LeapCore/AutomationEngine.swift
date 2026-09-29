@@ -111,9 +111,65 @@ extension Engine {
             // Do not DELETE WDA session: external backend lifecycle can terminate guest apps.
             return try RecordingStore.json(["schemaVersion":2,"session_id":id,"closed":true,"applicationTerminated":false])
         case "ui_observe":return try automationPage(try await automationObserve(s),args:args)
+        case "ui_inspect":return try await automationInspect(s,args:args)
         case "ui_perform":return try await automationPerform(s,args:args)
         default:throw AutomationModel.fail("Unknown automation tool")
         }
+    }
+
+    /// Normalized nodes for selectors and verdicts, shared by full observations and quick reads.
+    static func automationNodes(_ snap:AXWindowSnapshot,_ native:AppSession) -> [[String:Any]] {
+        var ancestors:[(Int,String)]=[]
+        return snap.nodes.map {n in
+            while let last=ancestors.last,last.0>=n.depth {ancestors.removeLast()}
+            var node:[String:Any]=["id":n.key,"role":n.role,"label":n.title ?? n.description ?? n.placeholder ?? "","enabled":n.enabled,"selected":n.selected,"focused":n.focused,"offscreen":n.offscreen,"depth":n.depth,"ancestors":ancestors.map{$0.1},"actions":n.actions.map(AX.actionName),"valueLimited":n.valueLimited]
+            node["unavailableFields"]=n.unavailableFields;node["identifier"]=n.identifier;if n.omittedChildren>0 {node["omittedChildren"]=n.omittedChildren};node["value"]=n.capturedValue ?? n.value;node["index"]=native.indexByKey[n.key]
+            if let f=n.frame {node["frame"]=[f.minX-snap.frame.minX,f.minY-snap.frame.minY,f.width,f.height]}
+            ancestors.append((n.depth,n.key));return node
+        }
+    }
+
+    /// A plain walk of the target window: no settle loop, rendering, recording or delta. Used to poll
+    /// waits cheaply (as the gameday ui-ax script does every 250 ms) and to resolve a target just before
+    /// input. Evidence still comes from full observations.
+    func automationQuickRead(_ s:AutomationSession) async throws -> (nodes:[[String:Any]],complete:Bool,snap:AXWindowSnapshot) {
+        let native=try await session(for:s.app,launch:false)
+        guard native.pid == s.pid else {throw AutomationModel.fail("Target process changed; open a new session")}
+        let window=try await waitForWindow(native,timeout:2)
+        guard let snap=walker.snapshot(window:window,app:native.axApp,timeout:2) else {throw AutomationModel.fail("AX snapshot unavailable")}
+        return (Self.automationNodes(snap,native),snap.supportsStateChecks,snap)
+    }
+
+    /// Raw, unnormalized attributes for triage (the gameday ui-ax dump settled app-vs-tool questions).
+    func automationInspect(_ s:AutomationSession,args:[String:Any]) async throws -> String {
+        guard s.wda == nil else {throw AutomationModel.fail("ui_inspect reads macOS accessibility; not available for wda sessions")}
+        let selector=AutomationModel.object(args["selector"]);try AutomationModel.validateSelector(selector)
+        let quick=try await automationQuickRead(s)
+        let limit=max(1,min(10,args["limit"] as? Int ?? 3))
+        let matched=quick.snap.nodes.enumerated().filter{AutomationModel.matches(quick.nodes[$0.offset],selector)}
+        func raw(_ v:CFTypeRef?) -> Any {
+            guard let v else {return NSNull()}
+            if let s=v as? String {return String(s.prefix(300))}
+            if let n=v as? NSNumber {return n}
+            if CFGetTypeID(v) == AXValueGetTypeID() {return String(describing:v).components(separatedBy:"{value = ").last.map{"{"+$0} ?? String(describing:v)}
+            if CFGetTypeID(v) == AXUIElementGetTypeID() {let e=v as! AXUIElement;return "element \((AX.attr(e,kAXRoleAttribute) as String?) ?? "?") \"\((AX.attr(e,kAXTitleAttribute) as String?) ?? (AX.attr(e,kAXDescriptionAttribute) as String?) ?? "")\""}
+            if let a=v as? [AnyObject] {return "array(\(a.count))"}
+            return String(String(describing:v).prefix(200))
+        }
+        let items:[[String:Any]]=matched.prefix(limit).map {(i,n) in
+            var names:CFArray?;AXUIElementCopyAttributeNames(n.element,&names)
+            var attrs:[String:Any]=[:]
+            for name in (names as? [String] ?? []) where ![kAXChildrenAttribute,"AXChildrenInNavigationOrder","AXPath"].contains(name) {
+                if name.hasPrefix("AXAttributed") {var v:CFTypeRef?;if AXUIElementCopyAttributeValue(n.element,name as CFString,&v) == .success,let a=v as? NSAttributedString {attrs[name]=String(a.string.prefix(300))};continue}
+                var v:CFTypeRef?;let err=AXUIElementCopyAttributeValue(n.element,name as CFString,&v)
+                attrs[name]=err == .success ? raw(v) : "error \(err.rawValue)"
+            }
+            var actions:CFArray?;AXUIElementCopyActionNames(n.element,&actions)
+            var chain:[String]=[];var p:AXUIElement?=AX.attr(n.element,kAXParentAttribute)
+            for _ in 0..<8 {guard let e=p else {break};chain.append("\((AX.attr(e,kAXRoleAttribute) as String?) ?? "?") \"\((AX.attr(e,kAXTitleAttribute) as String?) ?? (AX.attr(e,kAXDescriptionAttribute) as String?) ?? "")\"");p=AX.attr(e,kAXParentAttribute)}
+            return ["id":n.key,"index":quick.nodes[i]["index"] ?? NSNull(),"attributes":attrs,"actions":actions as? [String] ?? [],"parents":chain]
+        }
+        return try RecordingStore.json(["schemaVersion":2,"session_id":s.id,"window":quick.snap.title ?? "","matched":matched.count,"items":items,"meaning":"Raw provider data, unnormalized; compare with ui_observe to separate app behavior from Leap behavior. Read-only."])
     }
 
     func automationObserve(_ s:AutomationSession) async throws -> [String:Any] {
@@ -131,14 +187,7 @@ extension Engine {
                 windowChanged=true
             }
             s.windowIdentity=snap.window
-            var ancestors:[(Int,String)]=[]
-            let nodes:[[String:Any]]=snap.nodes.map {n in
-                while let last=ancestors.last,last.0>=n.depth {ancestors.removeLast()}
-                var node:[String:Any]=["id":n.key,"role":n.role,"label":n.title ?? n.description ?? n.placeholder ?? "","enabled":n.enabled,"selected":n.selected,"focused":n.focused,"offscreen":n.offscreen,"depth":n.depth,"ancestors":ancestors.map{$0.1},"actions":n.actions.map(AX.actionName),"valueLimited":n.valueLimited]
-                node["unavailableFields"]=n.unavailableFields;node["identifier"]=n.identifier;if n.omittedChildren>0 {node["omittedChildren"]=n.omittedChildren};node["value"]=n.capturedValue ?? n.value;node["index"]=native.indexByKey[n.key]
-                if let f=n.frame {node["frame"]=[f.minX-snap.frame.minX,f.minY-snap.frame.minY,f.width,f.height]}
-                ancestors.append((n.depth,n.key));return node
-            }
+            let nodes=Self.automationNodes(snap,native)
             observation=["nodes":nodes,"complete":snap.supportsStateChecks && !snap.retainedEarlierObservation,"windowChanged":windowChanged,"coordinateSpace":"window_points","bounds":[snap.frame.minX,snap.frame.minY,snap.frame.width,snap.frame.height],"window":snap.title ?? "","pid":native.pid,"blockingReadFailures":snap.blockingReadFailures,"advisoryReadFailures":snap.advisoryReadFailures,"limitations":["AX acquisition is not atomic; frame intersection is not occlusion","Simulator host AX geometry can be invalid; prefer device backend"]]
         }
         observation["schemaVersion"]=2;observation["session_id"]=s.id;observation["backend"]=s.backend
@@ -175,6 +224,15 @@ extension Engine {
 
     func automationCheck(_ s:AutomationSession,expectation:[String:Any],timeout:Double) async throws -> (String,[String:Any]) {
         let end=ProcessInfo.processInfo.systemUptime+max(0,timeout)
+        // Poll with quick reads every 250 ms; take one full observation (evidence, delta) when the
+        // condition resolves or time runs out.
+        if s.wda == nil, timeout>0 {
+            while ProcessInfo.processInfo.systemUptime<end {
+                guard let quick=try? await automationQuickRead(s) else {break}
+                if AutomationModel.verdict(nodes:quick.nodes,complete:quick.complete,expectation:expectation) == "passed" {break}
+                try await Task.sleep(nanoseconds:250_000_000)
+            }
+        }
         while true {
             let snap=try await automationObserve(s)
             let verdict=AutomationModel.verdict(nodes:snap["nodes"] as? [[String:Any]] ?? [],complete:snap["complete"] as? Bool == true,expectation:expectation)
@@ -354,6 +412,10 @@ extension Engine {
                     r["action"] = action
                     attempted=true;r["dispatch"]="attempted"
                     r["input_result"] = try await automationInput(s,action:action,node:node,args:a)
+                    if (r["input_result"] as? String ?? "").contains("cannotComplete (-25204)") {
+                        r["ax_result"]="cannotComplete (-25204)";r["dispatch"]="uncertain"
+                        r["side_effect_note"]="The accessibility action reported cannotComplete; it may have applied, possibly with side effects (e.g. unexpected navigation). The expectation below decides; never re-press."
+                    }
                     r["acknowledgement"]="returned"
                 }
                 var post=pre
@@ -453,6 +515,14 @@ extension Engine {
         // The element behind the index must be the observed target: same identity key and label.
         if let index,let node,s.wda == nil {
             let native=try await session(for:s.app,launch:false)
+            // Resolve the target again from a fresh read immediately before input, like the gameday
+            // ui-ax script (find and press in one pass) and Sky's element-id validation: SwiftUI can replace
+            // a control during a transition, and pressing the earlier reference can silently do nothing.
+            let fresh=try await automationQuickRead(s)
+            guard let freshNode=fresh.snap.nodes.first(where:{$0.key == node["id"] as? String}) else {
+                throw AutomationModel.fail("Target \"\(node["label"] as? String ?? "")\" is not present in a fresh read just before input (the screen changed). No input sent; observe again")
+            }
+            native.refresh(index,with:freshNode)
             let rec=try native.element(index)
             let label=rec.node.title ?? rec.node.description ?? rec.node.placeholder ?? ""
             guard rec.node.key == node["id"] as? String, label == node["label"] as? String ?? "" else {
