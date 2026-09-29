@@ -172,14 +172,15 @@ extension Engine {
         return try RecordingStore.json(["schemaVersion":2,"session_id":s.id,"window":quick.snap.title ?? "","matched":matched.count,"items":items,"meaning":"Raw provider data, unnormalized; compare with ui_observe to separate app behavior from Leap behavior. Read-only."])
     }
 
-    func automationObserve(_ s:AutomationSession) async throws -> [String:Any] {
+    func automationObserve(_ s:AutomationSession,settle:Bool=true) async throws -> [String:Any] {
         let started=ISO8601DateFormatter().string(from:Date())
         var observation:[String:Any]
         if let wda=s.wda {observation=try await wda.observe()}
         else {
             let native=try await session(for:s.app,launch:false)
             guard native.pid == s.pid else {throw AutomationModel.fail("Target process changed; open a new session")}
-            _ = try await state(app:s.app,window:s.window)
+            var opts=StateOptions();opts.settle=settle
+            _ = try await state(app:s.app,opts,window:s.window)
             guard let snap=native.automationSnapshot else {throw AutomationModel.fail("AX snapshot unavailable")}
             var windowChanged=false
             if let identity=s.windowIdentity,!CFEqual(identity,snap.window) {
@@ -226,15 +227,18 @@ extension Engine {
         let end=ProcessInfo.processInfo.systemUptime+max(0,timeout)
         // Poll with quick reads every 250 ms; take one full observation (evidence, delta) when the
         // condition resolves or time runs out.
+        var polled=false
         if s.wda == nil, timeout>0 {
-            while ProcessInfo.processInfo.systemUptime<end {
+            polled=true
+            // Leave room for the one evidence read so the step does not overrun its timeout.
+            while ProcessInfo.processInfo.systemUptime<end-0.3 {
                 guard let quick=try? await automationQuickRead(s) else {break}
                 if AutomationModel.verdict(nodes:quick.nodes,complete:quick.complete,expectation:expectation) == "passed" {break}
                 try await Task.sleep(nanoseconds:250_000_000)
             }
         }
         while true {
-            let snap=try await automationObserve(s)
+            let snap=try await automationObserve(s,settle:!polled)
             let verdict=AutomationModel.verdict(nodes:snap["nodes"] as? [[String:Any]] ?? [],complete:snap["complete"] as? Bool == true,expectation:expectation)
             if verdict == "passed" || ProcessInfo.processInfo.systemUptime>=end {return(verdict,snap)}
             try await Task.sleep(nanoseconds:200_000_000)
@@ -329,7 +333,10 @@ extension Engine {
                 guard ProcessInfo.processInfo.systemUptime<deadline else {throw AutomationModel.fail("Workflow scheduling deadline exceeded")}
                 if let health=s.store.health() {throw AutomationModel.fail("Recording unavailable: \(health)")}
                 let type=step["type"] as! String
-                var pre=try await automationObserve(s)
+                // Waits and asserts are judged by the check itself (quick reads plus one evidence snapshot);
+                // a full pre-observation with its post-action settle only delayed them.
+                let judgedOnly=type == "wait" || type == "assert"
+                var pre:[String:Any]=judgedOnly ? ["nodes":[[String:Any]](),"complete":false] : try await automationObserve(s)
                 // Like Sky's post-transition wait (~1 s + up to 5 s while state changes): a screen that is
                 // still being built gives incomplete reads. Re-observe until complete within the step's
                 // timeout; input is still never sent on an incomplete observation.
@@ -378,6 +385,9 @@ extension Engine {
                         guard hits.count==1 else {throw AutomationModel.fail("No element matches the selector in a complete observation; no input sent")}
                         node=hits[0]
                         guard node?["enabled"] as? Bool != false else {throw AutomationModel.fail("Target disabled; no input sent")}
+                        if s.wda == nil,let index=node?["index"] as? Int,let other=await hitTestReport(s.app,index) {
+                            r["hit_test"]="At this control's center the accessibility hit-test reports \(other). The control may be covered by another layer, or the hit-test may be imprecise (SwiftUI). Check the outcome."
+                        }
                     }
                     if action == "drag" || (["click","double_click","scroll"].contains(action) && node == nil) {
                         guard let baseline=a["snapshot"] as? Int,let prior=try automationStoredSnapshot(s,seq:baseline),
@@ -473,7 +483,8 @@ extension Engine {
                 if !Diagnostics.shared.insightsEnabled && type == "action" && step["expect"] == nil {
                     r["insights"]="disabled; no automatic post-action observation or delta"
                 } else { r["after_snapshot"]=post["snapshot"] }
-                if Diagnostics.shared.insightsEnabled { r["delta"]=AutomationModel.delta(pre["nodes"] as? [[String:Any]] ?? [],post["nodes"] as? [[String:Any]] ?? [],complete:pre["complete"] as? Bool == true && post["complete"] as? Bool == true) }
+                if judgedOnly {r["before_snapshot"]=nil}
+                if Diagnostics.shared.insightsEnabled && !judgedOnly { r["delta"]=AutomationModel.delta(pre["nodes"] as? [[String:Any]] ?? [],post["nodes"] as? [[String:Any]] ?? [],complete:pre["complete"] as? Bool == true && post["complete"] as? Bool == true) }
                 if type == "action", r["verification"] as? String == "failed", (r["delta"] as? [String:Any])?["totalChanges"] as? Int == 0,
                    AutomationModel.object(step["arguments"])["foreground"] as? Bool != true,
                    ["drag","scroll"].contains(step["action"] as? String ?? "") || (r["input_result"] as? String ?? "").contains("clicked") {
@@ -481,15 +492,27 @@ extension Engine {
                 }
                 r["execution"]="completed"
             } catch {
+                let overallBefore=overall
                 stopped=true;overall="unknown";r["execution"]="failed";r["error"]=String(describing:error)
                 if attempted {r["dispatch"]="uncertain"}
                 if r["verification"] as? String == "not_evaluated" {r["verification"]="unknown"}
                 Diagnostics.shared.record(level:"error",kind:"automation_step_failed",detail:String(describing:error))
-                if Diagnostics.shared.insightsEnabled { do {
+                if attempted,let expectation=step["expect"] as? [String:Any] {
+                    // The input API answered with an error, but it may have applied (Sky's timeouts "had
+                    // already applied"). Let the expectation decide: if it passes, the workflow continues
+                    // and the record keeps dispatch "uncertain" plus the raw error. Never replay.
+                    do {
+                        let wait=min(30,max(0,step["timeout"] as? Double ?? 5))
+                        let (v,post)=try await automationCheck(s,expectation:expectation,timeout:min(wait,max(0,deadline-ProcessInfo.processInfo.systemUptime)))
+                        r["after_snapshot"]=post["snapshot"];r["verification"]=v
+                        if v == "passed" {
+                            stopped=false;overall=overallBefore;r["execution"]="completed"
+                            r["dispatch_error"]=r["error"];r["error"]=nil
+                            r["note"]="The input call reported an error, but the expected outcome was observed. Dispatch stays uncertain; check for side effects."
+                        }
+                    } catch {r["observation_error"]=String(describing:error)}
+                } else if Diagnostics.shared.insightsEnabled { do {
                     let post=try await automationObserve(s);r["after_snapshot"]=post["snapshot"]
-                    if attempted,let expectation=step["expect"] as? [String:Any] {
-                        r["verification"]=AutomationModel.verdict(nodes:post["nodes"] as? [[String:Any]] ?? [],complete:post["complete"] as? Bool == true,expectation:expectation)
-                    }
                 } catch {r["observation_error"]=String(describing:error)} }
             }
             if stopped && Diagnostics.shared.insightsEnabled {do {r["failure_artifact"]=try await automationCapture(s)} catch {r["capture_error"]=String(describing:error)}}
@@ -507,6 +530,24 @@ extension Engine {
         let e=try Evidence(project:s.store.root)
         guard let row=try e.rows("SELECT payload FROM records WHERE seq=? AND session=? AND kind='automation_snapshot'",[String(seq),s.id]).first,let payload=row["payload"] as? String else {return nil}
         return try JSONSerialization.jsonObject(with:Data(payload.utf8)) as? [String:Any]
+    }
+
+    /// What the accessibility hit-test reports at the target's center when that is not the target, one of
+    /// its descendants or a close container. Reported, never used to refuse or choose: SwiftUI hit-tests can
+    /// return hidden-layer elements at visible controls (probe: a hidden "Route library" at the visible
+    /// editor Cancel), but for a covered control they usually name what covers it.
+    func hitTestReport(_ app:String,_ index:Int) async -> String? {
+        guard let native=try? await session(for:app,launch:false),let rec=try? native.element(index),
+              !rec.node.offscreen,!rec.node.untransformedFrame,let frame=AX.frame(rec.node.element),frame.width>0,frame.height>0 else {return nil}
+        var hit:AXUIElement?
+        guard AXUIElementCopyElementAtPosition(native.axApp,Float(frame.midX),Float(frame.midY),&hit) == .success,let hit else {return nil}
+        var current:AXUIElement?=hit
+        for _ in 0..<40 {guard let c=current else {break};if CFEqual(c,rec.node.element) {return nil};current=AX.attr(c,kAXParentAttribute)}
+        var up:AXUIElement?=AX.attr(rec.node.element,kAXParentAttribute)
+        for _ in 0..<3 {guard let u=up else {break};if CFEqual(u,hit) {return nil};up=AX.attr(u,kAXParentAttribute)}
+        let role:String=AX.attr(hit,kAXRoleAttribute) ?? "?"
+        let label:String=AX.attr(hit,kAXTitleAttribute) ?? AX.attr(hit,kAXDescriptionAttribute) ?? AX.attr(hit,kAXPlaceholderValueAttribute) ?? ""
+        return "\(role) \"\(label.prefix(60))\""
     }
 
     func automationInput(_ s:AutomationSession,action:String,node:[String:Any]?,args:[String:Any]) async throws -> String {

@@ -122,6 +122,9 @@ public actor Engine {
         /// Per-element window-relative frames in the tree. Off by default (Sky's tree has none;
         /// the screenshot carries geometry) — saves ~20 tokens per element.
         public var includeFrames = false
+        /// Poll until the tree stops changing after a recent action (Sky: ~1 s + up to 5 s). Evidence reads
+        /// taken after a condition already resolved skip it.
+        public var settle = true
         public init() {}
     }
 
@@ -162,7 +165,7 @@ public actor Engine {
         let sinceAction = Date().timeIntervalSince(s.lastActionAt)
         s.lastSettleStable = nil
         var retainedObservationNotice = ""
-        if sinceAction < maxSettleAfterAction {
+        if opts.settle && sinceAction < maxSettleAfterAction {
             let deadline = s.lastActionAt.addingTimeInterval(settleDelay + maxSettleAfterAction)
             var previous = Self.fingerprint(snap)
             var previousUsable = snap.supportsStateChecks
@@ -381,21 +384,33 @@ public actor Engine {
         return IndicatorGeometry.point(frame: s.lastWindowFrame, window: s.lastWindowFrame, offscreen: false)
     }
 
+    static func isSheet(_ focused: AXUIElement, of window: AXUIElement) -> Bool {
+        if let parent: AXUIElement = AX.attr(focused, kAXParentAttribute), CFEqual(parent, window) { return true }
+        let children: [AXUIElement] = AX.attr(window, kAXChildrenAttribute) ?? []
+        return children.contains { CFEqual($0, focused) }
+    }
+
     /// Keyboard events posted to a process land in its key window. When the caller pinned a
     /// window that is not the key one (two Simulator devices, two documents), make it key via
     /// accessibility — this does not activate the app — and verify; otherwise refuse rather
     /// than type into the wrong window.
-    func ensureKeyWindow(_ s: AppSession) throws {
+    func ensureKeyWindow(_ s: AppSession, foreground: Bool = false) throws {
         guard s.pinnedWindow != nil, let target = s.lastWindow else { return }
         let focused: AXUIElement? = AX.attr(s.axApp, kAXFocusedWindowAttribute)
         if let focused, CFEqual(focused, target) { return }
+        // A sheet/alert attached to the selected window is its key surface: keys meant for the window go
+        // there (Sky sends keys to the process, which routes them to its key window).
+        if let focused, Self.isSheet(focused, of: target) { return }
         AXUIElementSetAttributeValue(target, kAXMainAttribute as CFString, kCFBooleanTrue)
         AXUIElementPerformAction(target, kAXRaiseAction as CFString)
         usleep(80_000)
         let now: AXUIElement? = AX.attr(s.axApp, kAXFocusedWindowAttribute)
         guard let now, CFEqual(now, target) else {
             let title: String = AX.attr(target, kAXTitleAttribute) ?? ""
-            throw LeapError.unsupported("Keyboard input would go to \(s.displayName)'s key window, not to the selected window \"\(title)\", and the app refused to make it key from the background. Nothing was typed. Use set_value/type_text with element_index (accessibility, window-independent) or foreground=true.")
+            let advice = foreground
+                ? "foreground=true was already requested and the app still kept another window key"
+                : "the app refused to make it key from the background; foreground=true may help"
+            throw LeapError.unsupported("Keyboard input would go to \(s.displayName)'s key window, not to the selected window \"\(title)\"; \(advice). Nothing was typed. set_value/type_text with element_index use accessibility and do not depend on the key window.")
         }
     }
 
@@ -415,7 +430,7 @@ public actor Engine {
     func withInput<T>(_ s: AppSession, _ mode: InputMode, _ body: (Delivery) throws -> T) async throws -> T {
         let wantsForeground = mode.foreground || (hold?.session.pid == s.pid && hold?.mode.foreground == true)
         if wantsForeground { try await activate(s) }
-        try ensureKeyWindow(s)
+        try ensureKeyWindow(s, foreground: wantsForeground)
         s.refreshWindowFrame()
         let title: String? = s.lastWindow.flatMap { AX.attr($0, kAXTitleAttribute) }
         guard !s.app.isTerminated,

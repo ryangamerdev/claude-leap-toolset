@@ -37,10 +37,11 @@ final class AutomationModelTests:XCTestCase {
         XCTAssertFalse(AutomationModel.sameBounds(live,[0,0,1180]))
         XCTAssertFalse(AutomationModel.sameBounds(live,[0,0,Double.nan,820]))
     }
-    func testPartialAcquisitionCannotProveAbsenceOrUniqueState() {
+    func testPartialAcquisitionCannotProveAbsenceOrCountButObservedMatchesArePositiveEvidence() {
         let node:[String:Any] = ["label":"Save","enabled":true]
-        for condition in ["absent","count","enabled","exists"] {
-            XCTAssertEqual(AutomationModel.verdict(nodes:[node],complete:false,expectation:["selector":["label":"Save"],"condition":condition,"value":1]),"unknown")
+        let expected=["absent":"failed","count":"unknown","enabled":"passed","exists":"passed"]
+        for (condition,verdict) in expected {
+            XCTAssertEqual(AutomationModel.verdict(nodes:[node],complete:false,expectation:["selector":["label":"Save"],"condition":condition,"value":1]),verdict,condition)
         }
     }
     func testDuplicatesAreUnknownForStateChecks() {

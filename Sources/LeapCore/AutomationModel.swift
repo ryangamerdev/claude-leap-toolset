@@ -73,8 +73,20 @@ public enum AutomationModel {
     static func verdict(nodes: [[String:Any]], complete: Bool, expectation: [String:Any]) -> String {
         let hits=nodes.filter {matches($0,object(expectation["selector"]))}
         let condition=expectation["condition"] as? String ?? ""
-        // Incomplete reads cannot establish exhaustive counts, uniqueness or absence.
-        if !complete || !selectionReliable(nodes,object(expectation["selector"])) {return "unknown"}
+        // Incomplete reads cannot establish exhaustive counts, uniqueness or absence, but an observed match
+        // is positive evidence: it proves `exists`, disproves `absent`, and a unique match whose state
+        // satisfies a positive condition proves it. A failing state stays unknown (the target may be unseen).
+        if !complete || !selectionReliable(nodes,object(expectation["selector"])) {
+            guard !hits.isEmpty else {return "unknown"}
+            switch condition {
+            case "exists": return "passed"
+            case "absent": return "failed"
+            case "count": return "unknown"
+            default:
+                guard hits.count == 1 else {return "unknown"}
+                return verdict(nodes:hits,complete:true,expectation:expectation) == "passed" ? "passed":"unknown"
+            }
+        }
         // Rows of long lists that were not read could hold a match: no absence/count claims there.
         let unread=nodes.contains {n in
             guard (n["omittedChildren"] as? Int ?? 0)>0 else {return false}

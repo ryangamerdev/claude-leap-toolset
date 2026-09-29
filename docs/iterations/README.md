@@ -105,3 +105,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-28 — Agent retest: alert windows, disambiguation limits](2026-09-28-agent-retest.md): pointer events go to the window at the point; sessions follow the key window; hit-test disambiguation removed (SwiftUI hit-tests hidden layers).
 
 - [2026-09-28 — Combining methods (ui-ax lessons)](2026-09-28-ui-ax-lessons.md): resolve-before-press, raw cannotComplete as uncertain, quick waits, `ui_inspect`.
+
+- [2026-09-29 — Gameday retest fixes](2026-09-29-retest-fixes.md): sheet key window, hit_test report, fast waits, uncertain-but-passed continues, positive evidence from partial reads.

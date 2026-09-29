@@ -106,3 +106,13 @@ Combining methods (2026-09-28):
 - Waits poll a cheap read every 250 ms and record one full observation when they resolve.
 - `ui_inspect(session_id, selector)` shows raw, unnormalized accessibility attributes, actions and parents.
   Use it to decide whether odd behavior is the app's (e.g. swapped alert labels) or Leap's. Read-only.
+
+Retest fixes (2026-09-29):
+- Keys to a window whose sheet/alert is key go to the sheet (process-directed, like Sky).
+- `hit_test` on a step names what the accessibility hit-test reports at the target's center when it is not the
+  target. Treat it as a hint that the control may be covered; SwiftUI hit-tests can also be imprecise.
+- Wait/assert steps poll quickly and stay within their timeout; they record one evidence snapshot, no delta.
+- If an input call errors but the expected outcome is observed, the step completes with `dispatch: uncertain`,
+  `dispatch_error` and a side-effect note; the workflow continues. Never replay.
+- Partial observations: an observed match proves `exists`/positive state and disproves `absent`; absence of a
+  match, failing states and counts need a complete read.

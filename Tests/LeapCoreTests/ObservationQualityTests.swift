@@ -30,6 +30,17 @@ final class ObservationQualityTests: XCTestCase {
         XCTAssertEqual(AutomationModel.verdict(nodes:nodes,complete:true,expectation:["selector":["label":"Taxes"],"condition":"absent"]),"unknown")
         XCTAssertEqual(AutomationModel.verdict(nodes:nodes,complete:true,expectation:["selector":["label":"Taxes","root":"side"],"condition":"absent"]),"passed")
     }
+    func testPartialObservationStillProvesPositiveConditions() {
+        let nodes:[[String:Any]]=[["id":"r","role":"AXButton","label":"Revert","enabled":true]]
+        func v(_ e:[String:Any]) -> String {AutomationModel.verdict(nodes:nodes,complete:false,expectation:e)}
+        XCTAssertEqual(v(["selector":["label":"Revert"],"condition":"exists"]),"passed")
+        XCTAssertEqual(v(["selector":["label":"Revert"],"condition":"enabled"]),"passed")
+        XCTAssertEqual(v(["selector":["label":"Revert"],"condition":"disabled"]),"unknown")
+        XCTAssertEqual(v(["selector":["label":"Revert"],"condition":"absent"]),"failed")
+        XCTAssertEqual(v(["selector":["label":"Missing"],"condition":"absent"]),"unknown")
+        XCTAssertEqual(v(["selector":["label":"Missing"],"condition":"exists"]),"unknown")
+        XCTAssertEqual(v(["selector":["label":"Revert"],"condition":"count","value":1]),"unknown")
+    }
     func testFailedStateFieldIsNeverJudged() {
         let nodes:[[String:Any]]=[["id":"b","role":"AXButton","label":"Save","enabled":true,"unavailableFields":["enabled"]]]
         XCTAssertEqual(AutomationModel.verdict(nodes:nodes,complete:true,expectation:["selector":["label":"Save"],"condition":"enabled"]),"unknown")
