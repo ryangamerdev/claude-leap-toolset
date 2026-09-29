@@ -107,3 +107,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-28 — Combining methods (ui-ax lessons)](2026-09-28-ui-ax-lessons.md): resolve-before-press, raw cannotComplete as uncertain, quick waits, `ui_inspect`.
 
 - [2026-09-29 — Gameday retest fixes](2026-09-29-retest-fixes.md): sheet key window, hit_test report, fast waits, uncertain-but-passed continues, positive evidence from partial reads.
+
+- [2026-09-29 — History review and fix-forward](2026-09-29-history-review-fix-forward.md): the `a` had two Leap causes (keycode 0 text, keycode 0 flagsChanged), both fixed; restored the Sky-style playbook, removed echo trailers, collapse inactive views for every read, revived the 09-18 scenarios (`make scenarios`).

@@ -29,4 +29,14 @@ final class ObservationTextTests: XCTestCase {
         XCTAssertFalse(out.contains("Old 4"))
         XCTAssertTrue(out.contains("desc=\"Next\""))
     }
+    func testUnrecordedCollapseNamesItsExpansionAndIsIdempotent() {
+        let inactive = (1...7).map { "  [\($0)] StaticText value=\"Tab \($0)\" [disabled]" }
+        let text = (["[1] Button desc=\"Playbook\""] + inactive).joined(separator: "\n")
+        let hint = "get_app_state include_disabled=true for detail"
+        let once = Engine.collapseDisabledRuns(text, detailHint: hint)
+        XCTAssertTrue(once.contains("7 disabled elements"))
+        XCTAssertTrue(once.contains(hint))
+        XCTAssertFalse(once.contains("Tab 5"))
+        XCTAssertEqual(Engine.collapseDisabledRuns(once, detailHint: hint), once)
+    }
 }

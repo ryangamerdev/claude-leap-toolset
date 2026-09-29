@@ -9,9 +9,11 @@
 
   {"name": "click", "arguments": {"app": "Gameday", "element_index": "$playbook"},
    "expect_error": "Gameday was relaunched \\(new process\\)"},
+  {"name": "@capture", "arguments": {"pattern": "(new process since the previous state)", "var": "flag"}},
 
   {"name": "get_app_state", "arguments": {"app": "Gameday", "include_screenshot": false, "disable_diff": true}},
-  {"name": "@capture", "arguments": {"pattern": "(new process since the previous state)", "var": "flag"}},
   {"name": "@capture", "arguments": {"pattern": "\\[(\\d+)\\] Button desc=\"Formations\"", "var": "playbook2"}},
-  {"name": "click", "arguments": {"app": "Gameday", "element_index": "$playbook2", "then_state": false}}
+  {"name": "click", "arguments": {"app": "Gameday", "element_index": "$playbook2"}},
+  {"name": "@capture", "arguments": {"pattern": "\\[(\\d+)\\] Button desc=\"Playbook\"", "var": "playbookTab"}},
+  {"name": "click", "arguments": {"app": "Gameday", "element_index": "$playbookTab", "then_state": false}}
 ]

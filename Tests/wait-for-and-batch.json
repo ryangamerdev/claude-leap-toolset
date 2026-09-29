@@ -12,7 +12,7 @@
   ]}, "expect_error": "Batch stopped at step 3 of 3[\\s\\S]*Completed steps[\\s\\S]*\\[1\\] set_value[\\s\\S]*\\[2\\] wait_for: condition met"},
 
   {"name": "wait_for", "arguments": {"app": "Gameday", "label": "no such label anywhere", "timeout": 1, "then_state": false},
-   "expect_error": "wait_for timed out after 1 s"},
+   "expect_error": "Expectation unmet by deadline"},
 
   {"name": "wait_for", "arguments": {"app": "Gameday", "label": "Search plays", "condition": "value_contains", "value": "OSC", "timeout": 3}},
   {"name": "@capture", "arguments": {"pattern": "(condition met after \\d+ ms)", "var": "met"}},

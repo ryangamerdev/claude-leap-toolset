@@ -299,3 +299,19 @@ What the skill tells the model, beyond the transcript evidence above:
 | Confirmation policy in the skill | condensed policy in the server instructions (hand-off / confirm / pre-approvable / allowed) | matched |
 | `paste(format: md)` | text + html only | gap (minor) |
 | `turn_ended` hook releases the session at turn end | idle reaper (server 30 min, indicator 90 s) | different |
+
+## 12. Addendum — 2026-09-29 corrections to the §11 parity map
+
+The §11 table is preserved as written on 2026-09-18. Current code differs in these rows
+([history review](iterations/2026-09-29-history-review-fix-forward.md), parity chart in that session):
+
+- Background pointer input is no longer plain `postToPid`: background clicks are Command-clicks
+  (Sky sendClick); selection-sensitive roles use scoped synthetic window activation (4b742c1).
+- Keyboard input is always process-directed; `.system` delivery is never constructed (7faa53f).
+- Hidden-layer pruning was removed (zoom defect L1, 09-19); runs of 5+ disabled lines are
+  collapsed for every reader since 2026-09-29, lone disabled controls stay listed.
+- Container cap: global 1,500 nodes plus visible-rows-only for long lists (d1f995e), with unread counts.
+- Confirmation policy: dropped from server instructions on 09-20, restored 2026-09-29 (instructions
+  and SKILL.md), matched again.
+- Still gaps: user-interaction detection (`userIntervened`), per-app approval/deny list, user stop
+  key, `paste(format: md)`, per-app instruction files, display-sleep prevention.

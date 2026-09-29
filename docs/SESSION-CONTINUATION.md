@@ -1,5 +1,14 @@
 > **RESUMED 2026-09-28.** The current handoff is this first section; earlier handoffs follow unchanged.
 
+# Update — 2026-09-29
+
+Read iterations/2026-09-29-history-review-fix-forward.md. Installed candidate: see its install line.
+After restart, natively check: Gameday `get_app_state` after visiting Formations shows one collapsed
+disabled-run line (`include_disabled=true` expands); an ambiguous `click(label:"Formations")` error has
+no diagnostics trailer; skill loads with the interactive loop first. `make scenarios` is the harness
+regression (desktop set passes). Simulator.app is missing after the Xcode upgrade (runtimes present);
+restore it before Simulator cases.
+
 # Current handoff — 2026-09-28
 
 Read AGENTS.md (Sky-first rule, forward-only commits), docs/PLAN.md status, and the 2026-09-28

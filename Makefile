@@ -2,7 +2,7 @@
 TOOLCHAINS ?= org.swift.640202609131a
 export TOOLCHAINS
 
-.PHONY: build test bundle install skills
+.PHONY: build test bundle install skills scenarios
 
 build:
 	swift build
@@ -21,3 +21,8 @@ install: bundle
 
 skills:
 	python3 scripts/install.py --skills-only
+
+# Replay the interactive-tool regression scenarios (Tests/*.json) against the signed bundle.
+# Desktop set by default; `make scenarios SET=simulator` for the Simulator set. Uses Gameday.
+scenarios: bundle
+	scripts/run-legacy-scenarios.sh $(SET)

@@ -109,9 +109,15 @@ public final class Diagnostics: @unchecked Sendable {
         }
         return try RecordingStore.json(["items":items,"hasMore":more,"nextCursor":Int(items.last?["seq"] as? String ?? "") ?? after,"store":directory+"/diagnostics.db","loggingLevel":self.level,"health":failure ?? "available","meaning":"Diagnostic events, not proof of application success. Details capped at 1200 characters; raw arguments and UI trees are not logged. No automatic pruning."])
     }
+    /// Kinds that only restate the error or route already in the returned text (the result
+    /// line names synthesized key/text/wheel routes). They stay in the durable store but are
+    /// not repeated in the response (Sky returns one message per call).
+    public static let echoKinds:Set<String>=["tool_error","tool_completed","input_error","check_unmet",
+                                             "keyboard_route","text_keyboard_route","scroll_pointer_route"]
     public func warningSummary(interaction:String) -> String? {
         lock.lock();defer{lock.unlock()}
-        if warnings.isEmpty {return failure}
-        return "Diagnostics: " + warnings.prefix(3).joined(separator:"; ") + ". Query diagnostic_query(interaction_id: \(interaction)) for retained events. Logging level: \(level)."
+        let novel=warnings.filter { entry in !Self.echoKinds.contains(where:{entry.hasPrefix($0+":")}) }
+        if novel.isEmpty {return failure}
+        return "Diagnostics: " + novel.prefix(3).joined(separator:"; ") + ". Query diagnostic_query(interaction_id: \(interaction)) for retained events. Logging level: \(level)."
     }
 }

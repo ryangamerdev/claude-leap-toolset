@@ -20,7 +20,7 @@ private func schema(_ props: [String: Value], required: [String] = []) -> Value 
 }
 
 private let appProp = prop("string", "Target app: display name (\"Blender\"), bundle id (\"org.blenderfoundation.blender\"), or .app path. Launched in the background if not running.")
-private let foregroundProp = prop("boolean", "Default false: keep the user’s frontmost app. True explicitly brings the target app forward when synthesized input is needed. Mouse gestures use the same window-targeted delivery in both modes and do not move the real cursor. Keyboard fallback may use system events.")
+private let foregroundProp = prop("boolean", "Default false: keep the user’s frontmost app. True explicitly brings the target app forward when synthesized input is needed. Mouse gestures use the same window-targeted delivery in both modes and do not move the real cursor. Keys and text are always sent to the target app's process, never system-wide.")
 private let thenStateProp = prop("boolean", "Default true: observe updated state. Recorded successful single actions return a compact outcome/delta and snapshot references; other paths return state text.")
 
 private let labelProp = prop("string", "Alternative to element_index: the element's visible title/description/value, e.g. \"Save notes\". Case-insensitive; exact match wins, else a unique substring match. Errors list candidates if ambiguous.")
@@ -75,6 +75,7 @@ enum LeapTools {
                 "scale": prop("number", "Screenshot scale, 0.1–1.0 (default 1.0 = 1 px per point so pixel coords equal window points)."),
                 "window": prop("string", "Target a specific window by title substring (e.g. \"iPhone 16\" in Simulator). Sticks for later actions on this app; pass \"\" to go back to the key window."),
                 "include_frames": prop("boolean", "Default false. Add each element's window-relative @x,y w×h (only needed for coordinate clicks/drags on canvases)."),
+                "include_disabled": prop("boolean", "Default false: runs of 5+ disabled elements (usually an inactive tab kept alive in the tree) collapse to one line. True lists them."),
              ], required: ["app"]),
              annotations: .init(readOnlyHint: true)),
 
@@ -362,6 +363,7 @@ enum LeapTools {
             opts.disableDiff = a.bool("disable_diff") ?? false
             if let s = a.double("scale") { opts.scale = s }
             opts.includeFrames = a.bool("include_frames") ?? false
+            opts.includeDisabled = a.bool("include_disabled") ?? false
             let st = try await engine.state(app: try a.app(), opts, announce: true, window: a.string("window"))
             return result(text: st.text, shot: st.screenshot)
 
@@ -467,7 +469,12 @@ enum LeapTools {
         do { result=try await dispatchAction(name,argsIn,engine) }
         catch {
             let original=error
-            Diagnostics.shared.record(level:"error",kind:"input_error",detail:"\(name): \(error). Dispatch may have occurred; do not replay.",fields:["app":app])
+            // The returned error states whether input was sent; do not guess here.
+            if name == "wait_for" {
+                Diagnostics.shared.record(level:"warning",kind:"check_unmet",detail:"\(name): \(error). Read-only check; no input sent.",fields:["app":app])
+            } else {
+                Diagnostics.shared.record(level:"error",kind:"input_error",detail:"\(name): \(error)",fields:["app":app])
+            }
             do {try await engine.endRecordedAction(app:app,action:action,tool:name,message:String(describing:original),error:true)}
             catch {throw LeapError.unsupported("Input may already have been sent. Original: \(original). Recording failure: \(error). Do not replay.")}
             throw original

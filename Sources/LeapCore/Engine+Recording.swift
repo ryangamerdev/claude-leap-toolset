@@ -123,11 +123,10 @@ extension Engine {
         r.setInteraction(recordingInteraction);recordings[s.pid]=r
         try store.append(session:r.id,interaction:recordingInteraction,kind:"session_start",payload:["app":s.displayName,"pid":s.pid,"automatic":true,"coverage":"supported AX notifications only"])
     }
-    func compactObservation(_ text:String) -> String {
-        var out:[String]=[];var used=0;var omitted=0
-        // Runs of disabled lines are usually an inactive view kept alive in the tree (a previous
-        // tab or sheet): summarize them in one line. Individually disabled controls (a greyed
-        // Save) are state the agent needs, so short runs stay visible.
+    /// Runs of disabled lines are usually an inactive view kept alive in the tree (a previous
+    /// tab or sheet): summarize them in one line. Individually disabled controls (a greyed
+    /// Save) are state the agent needs, so short runs stay visible. Idempotent.
+    static func collapseDisabledRuns(_ text:String, detailHint:String) -> String {
         var lines:[String]=[]
         let all=text.components(separatedBy:"\n")
         var i=0
@@ -137,11 +136,16 @@ extension Engine {
             if j-i>=5 {
                 let indent=String(all[i].prefix{$0==" "})
                 let names=all[i..<j].compactMap{line -> String? in line.range(of:"\"[^\"]+\"",options:.regularExpression).map{String(line[$0])}}.prefix(3).joined(separator:", ")
-                lines.append("\(indent)… \(j-i) disabled elements (inactive view?\(names.isEmpty ? "" : "; e.g. \(names)")) collapsed; ui_to_text for detail")
+                lines.append("\(indent)… \(j-i) disabled elements (inactive view?\(names.isEmpty ? "" : "; e.g. \(names)")) collapsed; \(detailHint)")
                 i=j;continue
             }
             if j==i {lines.append(all[i]);i+=1} else {lines.append(contentsOf:all[i..<j]);i=j}
         }
+        return lines.joined(separator:"\n")
+    }
+    func compactObservation(_ text:String) -> String {
+        var out:[String]=[];var used=0;var omitted=0
+        let lines=Self.collapseDisabledRuns(text, detailHint:"ui_to_text for detail").components(separatedBy:"\n")
         for line in lines {
             if used+line.utf8.count>10000 {omitted+=1;continue}
             out.append(line);used+=line.utf8.count+1

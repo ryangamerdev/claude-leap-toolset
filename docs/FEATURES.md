@@ -1,4 +1,4 @@
-> **PAUSED by user, 2026-09-20.** Leap MCP removed from Codex configuration. Do not resume or reinstall without user direction. Desktop recheck results and unresolved gaps: [pause checkpoint](iterations/2026-09-20-paused.md).
+> **RESUMED 2026-09-28; current status lives in [PLAN.md](PLAN.md) and the 2026-09-28/29 iteration entries.** The table below is the 2026-09-20 snapshot: several rows are superseded by 09-28 native passes (R06 desktop/iPad/Blender actions, R16 desktop and iPad create/save/reopen gates) and are not re-certified here. The earlier pause banner (2026-09-20) is preserved in [the pause checkpoint](iterations/2026-09-20-paused.md).
 
 # Leap release checklist
 

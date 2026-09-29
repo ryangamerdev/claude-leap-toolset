@@ -125,6 +125,9 @@ public actor Engine {
         /// Poll until the tree stops changing after a recent action (Sky: ~1 s + up to 5 s). Evidence reads
         /// taken after a condition already resolved skip it.
         public var settle = true
+        /// Render runs of disabled elements (an inactive tab kept alive in the tree) line by line
+        /// instead of collapsing them into one summary line.
+        public var includeDisabled = false
         public init() {}
     }
 
@@ -231,12 +234,17 @@ public actor Engine {
         if snap.nodes.contains(where: \.untransformedFrame) {
             text += "\n[rotated]: this Simulator device is landscape but reports portrait-space frames. Click those elements by index/label (AXPress) or type_text/set_value with element_index; coordinates from their frames are refused. Screenshot coordinates remain valid; the wda backend handles rotation."
         }
-        if snap.advisoryReadFailures > 0 {
-            text += "\nOptional metadata unavailable: \(snap.advisoryReadFailures) reads; labels/state checks remain usable if no blocking capture errors. Details retained in snapshot."
-        }
+        // Advisory (per-node optional metadata) failures do not affect what the agent can do;
+        // they stay in the retained snapshot and the v2 observation metadata, not the text.
         do {
             let footer=try recordSnapshot(snap, session:s)
-            if recordings[s.pid] != nil {text=compactObservation(text)}
+            let recorded = recordings[s.pid] != nil
+            // Inactive views kept alive in the tree (SwiftUI TabView pages) render as long runs of
+            // disabled lines. Collapse them for every reader, not only recorded sessions.
+            if !opts.includeDisabled {
+                text = Self.collapseDisabledRuns(text, detailHint: recorded ? "ui_to_text for detail" : "get_app_state include_disabled=true for detail")
+            }
+            if recorded {text=compactObservation(text)}
             text += footer
         }
         catch { Diagnostics.shared.record(level:"error",kind:"snapshot_recording_failed",detail:String(describing:error)); text += "\nRecording failure: \(error). Prior input may have been sent; do not replay. Further recorded actions will be refused." }

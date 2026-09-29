@@ -22,6 +22,13 @@ inspection and UI-only tasks; the earlier "no construction script" gate wording 
 Open: iPhone UI reopen (list scrolling for laid-out iOS rows); Blender secondary-window capture;
 continued general-app coverage.
 
+2026-09-29 history review ([entry](iterations/2026-09-29-history-review-fix-forward.md)): the
+interactive get_app_state/click loop is the primary agent path again (Sky-style playbook restored),
+v2 ui_perform is the verified-workflow layer. `make scenarios` replays the 09-18 regression scenarios
+(desktop 7/7 harness pass). Next: native check after restart; restore Simulator.app after the Xcode
+upgrade and run `make scenarios SET=simulator`; then user-interaction detection (Sky
+`userIntervened`), v2 select_text/perform_action/paste steps, app deny list and stop key.
+
 
 > Earlier banner (2026-09-20, superseded 2026-09-28): **PAUSED by user, 2026-09-20.** Leap MCP removed from Codex configuration. Do not resume or reinstall without user direction. Desktop recheck results and unresolved gaps: [pause checkpoint](iterations/2026-09-20-paused.md).
 

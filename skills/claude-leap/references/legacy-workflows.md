@@ -1,6 +1,7 @@
-# Legacy tools and historical recording workflow
+# Recording and evidence tools
 
-Use only for compatibility, old evidence or diagnosing a v2 adapter gap. New sessions use intent-workflows.md.
+The interactive tools (get_app_state, click, set_value, …) are the primary loop; see SKILL.md.
+This file covers the project-bound recording layer and its query tools.
 
 ## Observe, act, verify
 
@@ -73,9 +74,8 @@ when the element is marked offscreen or its frame is invalid/outside the selecte
 the action result reports this. A visible marker is feedback, not proof of input delivery.
 
 Prefer background operation. Pointer delivery targets the app window; foreground=true is
-explicit activation when needed and should be announced. The activate tool now verifies
-frontmost status before reporting success; native acceptance of this entrypoint is pending. Keyboard fallback may use system
-input. Do not assume pointer behavior proves keyboard isolation.
+explicit activation when needed and should be announced. The activate tool verifies frontmost
+status before reporting success. Keys and text always go to the target app's process.
 
 For multiple Simulator windows, select the actual window title explicitly and verify its
 identity. Window selection persists. A stale target, relaunched process, ambiguous label or

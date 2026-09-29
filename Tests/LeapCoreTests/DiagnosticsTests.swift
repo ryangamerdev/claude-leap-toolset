@@ -21,6 +21,19 @@ final class DiagnosticsTests:XCTestCase {
         XCTAssertEqual(obj["nextCursor"] as? Int,26)
         XCTAssertTrue(try d.query(interaction:"i1",session:nil,level:nil,kind:nil,after:0,limit:1).contains("\"hasMore\":true"))
     }
+    func testErrorEchoesStayOutOfResponseTrailer() throws {
+        let d=Diagnostics(directory:directory());d.setContext(["interaction":"e1"])
+        XCTAssertNotNil(d.record(level:"error",kind:"input_error",detail:"click: ambiguous label"))
+        XCTAssertNotNil(d.record(level:"error",kind:"tool_error",detail:"ambiguous label"))
+        XCTAssertNotNil(d.record(level:"error",kind:"tool_completed",detail:"Returned error"))
+        XCTAssertNotNil(d.record(level:"warning",kind:"keyboard_route",detail:"Using synthesized key input"))
+        XCTAssertNil(d.warningSummary(interaction:"e1"))
+        XCTAssertTrue(try d.query(interaction:"e1",session:nil,level:"issues",kind:nil,after:0,limit:20).contains("input_error"))
+        XCTAssertNotNil(d.record(level:"warning",kind:"capture_failed",detail:"screenshot unavailable"))
+        let summary=d.warningSummary(interaction:"e1") ?? ""
+        XCTAssertTrue(summary.contains("capture_failed"))
+        XCTAssertFalse(summary.contains("tool_error"))
+    }
     func testConfigurationAndFilteredWarningsStayVisible() throws {
         let home=directory()
         try FileManager.default.createDirectory(atPath:home+"/.config/leap",withIntermediateDirectories:true)

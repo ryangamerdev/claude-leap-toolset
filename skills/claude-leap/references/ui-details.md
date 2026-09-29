@@ -28,8 +28,12 @@ Read only for text editing, menus, coordinates, screenshots or Simulator-specifi
   state and decide.
 - Append / type: `type_text(element_index, text)`. Accessibility insert (verified) → accessibility
   value append (verified) → keystrokes. The result text says which path ran; the **keystroke path is
-  dispatched, not verified**, so confirm it in the returned diff. In the iOS Simulator keystrokes are
-  not delivered to a background window; the accessibility paths are what work there.
+  dispatched, not verified**, so confirm it in the returned diff. In the iOS Simulator prefer the
+  accessibility paths; keystrokes use the current keyboard layout's physical keys, characters with
+  no single-key mapping are refused up front, and an occasional dropped character is possible
+  (Sky shows the same), so read the value back.
+- Simulator multi-line text areas refuse direct value writes (readback matched while the app's
+  model stayed unchanged); focus the area and use `type_text`.
 - Edit inside text: `select_text(element, text, prefix, suffix, selection_type)` then `type_text`
   (replaces the selection) or `selection_type: cursor_after` then type to insert.
 - `type_text` sends `\n` as Return and many composers submit on Return: use `set_value` or `paste`
@@ -55,7 +59,10 @@ Read only for text editing, menus, coordinates, screenshots or Simulator-specifi
 - `cannotComplete` — acknowledgement is uncertain. Inspect returned state/check evidence; never repeat input solely because this error occurred.
 - `Outcome uncertain: …` — a write changed the field but not into the expected text. Not retried.
 - `Batch stopped at step N … Completed steps (already applied)` — resume after the listed steps.
-- `wait_for timed out …` — the condition never held; the last observed element state is included.
+- `Expectation unmet by deadline; last observed: …` (wait_for) — the condition never held; the
+  last observed element state is included. Read-only: nothing was sent.
+- `Editable control focus could not be verified. No keyboard input sent.` — click the field (fresh
+  state) and check it is `[focused]` before typing.
 - `(action applied; state unavailable afterwards …)` — the action ran (e.g. Save closed the
   window); only the follow-up read failed. Do not repeat the action; call `get_app_state`.
 - `Keyboard input would go to … key window, not to the selected window` — use accessibility edits
@@ -80,10 +87,13 @@ each screen (click the tab, read the text state to confirm you are there), then 
   **dispatched, not verified** — most apps honour them, some canvases do not, so check the diff or
   a screenshot. Coordinates are re-based on the window's current position at action time.
 - `foreground=true` explicitly activates the app when synthesized input is needed. Mouse
-  gestures retain the same window-targeted delivery in either mode and never move the real
-  cursor. Click, drag, and wheel delivery share scoped synthetic-focus preparation/cleanup.
-  Keyboard fallback may still use system HID events. Announce explicit activation because it
-  changes the user’s frontmost app.
+  gestures keep the same window-targeted delivery in either mode and never move the real
+  cursor. Background clicks are sent as Command-clicks without activation (as Sky does);
+  rows, cells, links, text inputs and web content use scoped synthetic window activation.
+  Keys and text always go to the target app's process, never system-wide. Announce explicit
+  activation because it changes the user's frontmost app.
+- Wheel scrolling can be ignored by some views (iOS Simulator lists). If `scroll` shows no
+  change, drag the content instead and say so.
 
 ## Simulator specifics
 

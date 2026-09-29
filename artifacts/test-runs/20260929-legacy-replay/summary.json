@@ -1,0 +1,16 @@
+{
+  "date": "2026-09-29",
+  "kind": "harness replay of Tests/*.json through stdio MCP (not native acceptance)",
+  "app": "Gameday (macOS), background",
+  "before_build": "b00a8f4 (installed)",
+  "before": {"pass": ["index-stability", "background-keys", "label-targeting", "select-text"],
+             "fail_drift": ["wait-for-and-batch (message wording)", "relaunch-guard (flag moved into error evidence)", "hidden-tab-content (ambiguous label, correctly refused)"],
+             "blocked_env": ["ios-type-text", "menu-bar", "simulator-offscreen-press", "share-indicator (Simulator.app absent after Xcode upgrade)"],
+             "diagnostic_trailers": 17, "advisory_metadata_lines": 23},
+  "after_build": "working tree of the 2026-09-29 history-review commit (signed dist bundle)",
+  "after": {"pass": ["index-stability", "background-keys", "label-targeting", "select-text", "wait-for-and-batch", "hidden-tab-content", "relaunch-guard"],
+            "advisory_metadata_lines": 0},
+  "full_read_gameday_after_formations_visit": {"include_disabled_true": {"bytes": 23692, "element_lines": 296},
+                                               "default": {"bytes": 5449, "element_lines": 77}},
+  "logs": "artifacts/test-runs/20260929-legacy-replay/{,after/,final/}*.log (local-only, ignored)"
+}
