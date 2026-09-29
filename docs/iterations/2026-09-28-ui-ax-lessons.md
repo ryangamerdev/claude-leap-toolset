@@ -32,3 +32,5 @@ right before pressing; its timeouts "had already applied" (SKY-BEHAVIOR §5); it
 ## Validation and delivery
 
 `swift test`: 64 tests, 0 failures. Install identity below; native verification by the other agent pending.
+
+Installed 2026-09-29T00:00:59Z via `make install` from 4cc6be4. SHA256 `c372c60523285339882242e79abbebbd3e720556be49dea3798ffd0d791b5663`. Signature verified; skills match; registration unchanged. Restart pending.
