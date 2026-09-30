@@ -56,6 +56,15 @@ final class LeapAppDelegate: NSObject, NSApplicationDelegate {
 // responsible process so permissions are attributed to "leap", not the parent.
 disclaimResponsibilityIfNeeded()
 
+// `leap --request-permissions`: run by the installer (and usable by hand) so Leap asks for its own
+// Accessibility and Screen Recording grants as "Leap" before any agent needs them. Exits.
+if CommandLine.arguments.contains("--request-permissions") {
+    _ = Permissions.accessibilityTrusted(prompt: true)
+    Permissions.requestScreenRecording()
+    print("leap permissions: " + Permissions.summary())
+    exit(0)
+}
+
 let application = NSApplication.shared
 let leapDelegate = LeapAppDelegate()
 application.delegate = leapDelegate

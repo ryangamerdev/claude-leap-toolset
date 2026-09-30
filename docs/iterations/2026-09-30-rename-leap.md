@@ -43,3 +43,26 @@ permission grant.
   ("OSCAR TEMPO") → perform_action Confirm → select_text cursor_after → paste " X" (verified AX,
   clipboard untouched) → cleared. All passed. This is the first native pass of the v2
   select_text/perform_action/paste steps and of verified paste.
+
+## Screen Recording registration (2026-09-30)
+
+Problem: after the rename, "Leap" never appeared under Screen & System Audio Recording.
+`permissions(prompt:true)` called a bare `CGRequestScreenCaptureAccess()`; tccd logged "Notifying for
+access kTCCServiceScreenCapture … Leap.app", but no list entry was created (Settings listed only
+com.bridgetone.claude-leap).
+
+Sky reference: `SlimCore.ScreenRecordingPermission.validateAuthorization(withSystemSettings:)`
+(decompiled part-0072.c:16387) opens System Settings at the Screen Recording pane
+(`settingsDestination`), checks the Settings window is present (470–600 pt size check), and only then
+calls `CGRequestScreenCaptureAccess()`. It also has a drag-in tile fallback (`SystemSettingsAccessCoordinator`).
+
+Change: `Permissions.requestScreenRecording()` opens
+`x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture`, waits for Settings,
+then requests. New `leap --request-permissions` mode (after the TCC disclaim re-exec, so it asks as
+"Leap"): Accessibility prompt + Screen Recording request, prints status, exits. `install.py` runs it
+after registration, and its closing message names the + fallback.
+
+Evidence: at install, tccd published `Modify kTCCServiceScreenCapture com.bridgetone.leap`, and
+SecurityPrivacyExtension listed a new `com.bridgetone.leap` entry (none, then full once enabled). A
+fresh `leap --request-permissions` reports accessibility=granted screen_recording=granted.
+Tradeoff: the install opens System Settings on the user's screen when Screen Recording is missing.

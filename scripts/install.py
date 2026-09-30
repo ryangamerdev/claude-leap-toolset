@@ -178,10 +178,15 @@ def main():
     # Register the MCP server at the INSTALLED path (user scope, all projects).
     run(["claude", "mcp", "remove", "leap", "-s", "user"], check=False)
     run(["claude", "mcp", "add", "--scope", "user", "leap", "--", INSTALLED_SERVER])
+    # Ask for Leap's own grants now, as "Leap" (not the terminal): Accessibility prompt, and
+    # System Settings opened at Screen Recording with the request made while it is visible
+    # (Sky's approach). No-op when both are already granted.
+    run([INSTALLED_SERVER, "--request-permissions"], check=False)
 
     print("\nInstalled a self-contained copy; the repo is no longer needed at runtime.")
     print("Restart the Claude Code session so it loads the `leap` tools and the skills.")
-    print('Permissions: on first use macOS lists "Leap" under Privacy & Security > Accessibility and > Screen Recording.')
+    print('Permissions: turn on "Leap" under Privacy & Security > Accessibility and > Screen & System Audio Recording.')
+    print('If Leap is missing from Screen Recording, click + and choose ~/Applications/Leap.app. Restart the host afterwards.')
 
 
 if __name__ == "__main__":
