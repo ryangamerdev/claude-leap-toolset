@@ -74,7 +74,7 @@ public actor Engine {
 
     func requireAX() throws {
         guard Permissions.accessibilityTrusted() else {
-            throw LeapError.permission("Accessibility permission is missing for this process. Grant it in System Settings › Privacy & Security › Accessibility (the entry is the app that launched claude-leap, e.g. Claude), then retry.")
+            throw LeapError.permission("Accessibility permission is missing for this process. Grant it in System Settings › Privacy & Security › Accessibility (the entry is the app that launched leap, e.g. Claude), then retry.")
         }
     }
 

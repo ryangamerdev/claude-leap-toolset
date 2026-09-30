@@ -82,7 +82,7 @@ public final class Diagnostics: @unchecked Sendable {
             return id
         } catch {
             failure="Diagnostic evidence could not be persisted: \(error)"
-            FileHandle.standardError.write(Data("claude-leap diagnostics failure [\(kind)]: \(error)\n".utf8))
+            FileHandle.standardError.write(Data("leap diagnostics failure [\(kind)]: \(error)\n".utf8))
             return nil
         }
     }

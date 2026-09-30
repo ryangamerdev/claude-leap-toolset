@@ -8,7 +8,7 @@ are transcript records. "Sky" is OpenAI's `SkyComputerUseService`; the agent dro
 the `cua_repl` JS REPL. Slices 02 and 08 were `chrome-devtools` only (Hudl data pulled with
 in-page `fetch`, bypassing the UI) and contribute nothing about Sky.
 
-The last section maps every finding to claude-leap: matched, exceeded, or still a gap.
+The last section maps every finding to leap: matched, exceeded, or still a gap.
 
 ## 1. API surface the agent used
 
@@ -271,9 +271,9 @@ What the skill tells the model, beyond the transcript evidence above:
   moves, "are you sure", transmitting sensitive data with named data + destination); always
   allowed (cookie banners, downloads, everything else); confirm late, explain risk + mechanism.
 
-## 11. Parity map — Sky behavior → claude-leap
+## 11. Parity map — Sky behavior → leap
 
-| Sky | claude-leap (HEAD) | Status |
+| Sky | leap (HEAD) | Status |
 |---|---|---|
 | AX-only clicks/values/menu presses; never activates the app | AXPress / AX text API first; background `postToPid` events as fallback; activation only with `foreground=true` | matched |
 | Menu bar in every full tree; clicking a title returns the open menu; device switching via Window menu | `MenuBar`/`MenuBarItem` lines in every tree; open menus rendered with their items (probe: AXPress opens a background app's menu, frontmost unchanged); Escape → `AXCancel` on the open menu | matched (ba8d3d0) |

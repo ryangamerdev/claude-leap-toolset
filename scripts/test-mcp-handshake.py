@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Regression test MCP initialization and discovery using real client capabilities.
 
-Usage: LEAP_BIN=/path/to/claude-leap python3 -B scripts/test-mcp-handshake.py
+Usage: LEAP_BIN=/path/to/leap python3 -B scripts/test-mcp-handshake.py
 """
 import importlib.util
 import os

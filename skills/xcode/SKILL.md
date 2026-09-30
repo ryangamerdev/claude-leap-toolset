@@ -8,7 +8,7 @@ description: Build, run, test and interact with iOS/iPadOS/tvOS/watchOS apps thr
 Xcode 27 (macOS 27+) replaced Simulator.app with Device Hub and ships an MCP server, registered
 as `xcode` (`xcrun mcpbridge`). It is the preferred way to operate apps **inside** a simulated or
 physical device: real touches in device points, correct orientation, the device keyboard, and a
-UI hierarchy with tap points. Use the claude-leap skill for Mac apps, for Device Hub's own window
+UI hierarchy with tap points. Use the leap skill for Mac apps, for Device Hub's own window
 chrome, and as the fallback when this route is unavailable (see Limits).
 
 ## Setup (once)

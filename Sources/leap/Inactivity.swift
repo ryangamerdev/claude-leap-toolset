@@ -7,7 +7,7 @@ import Foundation
 /// its binary carries `inactivityTask` and emits a `cua_service_idle_timeout_reached`
 /// analytics event, alongside `shouldTerminateWhenNoClientsRemain` and an flock-guarded
 /// singleton socket (`computeruse.sock.lock`). Sky can rely mostly on client refcounting
-/// because it is one long-lived service shared by thin per-connection clients; claude-leap is
+/// because it is one long-lived service shared by thin per-connection clients; leap is
 /// one process per MCP connection, so each process owns its own ScreenCaptureKit session and
 /// the idle timeout is what keeps an orphan from holding that session forever.
 ///
@@ -43,7 +43,7 @@ enum Inactivity {
                 lock.lock(); let idle = Date().timeIntervalSince(lastActivity); lock.unlock()
                 if idle >= limit {
                     FileHandle.standardError.write(Data(
-                        "claude-leap: idle for \(Int(idle))s (limit \(Int(limit))s); exiting so the capture session is released\n".utf8))
+                        "leap: idle for \(Int(idle))s (limit \(Int(limit))s); exiting so the capture session is released\n".utf8))
                     exit(0)
                 }
             }

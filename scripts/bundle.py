@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Build dist/claude-leap.app: a signed bundle with its own TCC identity.
+"""Build dist/Leap.app: a signed bundle with its own TCC identity.
 
 Why a bundle: macOS shows permission entries by bundle name and keys grants to the code
-signature's designated requirement. Signed with a Developer ID, "claude-leap" appears in
+signature's designated requirement. Signed with a Developer ID, "leap" appears in
 System Settings under its own name and the grant survives rebuilds. The binary re-execs
 itself with responsibility_spawnattrs_setdisclaim (Disclaim.swift) so TCC attributes
 requests to this bundle instead of to Claude Code.
@@ -27,7 +27,7 @@ import time
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TOOLCHAIN_ID = "org.swift.640202609131a"
 DIST = os.path.join(ROOT, "dist")
-APP = os.path.join(DIST, "claude-leap.app")
+APP = os.path.join(DIST, "Leap.app")
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--identity", help='codesign identity; "-" for ad-hoc')
@@ -54,7 +54,7 @@ env = dict(os.environ, TOOLCHAINS=TOOLCHAIN_ID)
 config = "debug" if args.debug else "release"
 run(f"swift build -c {config}", ["swift", "build", "-c", config], env=env)
 bin_dir = run("locate build products", ["swift", "build", "-c", config, "--show-bin-path"], env=env).stdout.strip().splitlines()[-1]
-binary = os.path.join(bin_dir, "claude-leap")
+binary = os.path.join(bin_dir, "leap")
 if not os.path.exists(binary):
     print(f"binary missing: {binary}")
     sys.exit(1)
@@ -64,7 +64,7 @@ if os.path.isdir(APP):
     shutil.rmtree(APP)
 os.makedirs(os.path.join(APP, "Contents", "MacOS"))
 os.makedirs(os.path.join(APP, "Contents", "Resources"))
-shutil.copy2(binary, os.path.join(APP, "Contents", "MacOS", "claude-leap"))
+shutil.copy2(binary, os.path.join(APP, "Contents", "MacOS", "leap"))
 shutil.copy2(os.path.join(ROOT, "bundle", "Info.plist"), os.path.join(APP, "Contents", "Info.plist"))
 with open(os.path.join(APP, "Contents", "PkgInfo"), "w") as f:
     f.write("APPL????")
@@ -90,6 +90,6 @@ run("show signature", ["codesign", "-dv", "--verbose=2", APP])
 
 print("\n" + "=" * 78 + "\nDONE\n" + "=" * 78)
 print(f"app:    {APP}")
-print(f"server: {APP}/Contents/MacOS/claude-leap")
+print(f"server: {APP}/Contents/MacOS/leap")
 print("Point Claude Code's MCP config at the server path above. On first use, macOS will list")
 print(f"\"{info['CFBundleName']}\" in Privacy & Security › Accessibility (and › Screen Recording).")

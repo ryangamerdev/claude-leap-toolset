@@ -49,7 +49,7 @@ def download():
     if os.path.exists(PKG):
         print(f"already downloaded: {PKG} ({os.path.getsize(PKG) / 1e6:.0f} MB)")
         return
-    req = urllib.request.Request(URL, headers={"User-Agent": "claude-leap-installer"})
+    req = urllib.request.Request(URL, headers={"User-Agent": "leap-installer"})
     with urllib.request.urlopen(req, timeout=120) as resp, open(PKG + ".part", "wb") as out:
         total = int(resp.headers.get("Content-Length") or 0)
         print(f"HTTP {resp.status}  content-length={total / 1e6:.0f} MB")

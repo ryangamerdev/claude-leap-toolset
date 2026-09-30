@@ -30,7 +30,7 @@ func disclaimResponsibilityIfNeeded() {
     typealias SetDisclaim = @convention(c) (UnsafeMutablePointer<posix_spawnattr_t?>, Int32) -> Int32
     guard let symbol = dlsym(UnsafeMutableRawPointer(bitPattern: -2) /* RTLD_DEFAULT */,
                              "responsibility_spawnattrs_setdisclaim") else {
-        fputs("claude-leap: responsibility_spawnattrs_setdisclaim unavailable; running under parent's TCC identity\n", stderr)
+        fputs("leap: responsibility_spawnattrs_setdisclaim unavailable; running under parent's TCC identity\n", stderr)
         return
     }
     let setDisclaim = unsafeBitCast(symbol, to: SetDisclaim.self)
@@ -40,7 +40,7 @@ func disclaimResponsibilityIfNeeded() {
     defer { posix_spawnattr_destroy(&attrs) }
     guard posix_spawnattr_setflags(&attrs, Int16(POSIX_SPAWN_SETEXEC)) == 0,
           setDisclaim(&attrs, 1) == 0 else {
-        fputs("claude-leap: could not configure disclaim; running under parent's TCC identity\n", stderr)
+        fputs("leap: could not configure disclaim; running under parent's TCC identity\n", stderr)
         return
     }
 
@@ -53,7 +53,7 @@ func disclaimResponsibilityIfNeeded() {
     var pid: pid_t = 0
     let rc = posix_spawn(&pid, executable, nil, &attrs, argv, envp)
     // With SETEXEC a successful call never returns. Reaching here means exec failed.
-    fputs("claude-leap: disclaiming re-exec failed (posix_spawn rc=\(rc), errno=\(errno)); continuing under parent's TCC identity\n", stderr)
+    fputs("leap: disclaiming re-exec failed (posix_spawn rc=\(rc), errno=\(errno)); continuing under parent's TCC identity\n", stderr)
     for p in argv { free(p) }
     for p in envp { free(p) }
 }

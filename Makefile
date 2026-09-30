@@ -10,7 +10,7 @@ build:
 test:
 	swift test
 
-# Rebuild and sign dist/claude-leap.app from the current source.
+# Rebuild and sign dist/Leap.app from the current source.
 bundle:
 	python3 scripts/bundle.py
 

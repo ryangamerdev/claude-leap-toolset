@@ -5,7 +5,7 @@
 # LEAP_BIN selects the binary (default: the signed dist bundle, which carries the TCC grants).
 # LEAP_SCENARIO_OUT selects the log directory (default: artifacts/test-runs/legacy-scenarios, ignored).
 cd "$(dirname "$0")/.." || exit 2
-export LEAP_BIN="${LEAP_BIN:-$PWD/dist/claude-leap.app/Contents/MacOS/claude-leap}"
+export LEAP_BIN="${LEAP_BIN:-$PWD/dist/Leap.app/Contents/MacOS/leap}"
 OUT="${LEAP_SCENARIO_OUT:-artifacts/test-runs/legacy-scenarios}"
 mkdir -p "$OUT"
 DESKTOP="index-stability background-keys label-targeting select-text wait-for-and-batch hidden-tab-content relaunch-guard"

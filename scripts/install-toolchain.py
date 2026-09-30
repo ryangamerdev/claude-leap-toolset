@@ -73,7 +73,7 @@ def main():
 
     if not os.path.exists(SWIFTLY):
         banner(f"STEP: download {PKG_URL}")
-        req = urllib.request.Request(PKG_URL, headers={"User-Agent": "claude-leap-installer"})
+        req = urllib.request.Request(PKG_URL, headers={"User-Agent": "leap-installer"})
         with urllib.request.urlopen(req, timeout=120) as resp, open(PKG_PATH, "wb") as out:
             print(f"HTTP {resp.status}  content-length={resp.headers.get('Content-Length')}")
             shutil.copyfileobj(resp, out)

@@ -4,7 +4,7 @@ import LeapCore
 import MCP
 
 let instructions = """
-Leap: native macOS and iOS Simulator computer use, accessibility-first and background-first. Full playbook: the claude-leap skill. Keep this short: hosts truncate long server instructions.
+Leap: native macOS and iOS Simulator computer use, accessibility-first and background-first. Full playbook: the leap skill. Keep this short: hosts truncate long server instructions.
 
 Interactive loop (like Sky): get_app_state(app) returns the indexed accessibility tree as text, no screenshot by default. Act by element_index or label (click, set_value, type_text, select_text, press_key, perform_action, scroll, drag, paste); each action returns the updated diff, so read it and continue. batch runs predictable sequences in one call; wait_for bounds delayed outcomes. Screenshots only when the answer is visual (canvas, zoom, rendering).
 
@@ -18,7 +18,7 @@ Safety: confirm before deleting data, sending/posting, paying, installing, or ch
 func runServer() async throws {
     let engine = Engine()
     let server = Server(
-        name: "claude-leap",
+        name: "leap",
         version: "0.2.0",
         instructions: instructions,
         capabilities: .init(tools: .init(listChanged: false))
@@ -45,7 +45,7 @@ final class LeapAppDelegate: NSObject, NSApplicationDelegate {
                 try await runServer()
             } catch {
                 Diagnostics.shared.record(level:"error",kind:"server_failed",detail:String(describing:error))
-                FileHandle.standardError.write(Data("claude-leap: \(error)\n".utf8))
+                FileHandle.standardError.write(Data("leap: \(error)\n".utf8))
             }
             await MainActor.run { NSApplication.shared.terminate(nil) }
         }
@@ -53,7 +53,7 @@ final class LeapAppDelegate: NSObject, NSApplicationDelegate {
 }
 
 // Must run before anything touches TCC-protected APIs: re-execs this process as its own
-// responsible process so permissions are attributed to "claude-leap", not the parent.
+// responsible process so permissions are attributed to "leap", not the parent.
 disclaimResponsibilityIfNeeded()
 
 let application = NSApplication.shared

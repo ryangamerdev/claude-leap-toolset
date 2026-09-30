@@ -1,6 +1,6 @@
 ---
 name: app-store-screenshots
-description: Capture App Store / marketing screenshots of an iOS or iPadOS app from the Simulator — clean device pixels at native resolution, no bezel, correct orientation, optional 9:41 status bar. Capture and status bar are fully simulator-native (xcrun simctl); navigation is native-first (deep links, launch args, or an XCUITest target) and falls back to the claude-leap MCP tools only when the app offers none of those. Use when the user asks to make App Store screenshots, marketing shots, or a versioned screenshot set for iPhone/iPad.
+description: Capture App Store / marketing screenshots of an iOS or iPadOS app from the Simulator — clean device pixels at native resolution, no bezel, correct orientation, optional 9:41 status bar. Capture and status bar are fully simulator-native (xcrun simctl); navigation is native-first (deep links, launch args, or an XCUITest target) and falls back to the leap MCP tools only when the app offers none of those. Use when the user asks to make App Store screenshots, marketing shots, or a versioned screenshot set for iPhone/iPad.
 ---
 
 # App Store screenshots from the Simulator
@@ -27,7 +27,7 @@ bezel and is the display's scaled size. So capture with `simctl`, not with a win
      app project.
 - **Fallback on macOS 27+ with an iOS 27+ simulator: the Xcode MCP** (xcode skill) — tap and type
   inside the device with `DeviceInteractionSynthesize`, then capture with `simctl` as below.
-- **Fallback: claude-leap** — if the app has no deep links, no launch-arg navigation, and you do
+- **Fallback: leap** — if the app has no deep links, no launch-arg navigation, and you do
   not want to add a UI-test target, drive the UI with the leap MCP tools (`get_app_state`,
   `click`). This is fastest for a one-off; it is not reproducible in CI the way XCUITest is.
 - `sips` (built in) rotates the capture when the app is landscape-locked (see below).

@@ -353,9 +353,9 @@ enum LeapTools {
                 if !Permissions.screenRecordingGranted() { _ = Permissions.requestScreenRecording() }
             }
             let who = Bundle.main.bundleIdentifier != nil
-                ? "the \"claude-leap\" entry"
+                ? "the \"leap\" entry"
                 : "the app that launched this dev build (Claude Code's helper, shown as \"claude\")"
-            return ("claude-leap permissions: " + Permissions.summary() + "\nGrant missing ones in System Settings › Privacy & Security › Accessibility / Screen Recording — enable \(who) — then retry.").result
+            return ("leap permissions: " + Permissions.summary() + "\nGrant missing ones in System Settings › Privacy & Security › Accessibility / Screen Recording — enable \(who) — then retry.").result
 
         case "get_app_state":
             var opts = Engine.StateOptions()

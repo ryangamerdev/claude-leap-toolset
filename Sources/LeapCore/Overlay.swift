@@ -1,7 +1,7 @@
 import AppKit
 import QuartzCore
 
-/// A click-through heads-up overlay showing where claude-leap is acting.
+/// A click-through heads-up overlay showing where leap is acting.
 ///
 /// The pointer is a filled *wedge* — just the tip of an arrow cursor, with no tail — so it
 /// reads as a pointer while staying clearly distinct from the user's own black-and-white

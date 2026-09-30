@@ -1,4 +1,4 @@
-// Verify the claude-leap activity overlay window is on screen, without Screen Recording.
+// Verify the leap activity overlay window is on screen, without Screen Recording.
 //
 // Window *metadata* (owner, bounds, layer, alpha) is readable by any process; only window
 // titles and pixels require the Screen Recording grant. So this objectively confirms the
@@ -10,7 +10,7 @@
 import CoreGraphics
 import Foundation
 
-let filter = (CommandLine.arguments.count > 1 ? CommandLine.arguments[1] : "claude-leap").lowercased()
+let filter = (CommandLine.arguments.count > 1 ? CommandLine.arguments[1] : "leap").lowercased()
 let options: CGWindowListOption = [.optionOnScreenOnly, .excludeDesktopElements]
 let windows = (CGWindowListCopyWindowInfo(options, kCGNullWindowID) as? [[String: Any]]) ?? []
 

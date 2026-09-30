@@ -1,5 +1,10 @@
 > **RESUMED 2026-09-28.** The current handoff is this first section; earlier handoffs follow unchanged.
 
+# Name — 2026-09-30
+
+The product is Leap: `~/Applications/Leap.app`, executable `leap`, bundle id `com.bridgetone.leap`,
+skill `leap`, repo github.com/ryangamerdev/leap-mcp. Older entries say claude-leap.
+
 # Host registrations — 2026-09-29 (user direction)
 
 Leap is registered in Claude Code and OpenCode. Keep Leap OUT of Codex: Codex uses Sky

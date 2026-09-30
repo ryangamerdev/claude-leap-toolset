@@ -5,15 +5,15 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleExecutable</key>
-	<string>claude-leap</string>
+	<string>leap</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.bridgetone.claude-leap</string>
+	<string>com.bridgetone.leap</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>claude-leap</string>
+	<string>Leap</string>
 	<key>CFBundleDisplayName</key>
-	<string>claude-leap</string>
+	<string>Leap</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -27,7 +27,7 @@
 	<key>NSHighResolutionCapable</key>
 	<true/>
 	<key>NSAppleEventsUsageDescription</key>
-	<string>claude-leap operates apps on your behalf when Claude is working for you.</string>
+	<string>Leap operates apps on your behalf when Claude is working for you.</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright © 2026 Bridgetone, LLC</string>
 </dict>

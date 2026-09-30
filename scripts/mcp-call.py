@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Call claude-leap tools over stdio MCP, exactly as an agent would.
+"""Call leap tools over stdio MCP, exactly as an agent would.
 
 Usage:
   mcp-call.py tools                         # list tools
@@ -33,7 +33,7 @@ os.makedirs(SHOTS, exist_ok=True)
 
 
 def binary_path():
-    # LEAP_BIN overrides the build product, e.g. to exercise dist/claude-leap.app.
+    # LEAP_BIN overrides the build product, e.g. to exercise dist/Leap.app.
     if os.environ.get("LEAP_BIN"):
         path = os.path.expanduser(os.environ["LEAP_BIN"])
         if not os.path.exists(path):
@@ -45,7 +45,7 @@ def binary_path():
     if p.returncode != 0:
         print("swift build --show-bin-path failed:\n" + p.stdout + p.stderr)
         sys.exit(1)
-    path = os.path.join(p.stdout.strip().splitlines()[-1], "claude-leap")
+    path = os.path.join(p.stdout.strip().splitlines()[-1], "leap")
     if not os.path.exists(path):
         print(f"binary not found at {path}; run scripts/build.py first")
         sys.exit(1)

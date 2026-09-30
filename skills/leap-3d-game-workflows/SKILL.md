@@ -28,7 +28,7 @@ Establish the requested deliverable and existing project first. A recognizable s
 
 ## Interaction invariants
 
-Use the [base Leap skill](../claude-leap/SKILL.md) for targeting, state, and error semantics. Native pointer gestures should keep the same window-targeted delivery whether the app is foreground or background. `foreground:true` requests activation; announce it. Keyboard fallback has separate focus behavior. Preserve the user's actual cursor and current work, and verify coexistence rather than assuming it.
+Use the [base Leap skill](../leap/SKILL.md) for targeting, state, and error semantics. Native pointer gestures should keep the same window-targeted delivery whether the app is foreground or background. `foreground:true` requests activation; announce it. Keyboard fallback has separate focus behavior. Preserve the user's actual cursor and current work, and verify coexistence rather than assuming it.
 
 Blender and Unity route many shortcuts according to the focused editor or viewport. Confirm the active region, selection, mode, and keyboard focus before an operation. App-level focus alone is insufficient. Prefer explicit data/API operations when region context is ambiguous.
 
@@ -38,7 +38,7 @@ After a failed or ambiguous action, observe once before retrying. Do not blindly
 
 ## Leap comparison campaign storage
 
-When working on the claude-leap comparison campaign, keep scripts and tests in the repository’s `scripts/` and `tests/`, reports in `docs/research/`, and raw logs/previews/project artifacts under `artifacts/`. Keep the paired Mickey baseline and `.blend` files in `artifacts/blender/mickey-head/`. Do not use external scratch folders for evidence. For unrelated user projects, follow that project’s requested output location.
+When working on the leap comparison campaign, keep scripts and tests in the repository’s `scripts/` and `tests/`, reports in `docs/research/`, and raw logs/previews/project artifacts under `artifacts/`. Keep the paired Mickey baseline and `.blend` files in `artifacts/blender/mickey-head/`. Do not use external scratch folders for evidence. For unrelated user projects, follow that project’s requested output location.
 
 ## Completion standard
 

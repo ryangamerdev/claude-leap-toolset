@@ -2,10 +2,10 @@
 import PackageDescription
 
 let package = Package(
-    name: "claude-leap",
+    name: "leap",
     platforms: [.macOS(.v14)],
     products: [
-        .executable(name: "claude-leap", targets: ["claude-leap"]),
+        .executable(name: "leap", targets: ["leap"]),
         .library(name: "LeapCore", targets: ["LeapCore"]),
     ],
     dependencies: [
@@ -23,12 +23,12 @@ let package = Package(
             ]
         ),
         .executableTarget(
-            name: "claude-leap",
+            name: "leap",
             dependencies: [
                 "LeapCore",
                 .product(name: "MCP", package: "swift-sdk"),
             ],
-            path: "Sources/claude-leap"
+            path: "Sources/leap"
         ),
         .testTarget(
             name: "LeapCoreTests",

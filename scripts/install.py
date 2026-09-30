@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Install claude-leap for Claude Code the way a downloaded GitHub release would.
+"""Install leap for Claude Code the way a downloaded GitHub release would.
 
 Usage:
   install.py            # build+sign the app if needed, then install a self-contained copy
@@ -8,7 +8,7 @@ Usage:
   install.py --uninstall
 
 This does NOT symlink into the repo. It copies the signed app bundle to
-  ~/Applications/claude-leap.app
+  ~/Applications/Leap.app
 and copies each skill to
   ~/.claude/skills/<name>
 (not Codex: Codex uses its own computer-use service, and Leap is not registered there; a stale
@@ -26,11 +26,11 @@ import subprocess
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DIST_APP = os.path.join(ROOT, "dist", "claude-leap.app")
-DIST_SERVER = os.path.join(DIST_APP, "Contents", "MacOS", "claude-leap")
+DIST_APP = os.path.join(ROOT, "dist", "Leap.app")
+DIST_SERVER = os.path.join(DIST_APP, "Contents", "MacOS", "leap")
 
-INSTALL_APP = os.path.expanduser("~/Applications/claude-leap.app")
-INSTALLED_SERVER = os.path.join(INSTALL_APP, "Contents", "MacOS", "claude-leap")
+INSTALL_APP = os.path.expanduser("~/Applications/Leap.app")
+INSTALLED_SERVER = os.path.join(INSTALL_APP, "Contents", "MacOS", "leap")
 
 SKILLS_DIR = os.path.join(ROOT, "skills")
 SKILLS_DST_ROOTS = [os.path.expanduser("~/.claude/skills")]
@@ -68,6 +68,24 @@ def each_skill():
         if os.path.isdir(src) and os.path.exists(os.path.join(src, "SKILL.md")):
             for destination in SKILLS_DST_ROOTS:
                 yield name, src, os.path.join(destination, name)
+
+
+# Pre-rename installs (product "claude-leap", bundle com.bridgetone.claude-leap); removed on install.
+LEGACY_APP = os.path.expanduser("~/Applications/claude-leap.app")
+LEGACY_SKILLS = ["claude-leap"]
+
+
+def remove_legacy():
+    """Remove the pre-rename app bundle and skill copies (Claude and Codex)."""
+    if os.path.lexists(LEGACY_APP):
+        _rm(LEGACY_APP)
+        print(f"removed pre-rename app: {LEGACY_APP}")
+    for root in SKILLS_DST_ROOTS + [CODEX_SKILLS]:
+        for name in LEGACY_SKILLS:
+            stale = os.path.join(root, name)
+            if os.path.lexists(stale):
+                _rm(stale)
+                print(f"removed pre-rename skill: {stale}")
 
 
 def install_app():
@@ -132,6 +150,7 @@ def main():
         if args != {"--skills-only"}:
             raise SystemExit("--skills-only cannot be combined with other options")
         install_skills()
+        remove_legacy()
         return
     if "--uninstall" in args:
         run(["claude", "mcp", "remove", "leap", "-s", "user"], check=False)
@@ -142,6 +161,7 @@ def main():
                 _rm(dst)
                 print(f"removed {dst}")
         remove_codex_skills()
+        remove_legacy()
         print("Uninstalled. Restart the Claude Code session.")
         return
 
@@ -153,6 +173,7 @@ def main():
 
     install_app()
     install_skills()
+    remove_legacy()
     install_config()
     # Register the MCP server at the INSTALLED path (user scope, all projects).
     run(["claude", "mcp", "remove", "leap", "-s", "user"], check=False)
@@ -160,7 +181,7 @@ def main():
 
     print("\nInstalled a self-contained copy; the repo is no longer needed at runtime.")
     print("Restart the Claude Code session so it loads the `leap` tools and the skills.")
-    print('Permissions: on first use macOS lists "claude-leap" under Privacy & Security > Accessibility and > Screen Recording.')
+    print('Permissions: on first use macOS lists "Leap" under Privacy & Security > Accessibility and > Screen Recording.')
 
 
 if __name__ == "__main__":

@@ -36,7 +36,7 @@ ongoing delivery workflow on 2026-09-20. Preserve unrelated changes and never fo
 
 ## Skill maintenance
 
-When tool behavior, parameters or recommended usage change, update skills/claude-leap in the
+When tool behavior, parameters or recommended usage change, update skills/leap in the
 same iteration. Keep SKILL.md concise; put conditional detail in linked references. Describe
 installed capabilities separately from native acceptance and planned features. Source skills
 are authoritative; do not edit only the installed copies.

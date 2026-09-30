@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Build / test claude-leap with the pinned swift.org toolchain.
+"""Build / test leap with the pinned swift.org toolchain.
 
 Usage:
   build.py            # swift build
   build.py test       # swift test
-  build.py run ARGS   # swift run claude-leap ARGS
+  build.py run ARGS   # swift run leap ARGS
   build.py clean      # swift package clean
 
 Prints the full compiler output, then a compact list of errors (file:line: message)
@@ -33,7 +33,7 @@ def main():
     elif mode == "test":
         cmd = ["swift", "test", *extra]
     elif mode == "run":
-        cmd = ["swift", "run", "claude-leap", *extra]
+        cmd = ["swift", "run", "leap", *extra]
     elif mode == "clean":
         cmd = ["swift", "package", "clean"]
     else:

@@ -1,4 +1,4 @@
-# claude-leap
+# leap
 
 ## Development status
 
@@ -12,7 +12,7 @@ does — through the accessibility tree — with screenshots as the fallback, no
 It reproduces the architecture that makes ChatGPT Desktop's "Computer Use" effective,
 on public frameworks (Accessibility, CoreGraphics events, ScreenCaptureKit) plus one
 private libsystem call, `responsibility_spawnattrs_setdisclaim`, looked up with `dlsym` at
-launch so the signed bundle owns its own TCC identity ("claude-leap" in System Settings).
+launch so the signed bundle owns its own TCC identity ("leap" in System Settings).
 If the symbol is missing the server logs that and runs under the launching app's identity
 instead; nothing else depends on it.
 
@@ -55,7 +55,7 @@ Verify it is really there without needing Screen Recording:
 
 ```bash
 swiftc -O -o /tmp/check-overlay scripts/check-overlay.swift && /tmp/check-overlay
-# owner="claude-leap" layer=1000 alpha=1.0 bounds=0,0 1728x1117
+# owner="leap" layer=1000 alpha=1.0 bounds=0,0 1728x1117
 ```
 
 ## Requirements
@@ -64,11 +64,11 @@ swiftc -O -o /tmp/check-overlay scripts/check-overlay.swift && /tmp/check-overla
 - Swift 6.1+ toolchain (the MCP Swift SDK needs it). Xcode 16.0 ships 6.0, so this repo
   uses the swift.org **6.4.0** toolchain installed user-scope by
   `scripts/install-swift-pkg.py` — no Xcode or OS upgrade required.
-- Permissions, granted once to **claude-leap** (the signed bundle — see below):
+- Permissions, granted once to **leap** (the signed bundle — see below):
   - Privacy & Security › **Accessibility** — required for everything. macOS shows a
     dialog on first use; accept it.
   - Privacy & Security › **Screen Recording** — required for screenshots only. macOS
-    does *not* show a second dialog: it adds **claude-leap** to the list unchecked. Open
+    does *not* show a second dialog: it adds **leap** to the list unchecked. Open
     the pane and switch it on. (`open "x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture"`
     — System Settings may flash its previous pane first; that is a known deep-link quirk.)
   The `permissions` tool reports both and can raise the prompts.
@@ -96,17 +96,17 @@ All scripts print full command output and exit codes; nothing is truncated.
 ## Build the app bundle (own permissions identity)
 
 ```bash
-python3 scripts/bundle.py        # release build → dist/claude-leap.app, signed with your Developer ID
+python3 scripts/bundle.py        # release build → dist/Leap.app, signed with your Developer ID
 ```
 
 macOS attributes privacy permissions to the *responsible process*, which for a plain
 binary launched by Claude Code is Claude Code itself — so prompts say "claude" and the
 grant belongs to it. The bundle fixes that two ways: it has its own bundle id
-(`com.bridgetone.claude-leap`) and Developer ID signature, and on launch the binary
-re-execs itself with `responsibility_spawnattrs_setdisclaim` ([Disclaim.swift](Sources/claude-leap/Disclaim.swift))
+(`com.bridgetone.leap`) and Developer ID signature, and on launch the binary
+re-execs itself with `responsibility_spawnattrs_setdisclaim` ([Disclaim.swift](Sources/leap/Disclaim.swift))
 so TCC treats it as its own responsible process. `tccd` then logs
-`Sub:{com.bridgetone.claude-leap} Resp:{identifier=com.bridgetone.claude-leap}` and
-System Settings shows **claude-leap** under Accessibility and Screen Recording. Grant
+`Sub:{com.bridgetone.leap} Resp:{identifier=com.bridgetone.leap}` and
+System Settings shows **leap** under Accessibility and Screen Recording. Grant
 both once; the Developer ID signature keeps the grant valid across rebuilds.
 
 The bare `swift build` binary deliberately does *not* disclaim (it would end up under an
@@ -119,7 +119,7 @@ python3 scripts/install.py
 ```
 
 This builds and signs the app if needed, then installs a self-contained copy the way unpacking a
-GitHub release would: it copies the signed bundle to `~/Applications/claude-leap.app` (with `ditto`,
+GitHub release would: it copies the signed bundle to `~/Applications/Leap.app` (with `ditto`,
 so the code signature and its TCC grants survive), copies each skill under `skills/` to
 `~/.claude/skills/<name>`, and registers the `leap` MCP server at the installed path. After this the
 repo can be moved or deleted and the install keeps working; re-run to update. Restart the Claude Code
@@ -130,14 +130,14 @@ instructions (the model sees roughly the first 2 KB), so the server's `instructi
 kept to a short summary and the full playbook — tree grammar, menu-bar navigation, what text
 entry works where (including the iOS Simulator), the error strings and what to do about them,
 Simulator specifics, verification habits, and the confirmation policy — lives in
-[skills/claude-leap/SKILL.md](skills/claude-leap/SKILL.md), which the model loads on demand.
+[skills/leap/SKILL.md](skills/leap/SKILL.md), which the model loads on demand.
 This mirrors how ChatGPT's computer use ships: a bundled plugin whose `SKILL.md` explains the
 tools, with the service itself saying very little.
 
 Manual registration, if you prefer:
 
 ```bash
-claude mcp add --scope user leap -- ~/Applications/claude-leap.app/Contents/MacOS/claude-leap
+claude mcp add --scope user leap -- ~/Applications/Leap.app/Contents/MacOS/leap
 ```
 
 or in `~/.claude.json` / a project `.mcp.json`:
@@ -146,23 +146,23 @@ or in `~/.claude.json` / a project `.mcp.json`:
 {
   "mcpServers": {
     "leap": {
-      "command": "/Users/<you>/Applications/claude-leap.app/Contents/MacOS/claude-leap"
+      "command": "/Users/<you>/Applications/Leap.app/Contents/MacOS/leap"
     }
   }
 }
 ```
 
-For development against the debug build, `LEAP_BIN=…/.build/out/Products/Debug/claude-leap`
+For development against the debug build, `LEAP_BIN=…/.build/out/Products/Debug/leap`
 makes `scripts/mcp-call.py` use that binary instead.
 
 ### OpenCode and Codex
 
-OpenCode: add `"leap": {"type": "local", "command": ["/Users/<you>/Applications/claude-leap.app/Contents/MacOS/claude-leap"]}`
+OpenCode: add `"leap": {"type": "local", "command": ["/Users/<you>/Applications/Leap.app/Contents/MacOS/leap"]}`
 under `mcp` in `~/.config/opencode/opencode.json`.
 
 Codex is intentionally not a Leap host in this setup: it uses its own computer-use service, and
 the installer does not copy Leap skills there (decision 2026-09-30). The server still works with
-Codex if registered manually (`codex mcp add leap -- "$HOME/Applications/claude-leap.app/Contents/MacOS/claude-leap"`).
+Codex if registered manually (`codex mcp add leap -- "$HOME/Applications/Leap.app/Contents/MacOS/leap"`).
 Restart the Codex session after registration or a server update. If startup reports
 `-32603` and “The data couldn’t be read because it isn’t in the correct format”,
 rebuild and install the current server. The Swift SDK's string-only decoding of
@@ -172,7 +172,7 @@ initialization. This is a handshake failure, separate from stale tool descriptio
 Run the protocol regression against the installed binary with:
 
 ```bash
-LEAP_BIN="$HOME/Applications/claude-leap.app/Contents/MacOS/claude-leap" python3 -B scripts/test-mcp-handshake.py
+LEAP_BIN="$HOME/Applications/Leap.app/Contents/MacOS/leap" python3 -B scripts/test-mcp-handshake.py
 ```
 
 ## Tools
@@ -202,7 +202,7 @@ Run `scripts/mcp-call.py tools` for the full schemas. The server's `instructions
 ```
 Sources/LeapCore/      AXTree, AppSession (indices + diff), Engine (actions), Input (CGEvent),
                        Capture (ScreenCaptureKit), AppResolver, WindowInfo, Keys, Permissions
-Sources/claude-leap/   MCP server: tool schemas, dispatch, agent instructions
+Sources/leap/   MCP server: tool schemas, dispatch, agent instructions
 Tests/LeapCoreTests/   unit tests
 scripts/               install-swift-pkg.py, build.py, mcp-call.py, mine-codex-cua.py
 ```

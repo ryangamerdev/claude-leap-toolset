@@ -1,5 +1,5 @@
 ---
-name: claude-leap
+name: leap
 description: Drive native macOS apps (and, as a fallback, iOS Simulator apps) through the leap MCP (get_app_state, click, set_value, type_text, select_text, press_key, scroll, drag, paste, perform_action, batch, wait_for, screenshot; ui_perform for verified multi-step workflows). Use for reading or operating any app's UI (Xcode, Simulator, Blender, Finder, System Settings, any Mac app) or when the user says "use leap" or "computer use". Prefer a dedicated API or CLI when one covers the task.
 ---
 
