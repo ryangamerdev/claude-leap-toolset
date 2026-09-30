@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 Bridgetone, LLC and the Leap contributors
 """Read-only miner: how did Codex actually use computer-use / browser tools in a thread?
 
 Scans ~/.codex/sessions and archived_sessions rollout files for a thread id, pairs

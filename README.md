@@ -1,214 +1,192 @@
-# leap
+# Leap
 
-## Development status
+Open-source computer use for AI agents. Leap is a Model Context Protocol (MCP) server that lets
+an agent (Claude Code, OpenCode, or any MCP client) read and operate native desktop
+applications through the platform accessibility tree, the way a screen reader does, with
+screenshots as the fallback rather than the default.
 
-Acceptance and known gaps: [FEATURES](docs/FEATURES.md). Current execution order: [PLAN](docs/PLAN.md). Resume checkpoint: [SESSION-CONTINUATION](docs/SESSION-CONTINUATION.md). Durable recording, structured UI queries, text assets, snapshot comparisons and joined action outcomes are implemented. Native verification is scoped by the checklist; Gameday passes do not establish Simulator or Blender parity. Development rationale is recorded in [the iteration history](docs/iterations/README.md).
+It runs locally, works in the background without taking your mouse, keyboard or frontmost
+window, and records what it did so an agent (or you) can review the evidence afterwards.
 
+**Status:** macOS is implemented and in daily use. **Windows is not implemented yet and is the
+most wanted contribution**; see [Porting Leap to Windows](docs/WINDOWS-PORT.md) and the pinned
+tracking issue. Linux contributions are welcome too.
 
-Native macOS computer use for AI agents, built accessibility-first. A stdio MCP server
-written in Swift that lets an agent read and operate any Mac app the way a screen reader
-does — through the accessibility tree — with screenshots as the fallback, not the default.
+License: [GPL-3.0-or-later](LICENSE). Forks and derivative works must stay under the GPL.
 
-It reproduces the architecture that makes ChatGPT Desktop's "Computer Use" effective,
-on public frameworks (Accessibility, CoreGraphics events, ScreenCaptureKit) plus one
-private libsystem call, `responsibility_spawnattrs_setdisclaim`, looked up with `dlsym` at
-launch so the signed bundle owns its own TCC identity ("leap" in System Settings).
-If the symbol is missing the server logs that and runs under the launching app's identity
-instead; nothing else depends on it.
+## Why Leap
 
-| Capability | How |
-|---|---|
-| Indexed accessibility tree with **stable element indices** and **diffs** between states | `AXUIElement` walk, per-session index registry, line diff |
-| Actions that **never steal focus** and **never move your cursor** | AX `Press` / `SetSelectedText` / `SetValue` first, `CGEvent.postToPid` otherwise |
-| **Window-scoped screenshots** whose pixel coords equal window points | ScreenCaptureKit `SCScreenshotManager` |
-| **Batching** of predictable sequences into one call | `batch` tool; every action can also return the fresh state |
-| Background launch of the target app | `NSWorkspace.openApplication(activates: false)` |
-| xdotool-style key chords (`super+s`, `ctrl+shift+Tab`, `KP_0`) | `Keys.swift` |
-| **Visible activity indicator** — a virtual pointer + sonar ripple where the agent acts | `Overlay.swift`, a click-through `screenSaver`-level window |
+Commercial assistants now ship "computer use" for the Mac and Windows, but they are
+proprietary and tied to one vendor's models and accounts. Leap provides the same class of
+capability as an open, model-agnostic building block anyone can inspect, extend and self-host.
+
+Compared with other open projects in this space, Leap combines in one server:
+
+- **Accessibility-first observation.** `get_app_state` returns the key window as a compact,
+  indexed text tree with stable element indices and line diffs between states, so most steps
+  need no image at all.
+- **Background operation.** Actions go through accessibility actions (`AXPress`, value and
+  selected-text writes) first, then events posted directly to the target process. No tool
+  activates the app, takes keyboard focus or moves the real cursor unless you opt in with
+  `foreground: true`.
+- **Verified multi-step workflows.** `ui_perform` runs up to 50 steps with fresh targeting,
+  preconditions, bounded waits and expectations. Execution, dispatch and verification are
+  reported separately, and uncertain input is never replayed.
+- **Durable evidence.** Observations, inputs, outcomes and failure screenshots are journaled
+  in a project-local SQLite store and can be queried after a restart (`recording_*`,
+  `interaction_*`, `session_history`, `ui_diff`, `diagnostic_query`).
+- **iOS Simulator.** Guest apps can be driven through a pinned WebDriverAgent runner (`wda`
+  backend) or through the Simulator/Device Hub accessibility tree.
+- **Visible activity.** A coloured pointer wedge and ripple show where the agent acts, and the
+  macOS screen-recording indicator names the window being operated.
+- **Agent skills.** [skills/](skills) contains the playbooks agents load on demand.
+
+Related open projects worth knowing (each covers part of this space): agent-desktop,
+Cua Driver, open-computer-use, Peekaboo, Windows-MCP, mobile-mcp and appium-mcp. Contributions
+that borrow good ideas across projects are welcome, subject to each license.
 
 ## Two properties that matter
 
-**You keep your computer.** No tool activates an app, takes keyboard focus, or moves the
-real cursor. Text goes in through the accessibility text system (which SwiftUI and AppKit
-bindings observe), buttons go through AX `Press`, and anything left over is posted straight
-to the target process. You can keep typing in your own window while the agent works in
-another app. `foreground: true` is an explicit opt-in for apps that ignore posted events;
-it interrupts you, so the agent is instructed to ask first.
+**You keep your computer.** Text goes in through the accessibility text system, buttons through
+AX `Press`, and anything left over is posted to the target process. You can keep typing in your
+own window while the agent works in another app. `foreground: true` is an explicit opt-in for
+apps that ignore posted events; it interrupts you, so the bundled skill tells the agent to ask
+first.
 
-**You can see what it is doing.** Because the agent never borrows your cursor, it draws its
-own: a filled arrowhead *wedge* — just the tip of a cursor, no tail — whose point sits on the
-action and whose body trails down-and-right so it never covers the target. It is coloured by
-the action (coral = click, teal = edit, blue = scroll, violet = drag, grey = read) and pulses
-slowly like a heartbeat, so it reads as a pointer while staying obviously distinct from your
-own black-and-white cursor. Each interaction also fires one expanding sonar ring at the point.
-It is a click-through overlay at screen-saver window level, so it floats over everything, is
-never clickable, and never takes focus. `LEAP_OVERLAY=0` disables it.
+**You can see what it is doing.** Leap draws its own pointer: a filled wedge whose tip sits on
+the action, coloured by action (coral = click, teal = edit, blue = scroll, violet = drag,
+grey = read), with one sonar ring per interaction. It is a click-through overlay that never
+takes focus. `LEAP_OVERLAY=0` disables it. While a session is working in a window, Leap also
+holds a small ScreenCaptureKit stream on it so macOS shows its own recording indicator naming
+the window; frames are discarded and the stream is released after 90 s idle
+(`LEAP_SHARE_INDICATOR=0` disables it).
 
-**macOS shows it too.** While a session is working in a window, leap holds a tiny
-ScreenCaptureKit stream on that window, so macOS lights its own screen-recording indicator in
-the menu bar (the Control Center item whose menu names the capturing app and the window). That
-is the same system signal you see during ChatGPT's computer use; it is not a remote-desktop
-feature, just a consequence of streaming a window. Frames are discarded; the stream is released
-after 90 s idle. `LEAP_SHARE_INDICATOR=0` disables it; `tests/share-indicator.json` verifies it.
+## Requirements (macOS)
 
-Verify it is really there without needing Screen Recording:
-
-```bash
-swiftc -O -o /tmp/check-overlay scripts/check-overlay.swift && /tmp/check-overlay
-# owner="leap" layer=1000 alpha=1.0 bounds=0,0 1728x1117
-```
-
-## Requirements
-
-- macOS 14+ (Sonoma). Verified on 14.7.2.
-- Swift 6.1+ toolchain (the MCP Swift SDK needs it). Xcode 16.0 ships 6.0, so this repo
-  uses the swift.org **6.4.0** toolchain installed user-scope by
-  `scripts/install-swift-pkg.py` — no Xcode or OS upgrade required.
-- Permissions, granted once to **leap** (the signed bundle — see below):
-  - Privacy & Security › **Accessibility** — required for everything. macOS shows a
-    dialog on first use; accept it.
-  - Privacy & Security › **Screen Recording** — required for screenshots only. macOS
-    does *not* show a second dialog: it adds **leap** to the list unchecked. Open
-    the pane and switch it on. (`open "x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture"`
-    — System Settings may flash its previous pane first; that is a known deep-link quirk.)
+- macOS 14 (Sonoma) or later. Developed on macOS 14 through 27.
+- A Swift 6.1+ toolchain. `scripts/install-swift-pkg.py` installs a pinned swift.org toolchain
+  user-scope if your Xcode is older.
+- Permissions granted once to **Leap** (the signed app bundle):
+  - Privacy & Security > **Accessibility**: required.
+  - Privacy & Security > **Screen & System Audio Recording**: required for screenshots only.
   The `permissions` tool reports both and can raise the prompts.
-  Dev builds run under Claude Code's own grant (its helper is listed as **claude**).
+- For the `wda` Simulator backend: Xcode and a booted Simulator (see `scripts/wda.py`).
 
-## Build and test
-
-```bash
-python3 scripts/install-swift-pkg.py 6.4.0   # once
-python3 scripts/build.py                     # swift build with the pinned toolchain
-python3 scripts/build.py test                # unit tests
-python3 scripts/mcp-call.py tools            # talk to the server exactly like an agent
-python3 scripts/mcp-call.py call get_app_state '{"app":"Calculator"}'
-python3 scripts/mcp-call.py call batch '{"app":"Calculator","actions":[{"tool":"click","element_index":20},{"tool":"click","element_index":13},{"tool":"click","element_index":16},{"tool":"click","element_index":6}]}'
-python3 scripts/mcp-call.py script tests/index-stability.json   # multi-call test in ONE session
-```
-
-`script` mode runs every call against a single server process, which is how Claude Code
-uses it — and the only way element indices are meaningful, since the registry lives in the
-server. `@capture` pulls a value out of the previous result (`$var` substitutes it into
-later calls) and `@expect` asserts on it, so tests do not hardcode indices.
-
-All scripts print full command output and exit codes; nothing is truncated.
-
-## Build the app bundle (own permissions identity)
+## Install for Claude Code
 
 ```bash
-python3 scripts/bundle.py        # release build → dist/Leap.app, signed with your Developer ID
-```
-
-macOS attributes privacy permissions to the *responsible process*, which for a plain
-binary launched by Claude Code is Claude Code itself — so prompts say "claude" and the
-grant belongs to it. The bundle fixes that two ways: it has its own bundle id
-(`com.bridgetone.leap`) and Developer ID signature, and on launch the binary
-re-execs itself with `responsibility_spawnattrs_setdisclaim` ([Disclaim.swift](Sources/leap/Disclaim.swift))
-so TCC treats it as its own responsible process. `tccd` then logs
-`Sub:{com.bridgetone.leap} Resp:{identifier=com.bridgetone.leap}` and
-System Settings shows **leap** under Accessibility and Screen Recording. Grant
-both once; the Developer ID signature keeps the grant valid across rebuilds.
-
-The bare `swift build` binary deliberately does *not* disclaim (it would end up under an
-unsigned identity with no grants), so dev runs keep using the grant given to Claude Code.
-
-## Install for Claude Code (server + skill)
-
-```bash
+git clone https://github.com/gignit/leap-mcp.git
+cd leap-mcp
 python3 scripts/install.py
 ```
 
-This builds and signs the app if needed, then installs a self-contained copy the way unpacking a
-GitHub release would: it copies the signed bundle to `~/Applications/Leap.app` (with `ditto`,
-so the code signature and its TCC grants survive), copies each skill under `skills/` to
-`~/.claude/skills/<name>`, and registers the `leap` MCP server at the installed path. After this the
-repo can be moved or deleted and the install keeps working; re-run to update. Restart the Claude Code
-session afterwards. `--uninstall` reverses it.
+This builds and signs `dist/Leap.app` if needed, copies it to `~/Applications/Leap.app`
+(with `ditto`, so the signature and permission grants survive), copies each skill under
+`skills/` to `~/.claude/skills/<name>`, creates `~/.config/leap/leap.json` if absent, and
+registers the `leap` MCP server at the installed path. Restart the Claude Code session
+afterwards. `--uninstall` reverses it; `--skills-only` refreshes only the skills.
 
-**Why a skill as well as server instructions.** Claude Code truncates long MCP server
-instructions (the model sees roughly the first 2 KB), so the server's `instructions` string is
-kept to a short summary and the full playbook — tree grammar, menu-bar navigation, what text
-entry works where (including the iOS Simulator), the error strings and what to do about them,
-Simulator specifics, verification habits, and the confirmation policy — lives in
-[skills/leap/SKILL.md](skills/leap/SKILL.md), which the model loads on demand.
-This mirrors how ChatGPT's computer use ships: a bundled plugin whose `SKILL.md` explains the
-tools, with the service itself saying very little.
+Signing: `scripts/bundle.py` uses the first code-signing identity it finds, or
+`--identity "Developer ID Application: ..."`. An ad-hoc signature (`--identity -`) works, but
+macOS will ask for permissions again after each rebuild.
 
-Manual registration, if you prefer:
+Manual registration:
 
 ```bash
 claude mcp add --scope user leap -- ~/Applications/Leap.app/Contents/MacOS/leap
 ```
 
-or in `~/.claude.json` / a project `.mcp.json`:
+OpenCode (`~/.config/opencode/opencode.json`):
 
 ```json
-{
-  "mcpServers": {
-    "leap": {
-      "command": "/Users/<you>/Applications/Leap.app/Contents/MacOS/leap"
-    }
-  }
-}
+{ "mcp": { "leap": { "type": "local", "command": ["/Users/<you>/Applications/Leap.app/Contents/MacOS/leap"] } } }
 ```
 
-For development against the debug build, `LEAP_BIN=…/.build/out/Products/Debug/leap`
-makes `scripts/mcp-call.py` use that binary instead.
+Any other stdio MCP client can launch the same binary.
 
-### OpenCode and Codex
+### Why an app bundle
 
-OpenCode: add `"leap": {"type": "local", "command": ["/Users/<you>/Applications/Leap.app/Contents/MacOS/leap"]}`
-under `mcp` in `~/.config/opencode/opencode.json`.
-
-Codex is intentionally not a Leap host in this setup: it uses its own computer-use service, and
-the installer does not copy Leap skills there (decision 2026-09-30). The server still works with
-Codex if registered manually (`codex mcp add leap -- "$HOME/Applications/Leap.app/Contents/MacOS/leap"`).
-Restart the Codex session after registration or a server update. If startup reports
-`-32603` and “The data couldn’t be read because it isn’t in the correct format”,
-rebuild and install the current server. The Swift SDK's string-only decoding of
-experimental client capabilities rejects object-valued extensions sent by Codex;
-`CompatibleTransport` ignores experimental values Leap does not support during
-initialization. This is a handshake failure, separate from stale tool descriptions.
-Run the protocol regression against the installed binary with:
-
-```bash
-LEAP_BIN="$HOME/Applications/Leap.app/Contents/MacOS/leap" python3 -B scripts/test-mcp-handshake.py
-```
+macOS attributes privacy permissions to the responsible process, which for a plain binary
+launched by an agent host is the host itself. Leap ships as a signed bundle with its own
+bundle identifier, and on launch re-executes itself with `responsibility_spawnattrs_setdisclaim`
+([Disclaim.swift](Sources/leap/Disclaim.swift), looked up with `dlsym`; if missing, Leap runs
+under the host's identity). System Settings then lists **Leap** under Accessibility and Screen
+Recording. The bare `swift build` binary does not disclaim, so development runs use the host's
+grant.
 
 ## Tools
 
-`list_apps`, `get_app_state`, `screenshot`, `click`, `drag`, `scroll`, `press_key`,
-`type_text`, `set_value`, `perform_action`, `paste`, `activate`, `batch`, `permissions`.
-Run `scripts/mcp-call.py tools` for the full schemas. The server's `instructions`
-(sent on `initialize`) describe the intended workflow to the agent.
+Interactive loop: `list_apps`, `get_app_state`, `click`, `set_value`, `type_text`,
+`select_text`, `press_key`, `perform_action`, `scroll`, `drag`, `paste`, `activate`, `batch`,
+`wait_for`, `screenshot`, `permissions`.
+
+Intent workflows: `target_list`, `session_open`, `ui_observe`, `ui_inspect`, `ui_perform`,
+`session_history`, `session_close`, `verified_action`.
+
+Evidence: `bind_project`, `recording_start`/`stop`/`query`/`nodes`/`review`/`sessions`/`group`,
+`interaction_timeline`/`delta`/`result`, `ui_to_text`, `ui_diff`, `leap_asset`,
+`evidence_read`, `diagnostic_query`.
+
+Run `python3 scripts/mcp-call.py tools` for full schemas. The playbook agents follow is
+[skills/leap/SKILL.md](skills/leap/SKILL.md); configuration is in
+[docs/configuration.md](docs/configuration.md).
 
 ### State format
 
 ```
 ## Calculator — window "" 574x321 at screen (936,139) [background]
-[3] StaticText value="0" desc="main display" id=_NS:16 @17,22 545x56 actions=ShowMenu
-  [5] Button "2" desc="two" @398,224 59x49
+[3] StaticText value="0" desc="main display" id=_NS:16 actions=ShowMenu
+  [5] Button "2" desc="two"
 ```
 
 - `[n]` is the element index used by actions; it is stable for the life of the window.
-- `@x,y w×h` are window-relative points. With `scale=1` (default) the screenshot is
-  1 px per point, so the same numbers address the image.
-- Subsequent states are diffs: `+` added, `~` changed, `-` removed, unchanged omitted.
-- Flags: `[focused] [selected] [disabled] [settable]`; `actions=` lists secondary
-  accessibility actions for `perform_action`.
+- Subsequent states are diffs: `+` added, `~` changed, removed indices listed compactly.
+- Flags: `[focused] [selected] [disabled] [settable]`; `actions=` lists secondary actions for
+  `perform_action`. Frames appear with `include_frames=true`.
+
+## Build and test
+
+```bash
+python3 scripts/build.py                     # swift build with the pinned toolchain
+python3 scripts/build.py test                # unit tests (or: swift test)
+python3 scripts/mcp-call.py tools            # talk to the server like an agent
+python3 scripts/mcp-call.py call get_app_state '{"app":"Calculator"}'
+python3 scripts/mcp-call.py script Tests/menu-bar.json   # multi-call scenario in one session
+python3 -B scripts/test-mcp-handshake.py     # protocol regression
+```
+
+`script` mode runs every call against one server process, which is the only way element
+indices stay meaningful. `@capture` extracts a value from a result (`$var` substitutes it),
+`@expect`/`@absent` assert on it. `make scenarios SET=simulator` replays the Simulator set.
+`LEAP_BIN` selects the binary under test.
 
 ## Layout
 
 ```
-Sources/LeapCore/      AXTree, AppSession (indices + diff), Engine (actions), Input (CGEvent),
-                       Capture (ScreenCaptureKit), AppResolver, WindowInfo, Keys, Permissions
-Sources/leap/   MCP server: tool schemas, dispatch, agent instructions
-Tests/LeapCoreTests/   unit tests
-scripts/               install-swift-pkg.py, build.py, mcp-call.py, mine-codex-cua.py
+Sources/LeapCore/   accessibility walk, sessions/diffs, actions, input, capture, recording,
+                    evidence store, intent workflows, WebDriverAgent client
+Sources/leap/       MCP server: tool schemas, dispatch, transport, permissions identity
+Tests/              unit tests and JSON MCP scenarios
+scripts/            build, bundle, install, MCP client, WebDriverAgent helper, test harnesses
+skills/             agent skills installed alongside the server
+docs/               configuration, Windows port guide, iteration history
 ```
 
-## Comparison notes
+## Contributing
 
-`scripts/mine-codex-cua.py THREAD_ID` reads a local Codex rollout (read-only) and prints
-how its computer-use REPL was actually used — useful for keeping this project honest
-about what "as good or better" means.
+See [CONTRIBUTING.md](CONTRIBUTING.md). The highest-impact work right now:
+
+1. A Windows implementation (UI Automation) with the same tool contract.
+2. Portable, app-agnostic regression scenarios (for example against TextEdit or Calculator).
+3. Linux (AT-SPI) support.
+
+Security reports: see [SECURITY.md](SECURITY.md).
+
+## License
+
+Copyright (C) 2026 Bridgetone, LLC and the Leap contributors.
+
+Leap is free software: you can redistribute it and/or modify it under the terms of the GNU
+General Public License as published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version. It is distributed WITHOUT ANY WARRANTY; see
+[LICENSE](LICENSE).

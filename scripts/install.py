@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 Bridgetone, LLC and the Leap contributors
 """Install leap for Claude Code the way a downloaded GitHub release would.
 
 Usage:
@@ -11,8 +13,6 @@ This does NOT symlink into the repo. It copies the signed app bundle to
   ~/Applications/Leap.app
 and copies each skill to
   ~/.claude/skills/<name>
-(not Codex: Codex uses its own computer-use service, and Leap is not registered there; a stale
-Leap skill copy under $CODEX_HOME/skills is removed)
 then registers the MCP server at the installed path. After this the repo can be moved
 or deleted and the install keeps working. Re-run to update to a newer build.
 
@@ -34,8 +34,6 @@ INSTALLED_SERVER = os.path.join(INSTALL_APP, "Contents", "MacOS", "leap")
 
 SKILLS_DIR = os.path.join(ROOT, "skills")
 SKILLS_DST_ROOTS = [os.path.expanduser("~/.claude/skills")]
-# Leap stays out of Codex (user direction 2026-09-30); earlier installs copied skills there.
-CODEX_SKILLS = os.path.join(os.path.expanduser(os.environ.get("CODEX_HOME", "~/.codex")), "skills")
 
 
 def run(cmd, check=True):
@@ -70,24 +68,6 @@ def each_skill():
                 yield name, src, os.path.join(destination, name)
 
 
-# Pre-rename installs (product "claude-leap", bundle com.bridgetone.claude-leap); removed on install.
-LEGACY_APP = os.path.expanduser("~/Applications/claude-leap.app")
-LEGACY_SKILLS = ["claude-leap"]
-
-
-def remove_legacy():
-    """Remove the pre-rename app bundle and skill copies (Claude and Codex)."""
-    if os.path.lexists(LEGACY_APP):
-        _rm(LEGACY_APP)
-        print(f"removed pre-rename app: {LEGACY_APP}")
-    for root in SKILLS_DST_ROOTS + [CODEX_SKILLS]:
-        for name in LEGACY_SKILLS:
-            stale = os.path.join(root, name)
-            if os.path.lexists(stale):
-                _rm(stale)
-                print(f"removed pre-rename skill: {stale}")
-
-
 def install_app():
     # `ditto` copies an app bundle preserving the code signature and extended attributes,
     # so the installed copy keeps its Developer ID identity (and therefore its TCC grants).
@@ -109,18 +89,6 @@ def install_skills():
         _rm(dst)
         shutil.copytree(src, dst)
         print(f"skill: {dst}")
-    remove_codex_skills()
-
-
-def remove_codex_skills():
-    """Delete copies of this repo's skills that earlier installs put under Codex."""
-    if not os.path.isdir(SKILLS_DIR):
-        return
-    for name in sorted(os.listdir(SKILLS_DIR)):
-        stale = os.path.join(CODEX_SKILLS, name)
-        if os.path.exists(os.path.join(SKILLS_DIR, name, "SKILL.md")) and os.path.lexists(stale):
-            _rm(stale)
-            print(f"removed Codex skill copy: {stale}")
 
 
 def install_config():
@@ -150,7 +118,6 @@ def main():
         if args != {"--skills-only"}:
             raise SystemExit("--skills-only cannot be combined with other options")
         install_skills()
-        remove_legacy()
         return
     if "--uninstall" in args:
         run(["claude", "mcp", "remove", "leap", "-s", "user"], check=False)
@@ -160,8 +127,6 @@ def main():
             if os.path.exists(dst) or os.path.islink(dst):
                 _rm(dst)
                 print(f"removed {dst}")
-        remove_codex_skills()
-        remove_legacy()
         print("Uninstalled. Restart the Claude Code session.")
         return
 
@@ -173,14 +138,13 @@ def main():
 
     install_app()
     install_skills()
-    remove_legacy()
     install_config()
     # Register the MCP server at the INSTALLED path (user scope, all projects).
     run(["claude", "mcp", "remove", "leap", "-s", "user"], check=False)
     run(["claude", "mcp", "add", "--scope", "user", "leap", "--", INSTALLED_SERVER])
     # Ask for Leap's own grants now, as "Leap" (not the terminal): Accessibility prompt, and
-    # System Settings opened at Screen Recording with the request made while it is visible
-    # (Sky's approach). No-op when both are already granted.
+    # System Settings opened at Screen Recording with the request made while it is visible.
+    # No-op when both are already granted.
     run([INSTALLED_SERVER, "--request-permissions"], check=False)
 
     print("\nInstalled a self-contained copy; the repo is no longer needed at runtime.")

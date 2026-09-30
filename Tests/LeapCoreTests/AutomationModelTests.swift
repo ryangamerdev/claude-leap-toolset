@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Bridgetone, LLC and the Leap contributors
+
 import XCTest
 @testable import LeapCore
 
@@ -59,13 +62,13 @@ final class AutomationModelTests:XCTestCase {
         XCTAssertThrowsError(try AutomationModel.validateSelector(["lable":"Save"]))
     }
     func testWithinScopesByAncestorLabel() {
-        let node:[String:Any]=["id":"w/AXWindow[App]#0/AXScrollArea[Coaching notes]#1/AXTextArea[]#0","role":"AXTextArea","label":"",
-                               "ancestors":["w/AXWindow[App]#0","w/AXWindow[App]#0/AXScrollArea[Coaching notes]#1"]]
-        XCTAssertTrue(AutomationModel.matches(node,["role":"AXTextArea","within":"Coaching notes"]))
+        let node:[String:Any]=["id":"w/AXWindow[App]#0/AXScrollArea[Release notes]#1/AXTextArea[]#0","role":"AXTextArea","label":"",
+                               "ancestors":["w/AXWindow[App]#0","w/AXWindow[App]#0/AXScrollArea[Release notes]#1"]]
+        XCTAssertTrue(AutomationModel.matches(node,["role":"AXTextArea","within":"Release notes"]))
         XCTAssertFalse(AutomationModel.matches(node,["role":"AXTextArea","within":"Player notes"]))
         XCTAssertFalse(AutomationModel.matches(node,["role":"AXTextArea","within":"notes"]))
         XCTAssertTrue(AutomationModel.ownLabel(of:"a/AXGroup[Tag #1]#12",is:"Tag #1"))
-        XCTAssertNoThrow(try AutomationModel.validateSelector(["within":"Coaching notes"]))
+        XCTAssertNoThrow(try AutomationModel.validateSelector(["within":"Release notes"]))
     }
     func testRootMatchesElidedContainerIdsByPathPrefix() {
         let node:[String:Any]=["id":"w/AXWindow[G]#0/AXGroup[]#0/AXButton[Save]#0","role":"AXButton","label":"Save","ancestors":["w/AXWindow[G]#0"]]

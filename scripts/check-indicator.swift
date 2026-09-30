@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Bridgetone, LLC and the Leap contributors
+
 // Reports whether macOS's screen-recording indicator (Control Center's Audio and Video menu extra)
 // is on screen. It appears while any process streams a window with ScreenCaptureKit.
 // macOS 27: menu extras are owned by MenuBarAgent and read through accessibility

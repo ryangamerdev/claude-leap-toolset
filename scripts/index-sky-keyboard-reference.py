@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 Bridgetone, LLC and the Leap contributors
 """Index the supplied full reference manifest; prints pointers, never sends UI input."""
 from pathlib import Path
 import csv, json

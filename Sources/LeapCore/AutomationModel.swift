@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Bridgetone, LLC and the Leap contributors
+
 import Foundation
 import ApplicationServices
 
@@ -44,7 +47,7 @@ public enum AutomationModel {
            !(node["id"] as? String ?? "").hasPrefix(root+"/"),
            !(node["ancestors"] as? [String] ?? []).contains(root) {return false}
         // Scope by an ancestor's own label (ids end in "[label]#ordinal") so agents need not
-        // reconstruct full-path ids: {"role":"AXTextArea","within":"Coaching notes"}.
+        // reconstruct full-path ids: {"role":"AXTextArea","within":"Release notes"}.
         if let within=selector["within"] as? String,
            !(node["ancestors"] as? [String] ?? []).contains(where:{ownLabel(of:$0,is:within)}) {return false}
         return true
@@ -138,7 +141,7 @@ public enum AutomationModel {
         let old=keyed(before), new=keyed(after)
         // Deltas are read on every action: carry what identifies and describes a node,
         // not its ancestry/action lists (those stay in the retained snapshot).
-        // Like Sky's "+ 153 button Cancel": identity plus only non-default state.
+        // Compact like "+ 153 button Cancel": identity plus only non-default state.
         func summary(_ n:[String:Any]) -> [String:Any] {
             var out=n.filter { ["index","role","label","value"].contains($0.key) }
             if n["enabled"] as? Bool == false {out["enabled"]=false}
@@ -183,7 +186,7 @@ final class AutomationSession {
     let id:String, app:String, backend:String, store:RecordingStore
     var window:String?
     /// Opened with an explicit window: identity is enforced. Otherwise the session follows the key
-    /// window like Sky's app handle (a sheet opening/closing is reported, not an error).
+    /// window (a sheet opening/closing is reported, not an error).
     let explicitWindow:Bool
     var windowIdentity:AXUIElement?
     let pid:pid_t?

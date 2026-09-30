@@ -36,9 +36,9 @@ Inspect the schema before requesting middle/right-button dragging, hover, held k
 
 After a failed or ambiguous action, observe once before retrying. Do not blindly repeat extrude, duplicate, save/import, or text submission. After an action succeeds but the observation fails, re-observe without replaying the action. For asynchronous compile/import/render work, use bounded waits on meaningful UI state, logs, or output artifacts; a settled tree does not establish job completion.
 
-## Leap comparison campaign storage
+## Evidence storage
 
-When working on the leap comparison campaign, keep scripts and tests in the repository’s `scripts/` and `tests/`, reports in `docs/research/`, and raw logs/previews/project artifacts under `artifacts/`. Keep the paired Mickey baseline and `.blend` files in `artifacts/blender/mickey-head/`. Do not use external scratch folders for evidence. For unrelated user projects, follow that project’s requested output location.
+When developing Leap itself, keep scripts and tests in the repository's `scripts/` and `Tests/`, and raw logs, previews and `.blend` files under the ignored `artifacts/` directory. For user projects, follow that project's requested output location.
 
 ## Completion standard
 

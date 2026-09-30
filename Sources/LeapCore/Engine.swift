@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Bridgetone, LLC and the Leap contributors
+
 import ApplicationServices
 import AppKit
 import Foundation
@@ -59,8 +62,7 @@ public actor Engine {
         return s
     }
 
-    /// Session for an *action*. Refuses — like Sky's "The user changed '<app>'" and "Computer
-    /// Use is not active for '<app>'" errors — when the process was replaced since the last
+    /// Session for an *action*. Refuses when the process was replaced since the last
     /// state, or when an element_index/label arrives before any state was ever read: in both
     /// cases the caller's indices refer to a tree it has not seen. Coordinate-only actions
     /// still index silently (they only need the window frame).
@@ -120,10 +122,10 @@ public actor Engine {
         public var disableDiff = false
         public var scale: CGFloat = 1.0
         public var jpegQuality: CGFloat? = 0.8
-        /// Per-element window-relative frames in the tree. Off by default (Sky's tree has none;
-        /// the screenshot carries geometry) — saves ~20 tokens per element.
+        /// Per-element window-relative frames in the tree. Off by default (the screenshot carries
+        /// geometry) — saves ~20 tokens per element.
         public var includeFrames = false
-        /// Poll until the tree stops changing after a recent action (Sky: ~1 s + up to 5 s). Evidence reads
+        /// Poll until the tree stops changing after a recent action (~1 s + up to 5 s). Evidence reads
         /// taken after a condition already resolved skip it.
         public var settle = true
         /// Render runs of disabled elements (an inactive tab kept alive in the tree) line by line
@@ -150,8 +152,8 @@ public actor Engine {
     }
 
     /// Extra time allowed after an action while the tree is still changing (loading indicators,
-    /// list refreshes). Sky's runtime waits ~1 s plus up to 5 s more "if the app has a loading
-    /// indicator or other signs of state changes" (its plugin skill says so); we poll for stability.
+    /// list refreshes). We wait ~1 s plus up to 5 s more while the app shows
+    /// a loading indicator or other signs of state changes, polling for stability.
     public var maxSettleAfterAction: TimeInterval = 5.0
     /// Smallest budget worth starting a settle re-scan with (a typical full window scan takes 0.1–0.2 s).
     static let minSettleScan: TimeInterval = 0.75
@@ -213,7 +215,7 @@ public actor Engine {
         var warning: String?
         let info = WindowInfo.match(pid: s.pid, frame: snap.frame, title: snap.title)
         // Hold the capture indicator while leap is actively reading/driving this window, so the
-        // user sees the same "this window is being watched" badge Sky shows. Released after idle.
+        // user sees the same "this window is being watched" badge. Released after idle.
         if let info { await ShareIndicator.shared.hold(info.id) }
         if opts.includeScreenshot {
             if let info {
@@ -408,7 +410,7 @@ public actor Engine {
         let focused: AXUIElement? = AX.attr(s.axApp, kAXFocusedWindowAttribute)
         if let focused, CFEqual(focused, target) { return }
         // A sheet/alert attached to the selected window is its key surface: keys meant for the window go
-        // there (Sky sends keys to the process, which routes them to its key window).
+        // there (keys go to the process, which routes them to its key window).
         if let focused, Self.isSheet(focused, of: target) { return }
         AXUIElementSetAttributeValue(target, kAXMainAttribute as CFString, kCFBooleanTrue)
         AXUIElementPerformAction(target, kAXRaiseAction as CFString)
@@ -446,8 +448,8 @@ public actor Engine {
               let window = WindowInfo.match(pid: s.pid, frame: s.lastWindowFrame, title: title) else {
             throw LeapError.unsupported("Keyboard target window is unavailable. No keyboard input sent.")
         }
-        // Sky's app keyboard controller resolves a KeyboardEventTarget then calls
-        // send(to:pid), even when the app is foreground. Activation is a policy,
+        // Resolve the keyboard target, then post to the process (postToPid), even when
+        // the app is foreground. Activation is a policy,
         // not permission to send keys into the system-wide input stream.
         let delivery = try Input.appKeyboardDelivery(pid: s.pid, window: window)
         hold?.delivery = delivery
@@ -472,8 +474,7 @@ public actor Engine {
               window.bounds.approximatelyEquals(s.lastWindowFrame) else {
             throw LeapError.unsupported("Could not resolve the selected window for pointer delivery. No pointer input was sent; read get_app_state and retry.")
         }
-        // Sky resolves the target window at the event point from the app's ordered windows
-        // (target(forMouseEventAt:with: orderedWindows)). An alert sheet is its own window above the
+        // Resolve the target window at the event point from the app's ordered windows. An alert sheet is its own window above the
         // main one; routing its clicks to the main window made them hit nothing.
         var target = window
         if let point, let front = WindowInfo.onScreen().first(where: { $0.pid == s.pid && $0.layer == 0 && $0.bounds.contains(point) }) {
@@ -521,7 +522,7 @@ public actor Engine {
         app.activate()
     }
 
-    /// Sky activates instead of Command-clicking when a click may change a selection, in web
+    /// Activate instead of Command-clicking when a click may change a selection, in web
     /// content and on Catalyst menu buttons; the role under the point is the available signal.
     static let selectionSensitiveRoles: Set<String> = ["AXRow", "AXCell", "AXOutline", "AXTable", "AXList",
         "AXLink", "AXWebArea", "AXMenuButton", "AXTextField", "AXTextArea", "AXSearchField", "AXComboBox"]
@@ -529,7 +530,7 @@ public actor Engine {
         guard let role else { return .activateWindow }
         return selectionSensitiveRoles.contains(role) ? .activateWindow : .commandClick
     }
-    /// Role of the element under a screen point in the target app (Sky's target(forMouseEventAt:)).
+    /// Role of the element under a screen point in the target app.
     static func roleAt(_ s: AppSession, _ p: CGPoint) -> String? {
         var hit: AXUIElement?
         guard AXUIElementCopyElementAtPosition(s.axApp, Float(p.x), Float(p.y), &hit) == .success, let hit else { return nil }
@@ -556,7 +557,7 @@ public actor Engine {
             // AXPress needs no screen coordinate. Validate only its cosmetic marker,
             // before the action can remove the target or change the window.
             let marker = indicatorPoint(s, rec.index)
-            // Like Sky's clickablePoint(scrollToVisible:): bring a rotated Simulator element into
+            // Bring a rotated Simulator element into
             // view first; an off-screen iOS text area acknowledges AXPress without taking focus.
             if rec.node.untransformedFrame, rec.node.actions.contains("AXScrollToVisible") {
                 if AXUIElementPerformAction(rec.node.element, "AXScrollToVisible" as CFString) == .success {
@@ -571,7 +572,7 @@ public actor Engine {
                 await signal(marker, .click)
                 // A background app's menu can open a moment after AXPress returns; the settle loop may
                 // see two identical reads first. Wait (never re-press: a late-opening menu would close)
-                // until the menu shows items, like Sky returning the open menu after a title click.
+                // until the menu shows items; a title click should return the open menu.
                 if rec.node.role == "AXMenuBarItem" {
                     var opened = false
                     for _ in 0..<20 where !opened {
@@ -590,8 +591,7 @@ public actor Engine {
             // Only an explicitly unsupported action permits pointer fallback;
             // otherwise a second click could repeat an already-applied action.
             // kAXErrorCannotComplete: SwiftUI commonly replaces a control while its action runs (a toggle
-            // swapping icon, Save closing an editor), so the press often applied. Sky's timeouts likewise
-            // "had already applied". Report the raw result as uncertain and let the caller verify; never re-press.
+            // swapping icon, Save closing an editor), so the press often applied. Report the raw result as uncertain and let the caller verify; never re-press.
             if err == .cannotComplete {
                 await signal(marker, .click)
                 return "pressed [\(rec.index)] via accessibility; AX returned cannotComplete (-25204): uncertain — the action may have applied. Verify the state; do not press again"
@@ -780,7 +780,7 @@ public actor Engine {
         if chord.flags.contains(.maskCommand), let code = chord.keyCode {
             // Text editing chords: AppKit disables Edit-menu items for a background app (no key
             // window to validate against), so these go through the AX text API instead — the
-            // Sky service does the same (it carries `selectAll:`, not menu presses, for this).
+            // text system handles selectAll: directly, without menu presses.
             let plainCommand = chord.flags.subtracting([.maskCommand, .maskNonCoalesced, .maskNumericPad]).isEmpty
             if plainCommand, let target = focused, let done = try axTextCommand(target, code) { return done }
             if let item = menuItem(s, matching: chord) {
@@ -1045,7 +1045,7 @@ public actor Engine {
         defer { s.lastActionAt = Date() }
         // Plain text into a focused text element: insert through the accessibility text API and
         // read it back, like press_key super+v. A background app's Edit menu is disabled, so a
-        // posted ⌘V is often ignored (Sky's paste times out waiting for the clipboard read there).
+        // posted ⌘V is often ignored (a paste can time out waiting for the clipboard read there).
         // Rich (html) content and non-text focus keep the pasteboard + ⌘V route.
         if html == nil, !mode.foreground, let focused: AXUIElement = AX.attr(s.axApp, kAXFocusedUIElementAttribute) {
             switch AX.insertText(focused, text, replaceAll: false) {
@@ -1066,7 +1066,7 @@ public actor Engine {
     public enum SelectionType: String { case text, cursorBefore = "cursor_before", cursorAfter = "cursor_after" }
 
     /// Select `text` inside an editable element (or place the caret before/after it), through
-    /// the accessibility selected-text range — Sky's `select_text(prefix, suffix, selection_type)`.
+    /// the accessibility selected-text range.
     public func selectText(app query: String, elementIndex: Int, text: String, prefix: String? = nil,
                            suffix: String? = nil, selection: SelectionType = .text) async throws -> String {
         try requireAX()
@@ -1203,10 +1203,10 @@ public actor Engine {
         let all = s.elements.values.sorted { $0.index < $1.index }
         var exact = all.filter { texts($0.node).contains(needle) }
         if exact.count == 1 { return exact[0].index }
-        // A button "Playbook" and a heading "PLAYBOOK" both match exactly; the one that can be
+        // A button "Library" and a heading "LIBRARY" both match exactly; the one that can be
         // acted on is what a caller giving a label means.
         if exact.count > 1 {
-            // "Coaching notes" vs a "COACHING NOTES" heading: an exact-case match is the stronger signal.
+            // "Release notes" vs a "RELEASE NOTES" heading: an exact-case match is the stronger signal.
             let raw = label.trimmingCharacters(in: .whitespaces)
             let cased = exact.filter { [$0.node.title, $0.node.description, $0.node.value, $0.node.placeholder].contains(raw) }
             if cased.count == 1 { return cased[0].index }

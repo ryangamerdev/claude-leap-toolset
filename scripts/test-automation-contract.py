@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 Bridgetone, LLC and the Leap contributors
 """Protocol/adapter fault fixture, NOT native application acceptance. No real UI input.
 Run with LEAP_BIN pointing at signed candidate. Artifacts remain in repository.
 """

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Bridgetone, LLC and the Leap contributors
+
 import Foundation
 
 enum ClickGeometry {

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 Bridgetone, LLC and the Leap contributors
 """Call leap tools over stdio MCP, exactly as an agent would.
 
 Usage:
@@ -168,7 +170,7 @@ def main():
 
         def substitute(value):
             if isinstance(value, str):
-                # Longest names first so "$playbook" never eats the front of "$playbook2".
+                # Longest names first so "$item" never eats the front of "$item2".
                 for k in sorted(captured, key=len, reverse=True):
                     v = captured[k]
                     if value == "$" + k:

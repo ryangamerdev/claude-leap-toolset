@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Bridgetone, LLC and the Leap contributors
+
+import AppKit
 import XCTest
 @testable import LeapCore
 
@@ -14,11 +18,25 @@ final class ScrollEvidenceTests:XCTestCase {
         XCTAssertEqual(ScrollEvidence.geometry(before:before,after:after,region:nil,root:"other",direction:"down")["status"] as? String,"unverified")
         XCTAssertEqual(ScrollEvidence.geometry(before:before,after:after,region:nil,root:"list",direction:"up")["status"] as? String,"unverified")
     }
+    /// Writes a 1006x780 PNG: light background, dark stripes inside the sidebar region starting at `offset`.
+    func stripedImage(_ url:URL, offset:Int) throws {
+        let w=1006,h=780
+        let ctx=CGContext(data:nil,width:w,height:h,bitsPerComponent:8,bytesPerRow:0,space:CGColorSpaceCreateDeviceRGB(),bitmapInfo:CGImageAlphaInfo.premultipliedLast.rawValue)!
+        ctx.setFillColor(CGColor(red:0.95,green:0.95,blue:0.95,alpha:1));ctx.fill(CGRect(x:0,y:0,width:w,height:h))
+        ctx.setFillColor(CGColor(red:0.1,green:0.1,blue:0.1,alpha:1))
+        var y=offset
+        while y<h {ctx.fill(CGRect(x:25,y:y,width:220,height:20));y+=60}
+        let rep=NSBitmapImageRep(cgImage:ctx.makeImage()!)
+        try rep.representation(using:.png,properties:[:])!.write(to:url)
+    }
     func testRetainedScreenshotsSeparateVisualDifferenceFromMovement() throws {
-        let root=URL(fileURLWithPath:#filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
-        let dir=root.appendingPathComponent("artifacts/test-runs/20260920-ipad-pointer-native")
-        let before:[String:Any]=["file":dir.appendingPathComponent("baseline.png").path]
-        let after:[String:Any]=["file":dir.appendingPathComponent("sidebar-scrolled.png").path]
+        let dir=FileManager.default.temporaryDirectory.appendingPathComponent("leap-scroll-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at:dir,withIntermediateDirectories:true)
+        defer {try? FileManager.default.removeItem(at:dir)}
+        let baseline=dir.appendingPathComponent("baseline.png"),scrolled=dir.appendingPathComponent("scrolled.png")
+        try stripedImage(baseline,offset:0);try stripedImage(scrolled,offset:30)
+        let before:[String:Any]=["file":baseline.path]
+        let after:[String:Any]=["file":scrolled.path]
         XCTAssertEqual(try ScrollEvidence.pixels(before:before,after:before,region:[25,150,220,540],bounds:[130,99,1006,780])["status"] as? String,"no_visual_change_observed")
         XCTAssertEqual(try ScrollEvidence.pixels(before:before,after:after,region:[25,150,220,540],bounds:[130,99,1006,780])["status"] as? String,"visual_change_observed")
     }

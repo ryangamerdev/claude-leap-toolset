@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Bridgetone, LLC and the Leap contributors
+
 import Foundation
 import AppKit
 import ApplicationServices
@@ -131,7 +134,7 @@ extension Engine {
     }
 
     /// A plain walk of the target window: no settle loop, rendering, recording or delta. Used to poll
-    /// waits cheaply (as the gameday ui-ax script does every 250 ms) and to resolve a target just before
+    /// waits cheaply (every 250 ms) and to resolve a target just before
     /// input. Evidence still comes from full observations.
     func automationQuickRead(_ s:AutomationSession,budget:Double=2) async throws -> (nodes:[[String:Any]],complete:Bool,snap:AXWindowSnapshot,native:AppSession) {
         let native=try await session(for:s.app,launch:false)
@@ -141,7 +144,7 @@ extension Engine {
         return (Self.automationNodes(snap,native),snap.supportsStateChecks,snap,native)
     }
 
-    /// Raw, unnormalized attributes for triage (the gameday ui-ax dump settled app-vs-tool questions).
+    /// Raw, unnormalized attributes for triage (settles app-versus-tool questions).
     func automationInspect(_ s:AutomationSession,args:[String:Any]) async throws -> String {
         guard s.wda == nil else {throw AutomationModel.fail("ui_inspect reads macOS accessibility; not available for wda sessions")}
         let selector=AutomationModel.object(args["selector"]);try AutomationModel.validateSelector(selector)
@@ -317,7 +320,6 @@ extension Engine {
                 case "press_key":keys=["key"]
                 case "scroll":keys=["direction","observation_region"]
                 case "rotate":keys=["orientation"]
-                // Sky's perform_secondary_action / select_text / paste primitives.
                 case "perform_action":keys=["name"]
                 case "select_text":keys=["text","prefix","suffix","selection_type"]
                 case "paste":keys=["text","html"]
@@ -373,7 +375,7 @@ extension Engine {
                 // a full pre-observation with its post-action settle only delayed them.
                 let judgedOnly=type == "wait" || type == "assert"
                 var pre:[String:Any]=judgedOnly ? ["nodes":[[String:Any]](),"complete":false] : try await automationObserve(s)
-                // Like Sky's post-transition wait (~1 s + up to 5 s while state changes): a screen that is
+                // Post-transition wait (~1 s + up to 5 s while state changes): a screen that is
                 // still being built gives incomplete reads. Re-observe until complete within the step's
                 // timeout; input is still never sent on an incomplete observation.
                 if pre["complete"] as? Bool != true, step["selector"] != nil {
@@ -399,19 +401,19 @@ extension Engine {
                     if let selector=step["selector"] as? [String:Any] {
                         var hits=nodes.filter{AutomationModel.matches($0,selector)}
                         if hits.count>1 {
-                            // Sky shows only the sheet while one is up; input cannot reach the window under
+                            // While a sheet is up, input cannot reach the window under
                             // a modal sheet, so prefer matches inside it.
                             let inSheet=hits.filter{($0["id"] as? String ?? "").contains("/AXSheet[")}
                             if !inSheet.isEmpty,inSheet.count<hits.count {hits=inSheet;r["disambiguated"]="modal sheet"}
                         }
                         if hits.count>1 {
-                            // Sky prunes empty disabled elements; a disabled match cannot be the target of an action.
+                            // A disabled match cannot be the target of an action.
                             let enabled=hits.filter{$0["enabled"] as? Bool != false}
                             if enabled.count==1 {hits=enabled;r["disambiguated"]=(r["disambiguated"] as? String).map{$0+", only enabled match"} ?? "only enabled match"}
                         }
                         // No occlusion inference: probes showed SwiftUI's AX hit-test returns hidden-layer elements
                         // at visible controls (a hidden "Route library" at the editor's Cancel), so it can pick the
-                        // wrong duplicate. Sky likewise leaves duplicates to the agent. Scope with within/root/role.
+                        // wrong duplicate. Scope with within/root/role.
                         guard hits.count<=1 else {
                             let sample=hits.prefix(5).map{"\($0["role"] as? String ?? "?") \"\($0["label"] as? String ?? "")\" id=\($0["id"] as? String ?? "")"}.joined(separator:"; ")
                             throw AutomationModel.fail("Selector matches \(hits.count) elements (\(sample)); add role/id/root to make it unique. No input sent")
@@ -432,7 +434,7 @@ extension Engine {
                               AutomationModel.sameOrientation(prior,pre),
                               AutomationModel.sameBounds(prior["bounds"],pre["bounds"]),
                               prior["window"] as? String == pre["window"] as? String else {throw AutomationModel.fail("Coordinates require snapshot and space with unchanged window, bounds and orientation; no input sent")}
-                        // Like Sky's click([x,y]), content may have changed since the snapshot (clocks,
+                        // As with a coordinate click, content may have changed since the snapshot (clocks,
                         // animations); only the geometric mapping must hold. The expectation judges the outcome.
                         guard let b=AutomationModel.coordinateBounds(pre["bounds"]) else {throw AutomationModel.fail("Coordinate bounds unavailable")}
                         let pairs=action == "drag" ? [("from_x","from_y"),("to_x","to_y")]:[("x","y")]
@@ -537,8 +539,7 @@ extension Engine {
                 if r["verification"] as? String == "not_evaluated" {r["verification"]="unknown"}
                 Diagnostics.shared.record(level:"error",kind:"automation_step_failed",detail:String(describing:error))
                 if attempted,let expectation=step["expect"] as? [String:Any] {
-                    // The input API answered with an error, but it may have applied (Sky's timeouts "had
-                    // already applied"). Let the expectation decide: if it passes, the workflow continues
+                    // The input API answered with an error, but it may have applied. Let the expectation decide: if it passes, the workflow continues
                     // and the record keeps dispatch "uncertain" plus the raw error. Never replay.
                     do {
                         let wait=min(30,max(0,step["timeout"] as? Double ?? 5))
@@ -609,8 +610,8 @@ extension Engine {
         // The element behind the index must be the observed target: same identity key and label.
         if let index,let node,s.wda == nil {
             let native=try await session(for:s.app,launch:false)
-            // Resolve the target again from a fresh read immediately before input, like the gameday
-            // ui-ax script (find and press in one pass) and Sky's element-id validation: SwiftUI can replace
+            // Resolve the target again from a fresh read immediately before input (find and press in one
+            // pass, validating element identity): SwiftUI can replace
             // a control during a transition, and pressing the earlier reference can silently do nothing.
             let fresh=try await automationQuickRead(s)
             guard let freshNode=fresh.snap.nodes.first(where:{$0.key == node["id"] as? String}) else {

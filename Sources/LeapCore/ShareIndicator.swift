@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Bridgetone, LLC and the Leap contributors
+
 import Foundation
 import ScreenCaptureKit
 
@@ -6,8 +9,7 @@ import ScreenCaptureKit
 /// Why: macOS shows its screen-recording indicator in the menu bar (Control Center's
 /// "AudioVideoModule" item) for as long as any process streams a window with SCStream, and
 /// the indicator's menu names the capturing app and the window. That is the system-level
-/// "this window is being watched" signal the user sees while ChatGPT's computer use runs (its
-/// service streams the controlled window for live thumbnails). Single screenshots via
+/// "this window is being watched" signal the user expects while an agent operates a window. Single screenshots via
 /// SCScreenshotManager never light it. Verified: streaming the Simulator window added the
 /// Control Center item within a second and removed it on stop.
 ///

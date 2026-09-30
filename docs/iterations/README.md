@@ -117,3 +117,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-30 — v2 steps, verified paste, quieter diagnostics, macOS 27 indicator](2026-09-30-v2-steps-paste-indicator.md): native A/C/B retest passed; ui_perform gains perform_action/select_text/paste; paste inserts via AX with read-back; waits judge from the last complete read; menu titles wait to open (no re-press); checker reads MenuBarAgent extras.
 
 - [2026-09-30 — Rename to Leap](2026-09-30-rename-leap.md): Leap.app / `leap` / com.bridgetone.leap, skill `leap`, GitHub repo leap-mcp; installer removes pre-rename copies; permissions must be re-granted once.
+
+- [2026-09-30 — Public open-source release preparation](2026-09-30-public-release.md): GPL-3.0-or-later, proprietary-product references removed, single-commit public export to gignit/leap-mcp.

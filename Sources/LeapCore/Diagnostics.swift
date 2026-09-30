@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Bridgetone, LLC and the Leap contributors
+
 import Foundation
 import CoreFoundation
 import SQLite3
@@ -111,7 +114,7 @@ public final class Diagnostics: @unchecked Sendable {
     }
     /// Kinds that only restate the error or route already in the returned text (the result
     /// line names synthesized key/text/wheel routes). They stay in the durable store but are
-    /// not repeated in the response (Sky returns one message per call).
+    /// not repeated in the response (one message per call keeps responses compact).
     public static let echoKinds:Set<String>=["tool_error","tool_completed","input_error","check_unmet",
                                              "keyboard_route","text_keyboard_route","scroll_pointer_route","indicator_suppressed"]
     public func warningSummary(interaction:String) -> String? {

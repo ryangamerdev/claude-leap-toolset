@@ -27,7 +27,7 @@
 	<key>NSHighResolutionCapable</key>
 	<true/>
 	<key>NSAppleEventsUsageDescription</key>
-	<string>Leap operates apps on your behalf when Claude is working for you.</string>
+	<string>Leap operates apps on your behalf when an AI agent is working for you.</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright © 2026 Bridgetone, LLC</string>
 </dict>

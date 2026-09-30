@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 Bridgetone, LLC and the Leap contributors
 """Install an official swift.org Xcode toolchain package into the user's home.
 
 Bypasses swiftly (which aborts on this machine). Installs to

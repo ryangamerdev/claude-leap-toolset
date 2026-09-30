@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Bridgetone, LLC and the Leap contributors
+
 import XCTest
 import SQLite3
 @testable import LeapCore
@@ -31,7 +34,7 @@ final class RecordingGroupTests:XCTestCase {
             let store=try RecordingStore(project:root)
             XCTAssertNil(store.activeGroup, "Restart requires explicit resume")
             XCTAssertEqual(try store.selectGroup(action:"resume",name:nil,id:group),group)
-            let second=try store.attach(app:"Gameday",pid:3)
+            let second=try store.attach(app:"Notes",pid:3)
             try store.append(session:second,interaction:"call-3",kind:"snapshot",payload:["nodes":[]])
             XCTAssertNotEqual(second,capture)
             _ = try store.selectGroup(action:"end",name:nil,id:nil)

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 Bridgetone, LLC and the Leap contributors
 """Build/start a pinned WebDriverAgent on a named booted Simulator. No device reset.
 All downloads, build outputs, logs and endpoint manifests stay inside this repository.
 Usage: wda.py build UDID | wda.py start UDID --port 8100 | wda.py status UDID

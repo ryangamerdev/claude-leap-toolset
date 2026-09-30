@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Bridgetone, LLC and the Leap contributors
+
 import ApplicationServices
 import AppKit
 import Foundation
@@ -29,8 +32,7 @@ public final class AppSession {
     public var pinnedWindow: String?
     /// Set when this session replaced one for the same app whose process went away (the app
     /// quit, crashed or was reinstalled). Actions are refused until a state read clears it, so a
-    /// stale element_index from the old process can never land on a different element. Sky
-    /// does the same ("The user changed '<app>'. Re-query the latest state...").
+    /// stale element_index from the old process can never land on a different element.
     public var relaunchedFrom: pid_t?
     /// Snapshot counter: every rendered state gets an id and a diff names its baseline, so a
     /// caller that lost or skipped an observation knows its diff is against something it never
@@ -47,14 +49,13 @@ public final class AppSession {
         let pid = AppResolver.pid(of: app)
         self.pid = pid
         self.axApp = AXUIElementCreateApplication(pid)
-        // Chromium/Electron apps (ChatGPT, VS Code, Slack, browsers) build their accessibility
+        // Chromium/Electron apps (VS Code, Slack, browsers) build their accessibility
         // tree lazily and expose only the window chrome until an assistive client asks. These
-        // two app-level attributes are the switch; the Sky computer-use service carries both.
+        // two app-level attributes are the switch; set both.
         // Apps that don't know them return attributeUnsupported, which is harmless.
         AXUIElementSetAttributeValue(axApp, "AXManualAccessibility" as CFString, kCFBooleanTrue)
         AXUIElementSetAttributeValue(axApp, "AXEnhancedUserInterface" as CFString, kCFBooleanTrue)
-        // A busy or hung app must yield an error, not hang the whole server. Sky's calls surface
-        // `timeoutReached` at ~5 s; the AX API has a per-app messaging timeout for exactly this.
+        // A busy or hung app must yield an error, not hang the whole server. The AX API has a per-app messaging timeout for exactly this.
         AXUIElementSetMessagingTimeout(axApp, Self.messagingTimeout)
     }
 
@@ -195,7 +196,7 @@ public final class AppSession {
         return (full, diff)
     }
 
-    /// "10-12, 14-16, 75" — the compact form Sky uses for removed IDs.
+    /// "10-12, 14-16, 75" — a compact form for removed IDs.
     static func ranges(_ values: [Int]) -> String {
         let v = values.sorted()
         var out: [String] = []
@@ -210,7 +211,7 @@ public final class AppSession {
     }
 
     /// Trailing lines naming the focused element, whether or not it was rendered, and the text
-    /// the user has selected in it (Sky appends a `Selected text:` block: what the user is
+    /// the user has selected in it (a `Selected text:` block: what the user is
     /// looking at is often what they mean).
     static func focusedFooter(snap: AXWindowSnapshot, table: [Int: ElementRecord], order: [Int]) -> String {
         guard let f = snap.focusedElement else { return "" }

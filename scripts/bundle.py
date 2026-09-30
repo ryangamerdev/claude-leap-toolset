@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 Bridgetone, LLC and the Leap contributors
 """Build dist/Leap.app: a signed bundle with its own TCC identity.
 
 Why a bundle: macOS shows permission entries by bundle name and keys grants to the code
@@ -9,7 +11,7 @@ requests to this bundle instead of to Claude Code.
 
 Usage:
   bundle.py                       # release build, sign with the first "Developer ID Application"
-  bundle.py --identity "Developer ID Application: BRIDGETONE, LLC (XD249KVG74)"
+  bundle.py --identity "Developer ID Application: Your Name (TEAMID1234)"
   bundle.py --identity -          # ad-hoc (grant will NOT survive rebuilds)
   bundle.py --debug               # use the debug build instead of release
 

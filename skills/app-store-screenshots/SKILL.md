@@ -18,7 +18,7 @@ bezel and is the display's scaled size. So capture with `simctl`, not with a win
   to move between screens are, in order of preference:
   1. **Deep links** — `xcrun simctl openurl <udid> "myapp://screen"` if the app defines URL
      schemes (`CFBundleURLTypes`) or universal links for its screens.
-  2. **Launch arguments / environment** — `xcrun simctl launch <udid> <bundle> -Screen formations`
+  2. **Launch arguments / environment** — `xcrun simctl launch <udid> <bundle> -Screen settings`
      if the app reads an argument to open a screen (the pattern fastlane snapshot uses with a
      `SNAPSHOT`/`UITEST` flag).
   3. **XCUITest** — an Xcode UI-test target that taps by accessibility identifier and captures with
@@ -58,7 +58,7 @@ links, prefer them (no external driver, works headless). If it has a UI-test tar
 4. **Navigate to each screen.**
    - *Deep links:* `xcrun simctl openurl <udid> "<scheme>://<screen>"`, then capture. Fully native.
    - *Launch args:* relaunch with the screen selector, e.g.
-     `xcrun simctl launch <udid> <bundle> -startScreen formations`, then capture.
+     `xcrun simctl launch <udid> <bundle> -startScreen settings`, then capture.
    - *XCUITest:* the test itself navigates and calls `XCUIScreen.main.screenshot()`; run it with
      `xcodebuild test -scheme <UITestScheme> -destination "id=<udid>"` and collect the attachments.
    - *leap fallback:* the app must be the Simulator's **key window** for its accessibility tree to
@@ -83,7 +83,7 @@ links, prefer them (no external driver, works headless). If it has a UI-test tar
 
 7. **Organize.** Save to a versioned folder named after the app's marketing version, e.g.
    `docs/screenshots/<version>/<platform>-<screen>-<kind>.png` →
-   `docs/screenshots/0.19.0/iphone-playbook-main.png`, `ipad-formations-main.png`. Read the app's
+   `docs/screenshots/0.19.0/iphone-home-main.png`, `ipad-settings-main.png`. Read the app's
    `MARKETING_VERSION` from the Xcode project for the folder name.
 
 ## Gotchas

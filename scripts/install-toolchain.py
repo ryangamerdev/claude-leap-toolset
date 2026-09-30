@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 Bridgetone, LLC and the Leap contributors
 """Install swiftly (official swift.org package) and a Swift toolchain, step by step.
 
 Every step prints the exact command, its exit code, and its full stdout/stderr.

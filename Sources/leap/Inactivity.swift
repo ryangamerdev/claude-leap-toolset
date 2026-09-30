@@ -1,14 +1,12 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Bridgetone, LLC and the Leap contributors
+
 import Darwin
 import Foundation
 
 /// Shut the server down after a period with no tool calls.
 ///
-/// Modelled on the mechanism the Sky computer-use service uses rather than an invented one:
-/// its binary carries `inactivityTask` and emits a `cua_service_idle_timeout_reached`
-/// analytics event, alongside `shouldTerminateWhenNoClientsRemain` and an flock-guarded
-/// singleton socket (`computeruse.sock.lock`). Sky can rely mostly on client refcounting
-/// because it is one long-lived service shared by thin per-connection clients; leap is
-/// one process per MCP connection, so each process owns its own ScreenCaptureKit session and
+/// A long-lived shared service could rely on client refcounting; leap is one process per MCP connection, so each process owns its own ScreenCaptureKit session and
 /// the idle timeout is what keeps an orphan from holding that session forever.
 ///
 /// This matters concretely: a server left over from an earlier run kept an SCK/ReplayKit

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Bridgetone, LLC and the Leap contributors
+
 import AppKit
 import Darwin
 import Foundation
@@ -79,7 +82,7 @@ public struct AppInfo: Codable {
 public enum AppResolver {
     /// Resolve by display name, bundle identifier, process name, or .app path.
     /// Launches (without activating) when not running and `launch` is set.
-    /// Optional enforcement: `LEAP_ALLOWED_APPS="Gameday,com.apple.iphonesimulator,/path/X.app"`
+    /// Optional enforcement: `LEAP_ALLOWED_APPS="Notes,com.apple.iphonesimulator,/path/X.app"`
     /// restricts control to those apps (display name, bundle id or path, case-insensitive).
     /// Tool descriptions guide the model; this is the actual control.
     static func enforceAllowList(_ app: NSRunningApplication, query: String) throws {
@@ -127,8 +130,8 @@ public enum AppResolver {
     }
 
     /// The real process id. Xcode 27's Device Hub is listed by NSRunningApplication with
-    /// processIdentifier -1 while its windows and AX server belong to a real process. Sky links
-    /// proc_pidpath and CGWindowListCopyWindowInfo; we use the same two sources: the process
+    /// processIdentifier -1 while its windows and AX server belong to a real process. We
+    /// resolve it from proc_pidpath and CGWindowListCopyWindowInfo: the process
     /// whose executable is the app's executable, else the owner of a window named like the app.
     public static func pid(of app: NSRunningApplication) -> pid_t {
         let reported = app.processIdentifier
@@ -178,9 +181,9 @@ public enum AppResolver {
         return t
     }
 
-    /// Several running copies of one app (e.g. Gameday.app in ~/Applications and a build dir):
+    /// Several running copies of one app (e.g. MyApp.app in ~/Applications and a build dir):
     /// the frontmost one wins, else the only one with windows on screen, else it is a genuine
-    /// ambiguity and — like Sky — we refuse rather than guess, listing the paths.
+    /// ambiguity and we refuse rather than guess, listing the paths.
     static func pickOne(_ candidates: [NSRunningApplication], _ query: String) throws -> NSRunningApplication? {
         if candidates.count <= 1 { return candidates.first }
         if let active = candidates.first(where: { $0.isActive }) { return active }

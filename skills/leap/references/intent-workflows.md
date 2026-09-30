@@ -15,7 +15,7 @@ evidence. For quick interactive work the get_app_state/click loop in SKILL.md is
 - `ui_observe(session_id)` returns a snapshot id, `complete`, coordinate space, bounds and
   normalized nodes. Selector keys: `id`, `identifier`, `role`, `label` (exact), `contains`,
   `root` (id-path prefix), `within` (an ancestor's own label, e.g.
-  `{"role":"AXTextArea","within":"Coaching notes"}`). `fields`, `depth`, `after`, `limit`,
+  `{"role":"AXTextArea","within":"Notes"}`). `fields`, `depth`, `after`, `limit`,
   `max_bytes` bound output; paginate with the snapshot fixed. `selectorComplete` says whether an
   unreadable attribute could hide a match. IDs are observation handles, not durable locators.
 - `ui_inspect(session_id, selector)` shows raw accessibility attributes, actions and parents to

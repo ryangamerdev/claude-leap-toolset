@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Bridgetone, LLC and the Leap contributors
+
 import ApplicationServices
 import AppKit
 import Foundation
@@ -93,7 +96,7 @@ enum AX {
     static let nodeScopedAttributes: Set<String> = [kAXSubroleAttribute, kAXTitleAttribute,
         kAXDescriptionAttribute, kAXIdentifierAttribute, kAXPlaceholderValueAttribute, kAXValueAttribute,
         kAXEnabledAttribute, kAXFocusedAttribute, kAXSelectedAttribute, kAXPositionAttribute, kAXSizeAttribute,
-        // A label relation (used to fold title elements into their controls, as Sky does); a
+        // A label relation (used to fold title elements into their controls); a
         // failure loses the folding, not structure. Device Hub buttons fail it with -25200.
         "AXServesAsTitleForUIElements"]
     static func advisoryFailure(attribute: String, role: String?) -> Bool {
@@ -159,7 +162,7 @@ enum AX {
             }
             return dict
         }
-        // Chromium/Electron (ChatGPT, VS Code, browsers) reject the batched call for many
+        // Chromium/Electron (VS Code, browsers) reject the batched call for many
         // elements while answering single-attribute reads fine; without this fallback their
         // web content walks as an empty group.
         // A rejected batch can be fully recovered by individual reads. Count their failures, not the recovered batch.
@@ -410,9 +413,9 @@ public struct AXWalker {
 
     /// The app's menu bar: its titles always, and the items of any menu that is currently open.
     ///
-    /// The Codex/Sky session lists the menu bar in every full tree and, after clicking a menu
-    /// title, returns that menu's items — that is how it switched Simulator device windows
-    /// (Window › "iPhone 16 – iOS 18.0") and quit apps (Quit Gameday). AXPress on a title opens
+    /// The menu bar is listed in every full tree and, after clicking a menu title, that menu's
+    /// items are returned — that is how an agent switches Simulator device windows
+    /// (Window › "iPhone 16 – iOS 18.0") and quits apps (Quit MyApp). AXPress on a title opens
     /// the menu even for a background app and leaves the frontmost app alone (verified);
     /// a closed menu has a zero-size frame and no visible children, an open one has both.
     private func walkMenuBar(_ bar: AXUIElement, nodes: inout [AXNode], count: inout Int, truncated: inout Bool) {
@@ -426,7 +429,7 @@ public struct AXWalker {
             if count >= maxNodes { truncated = true; return }
             let a = AX.attrs(item, [kAXTitleAttribute, kAXSelectedAttribute, kAXEnabledAttribute, kAXChildrenAttribute])
             let title = AX.string(a[kAXTitleAttribute]) ?? ""
-            if title == "Apple" { continue } // the system menu, not the app's (Sky omits it too)
+            if title == "Apple" { continue } // the system menu, not the app's
             let selected = (a[kAXSelectedAttribute] as? Bool) ?? false
             let key = "\(barKey)/AXMenuBarItem[\(title)]#\(i)"
             nodes.append(AXNode(element: item, role: "AXMenuBarItem", subrole: nil, title: title.isEmpty ? nil : title,
@@ -464,7 +467,7 @@ public struct AXWalker {
         // Controls labelled by a separate element (form rows, SwiftUI Toggle/LabeledContent)
         // expose it as AXTitleUIElement; screen readers use it as the label. Some providers
         // fail AXDescription outright for such controls.
-        // Sky's service reads the same relations (AXTitleUIElement, AXLabelUIElements).
+        // Relations read: AXTitleUIElement, AXLabelUIElements.
         if title == nil, description == nil,
            let labelElement: AXUIElement = AX.attr(el, kAXTitleUIElementAttribute)
                ?? (AX.attr(el, "AXLabelUIElements") as [AXUIElement]?)?.first {
@@ -505,7 +508,7 @@ public struct AXWalker {
             offscreen = untransformed || !f.intersects(windowFrame.insetBy(dx: -1, dy: -1))
             // Do not prune subtrees based on hit-testing. SwiftUI overlays can
             // intercept every sampled point while the underlying controls remain
-            // visible and accessible (e.g. Gameday's zoomed Sideline field).
+            // visible and accessible (e.g. a zoomed canvas overlay).
             // Returning extra inactive-tab nodes is preferable to losing live UI.
         }
 
@@ -550,7 +553,7 @@ public struct AXWalker {
         var ordinals: [String: Int] = [:]
         // Read each child's full batch once: it keys the ordinal here and is reused by the child.
         var batches = children.map { AX.attrs($0, AXWalker.batchAttributes) }
-        // Sky's associateTitleUIElements (transform 0x100645230): an element that only titles
+        // Title association: an element that only titles
         // sibling controls is removed and its text moves onto them, so a labelled control and its
         // label do not render as two elements with one label.
         var skip = Set<Int>()

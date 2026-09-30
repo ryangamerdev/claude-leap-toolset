@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Bridgetone, LLC and the Leap contributors
+
 import XCTest
 import ApplicationServices
 @testable import LeapCore
@@ -31,7 +34,7 @@ final class ObservationTextTests: XCTestCase {
     }
     func testUnrecordedCollapseNamesItsExpansionAndIsIdempotent() {
         let inactive = (1...7).map { "  [\($0)] StaticText value=\"Tab \($0)\" [disabled]" }
-        let text = (["[1] Button desc=\"Playbook\""] + inactive).joined(separator: "\n")
+        let text = (["[1] Button desc=\"Library\""] + inactive).joined(separator: "\n")
         let hint = "get_app_state include_disabled=true for detail"
         let once = Engine.collapseDisabledRuns(text, detailHint: hint)
         XCTAssertTrue(once.contains("7 disabled elements"))

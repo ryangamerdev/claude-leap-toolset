@@ -26,7 +26,7 @@ window; a coloured pointer wedge and ripple show where you act.
 5. Each state is `state #N`; a diff names its baseline. If you did not see it, pass
    `disable_diff=true`.
 
-Verify by reading the tree (`"4 matching plays"`, `value="OSCAR"`), not by assumption. A current
+Verify by reading the tree (`"4 matching items"`, `value="OSCAR"`), not by assumption. A current
 value does not prove saving: reopen to verify persistence.
 
 ## iOS devices on macOS 27+: use the xcode skill first

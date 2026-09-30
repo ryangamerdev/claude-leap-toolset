@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Bridgetone, LLC and the Leap contributors
+
 import AppKit
 import Foundation
 import LeapCore
@@ -6,7 +9,7 @@ import MCP
 let instructions = """
 Leap: native macOS and iOS Simulator computer use, accessibility-first and background-first. Full playbook: the leap skill. Keep this short: hosts truncate long server instructions.
 
-Interactive loop (like Sky): get_app_state(app) returns the indexed accessibility tree as text, no screenshot by default. Act by element_index or label (click, set_value, type_text, select_text, press_key, perform_action, scroll, drag, paste); each action returns the updated diff, so read it and continue. batch runs predictable sequences in one call; wait_for bounds delayed outcomes. Screenshots only when the answer is visual (canvas, zoom, rendering).
+Interactive loop: get_app_state(app) returns the indexed accessibility tree as text, no screenshot by default. Act by element_index or label (click, set_value, type_text, select_text, press_key, perform_action, scroll, drag, paste); each action returns the updated diff, so read it and continue. batch runs predictable sequences in one call; wait_for bounds delayed outcomes. Screenshots only when the answer is visual (canvas, zoom, rendering).
 
 Verified workflows: session_open(project,app) + ui_perform(steps with before/expect checks) for multi-step tasks that need per-step evidence; ui_observe for selector queries; session_history/evidence_read to read retained results without repeating input.
 

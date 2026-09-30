@@ -1,4 +1,6 @@
 #!/bin/bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 Bridgetone, LLC and the Leap contributors
 # Replays the interactive-tool regression scenarios (Tests/*.json) through stdio MCP.
 # Harness evidence only, not native acceptance. Drives apps in the background.
 #   scripts/run-legacy-scenarios.sh [scenario ...]
@@ -12,6 +14,12 @@ DESKTOP="index-stability background-keys label-targeting select-text wait-for-an
 SIMULATOR="ios-type-text menu-bar simulator-offscreen-press share-indicator"
 if [ $# -eq 0 ]; then set -- $DESKTOP; fi
 if [ "$1" = "simulator" ]; then set -- $SIMULATOR; fi
+# Scenarios written against a private test app are not distributed; skip any that are absent.
+present=()
+for t in "$@"; do
+  if [ -f "Tests/$t.json" ]; then present+=("$t"); else echo "SKIP $t (Tests/$t.json not present)"; fi
+done
+set -- "${present[@]}"
 failed=0
 for t in "$@"; do
   if python3 scripts/mcp-call.py script "Tests/$t.json" > "$OUT/$t.log" 2>&1; then

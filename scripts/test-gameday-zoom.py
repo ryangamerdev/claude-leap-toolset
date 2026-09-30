@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 Bridgetone, LLC and the Leap contributors
 """Live regression: Gameday must already be in Sideline with a zoomed field.
 
 Reads the current UI without changing it. Exercises the signed server selected by

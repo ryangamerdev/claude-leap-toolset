@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Bridgetone, LLC and the Leap contributors
+
 import AppKit
 import CoreGraphics
 import Foundation
@@ -115,8 +118,7 @@ public enum Input {
                 }
                 do {
                     let point = event.location
-                    // Sky's wheel factory also sets field 51 to the window ID
-                    // (0x10072a07c; initialized to 0x33 at 0x10071b654).
+                    // Field 51 carries the target window ID for wheel routing.
                     // This wheel routing field is distinct from the two public
                     // mouse-window fields and from the local hit-test position.
                     if let wheelWindow = CGEventField(rawValue: 51) {
@@ -146,7 +148,7 @@ public enum Input {
 
     /// How a background (non-frontmost) app is prepared for a pointer gesture.
     enum BackgroundPointer {
-        /// Sky's default (sendClick 0x1006e98a8): hold Command on the gesture and send no
+        /// Default: hold Command on the gesture and send no
         /// activation — Command-clicking an inactive window operates its controls without
         /// bringing it forward, while a plain first click is often consumed as activation
         /// (observed: SwiftUI buttons ignored background clicks).
@@ -206,7 +208,7 @@ public enum Input {
                              flags: CGEventFlags = [], _ delivery: Delivery) throws {
         var events:[(CGEvent,UInt32)]=[]
         // Hover-driven UIs (Blender, games, web hover menus) only arm a control after the pointer
-        // moves onto it; Sky's click builder sends no mouseMoved, which leaves such controls cold.
+        // moves onto it; a click without a preceding mouseMoved leaves such controls cold.
         // A process-directed move does not move the user's cursor.
         if let move=CGEvent(mouseEventSource:source,mouseType:.mouseMoved,mouseCursorPosition:p,mouseButton:button.cgButton) {
             move.flags=flags
@@ -246,8 +248,7 @@ public enum Input {
         sendPrepared(events,delivery)
     }
 
-    /// AppKit activation notification targets the selected window, as in Sky's
-    /// native factory (10071a8fc). This does not activate the app in WindowServer.
+    /// AppKit activation notification targets the selected window. This does not activate the app in WindowServer.
     static func activationEvent(windowID:CGWindowID, active:Bool) throws -> CGEvent {
         guard let event = NSEvent.otherEvent(with:.appKitDefined, location:.zero,
             modifierFlags: active ? NSEvent.ModifierFlags(rawValue:0xc0000) : [],

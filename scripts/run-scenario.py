@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 Bridgetone, LLC and the Leap contributors
 """Execute a reviewed Leap intent scenario through stdio MCP; not a native host acceptance claim.
 Usage: run-scenario.py scenario.json --output artifacts/test-runs/<run>/result.json
 Scenario: {session: {project,app,backend,window?,endpoint?}, steps: [...], timeout?:60}.

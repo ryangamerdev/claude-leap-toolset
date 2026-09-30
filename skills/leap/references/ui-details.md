@@ -30,8 +30,8 @@ Read only for text editing, menus, coordinates, screenshots or Simulator-specifi
   value append (verified) → keystrokes. The result text says which path ran; the **keystroke path is
   dispatched, not verified**, so confirm it in the returned diff. In the iOS Simulator prefer the
   accessibility paths; keystrokes use the current keyboard layout's physical keys, characters with
-  no single-key mapping are refused up front, and an occasional dropped character is possible
-  (Sky shows the same), so read the value back.
+  no single-key mapping are refused up front, and an occasional dropped character is possible,
+  so read the value back.
 - Simulator multi-line text areas refuse direct value writes (readback matched while the app's
   model stayed unchanged); focus the area and use `type_text`.
 - Edit inside text: `select_text(element, text, prefix, suffix, selection_type)` then `type_text`
@@ -79,7 +79,7 @@ Read only for text editing, menus, coordinates, screenshots or Simulator-specifi
 a text confirmation, so you can capture many screens without flooding context; add `embed=true`
 to also see one inline. Target a device with `window` (`"iPhone 16"`, `"iPad Air"`). For a
 documentation pass, save under `docs/screenshots/<app-version>/<platform>-<screen>-<kind>.png`,
-e.g. `docs/screenshots/0.19.0/desktop-playbook-main.png`, `ipad-flashcards-main.png`. Navigate to
+e.g. `docs/screenshots/0.19.0/desktop-home-main.png`, `ipad-settings-main.png`. Navigate to
 each screen (click the tab, read the text state to confirm you are there), then capture.
 
 ## Coordinates and foreground
@@ -92,7 +92,7 @@ each screen (click the tab, read the text state to confirm you are there), then 
   a screenshot. Coordinates are re-based on the window's current position at action time.
 - `foreground=true` explicitly activates the app when synthesized input is needed. Mouse
   gestures keep the same window-targeted delivery in either mode and never move the real
-  cursor. Background clicks are sent as Command-clicks without activation (as Sky does);
+  cursor. Background clicks are sent as Command-clicks without activation;
   rows, cells, links, text inputs and web content use scoped synthetic window activation.
   Keys and text always go to the target app's process, never system-wide. Announce explicit
   activation because it changes the user's frontmost app.

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Bridgetone, LLC and the Leap contributors
+
 import AppKit
 import ApplicationServices
 import CoreGraphics
@@ -18,7 +21,7 @@ public enum Permissions {
 
     static let screenRecordingPane = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture")!
 
-    /// Request Screen Recording the way Sky does (ScreenRecordingPermission.validateAuthorization):
+    /// Request Screen Recording in a way users can follow:
     /// open System Settings at the Screen Recording list first, then call the request while that
     /// pane is visible. On current macOS a bare CGRequestScreenCaptureAccess() from a background
     /// (LSUIElement) helper only posts a notification and does not add the app to the list
@@ -28,7 +31,7 @@ public enum Permissions {
         if CGPreflightScreenCaptureAccess() { return true }
         if openSettings {
             NSWorkspace.shared.open(screenRecordingPane)
-            // Let Settings show the pane before the request, as Sky waits for its window.
+            // Let Settings show the pane before the request; wait for its window.
             let settings = "com.apple.systempreferences"
             for _ in 0..<20 {
                 if NSRunningApplication.runningApplications(withBundleIdentifier: settings).first?.isFinishedLaunching == true { break }

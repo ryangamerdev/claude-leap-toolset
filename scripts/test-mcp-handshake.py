@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 Bridgetone, LLC and the Leap contributors
 """Regression test MCP initialization and discovery using real client capabilities.
 
 Usage: LEAP_BIN=/path/to/leap python3 -B scripts/test-mcp-handshake.py

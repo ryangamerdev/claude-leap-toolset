@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Bridgetone, LLC and the Leap contributors
+
 // Verify the leap activity overlay window is on screen, without Screen Recording.
 //
 // Window *metadata* (owner, bounds, layer, alpha) is readable by any process; only window

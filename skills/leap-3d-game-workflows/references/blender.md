@@ -18,13 +18,13 @@ Use `bpy.data` and explicit object references where possible. Operators often de
 
 Use Leap's AX tree for Outliner, properties, menus, and dialogs where accessible. Treat the 3D viewport, sculpting, node canvas, UV editor, and timeline as visual surfaces when AX is incomplete. Observe the region before shortcuts or gestures; recover from an accidental mode change before continuing. Use selection labels and structured scene inspection to distinguish look-alike objects.
 
-## Example: Mickey Mouse character
+## Example: stylized cartoon mascot
 
-This example demonstrates the workflow, not a required subject for other requests. Match the user's chosen depiction and intended use; do not silently replace it with a generic mouse.
+This example demonstrates the workflow, not a required subject for other requests. Match the user's chosen depiction and intended use; do not silently replace it with a generic figure.
 
-For a stylized static Mickey, begin with the head and round ears, torso, muzzle/face, arms, legs, gloves, shorts/buttons, shoes, and tail. Establish the recognizable silhouette and proportions before small detail. Build in a dedicated collection with named parts and materials. Do not mistake a pile of intersecting spheres for a finished character simply because the major colors are present.
+For a stylized static mascot (for example a cartoon animal), begin with the head and ears, torso, muzzle/face, arms, legs, hands, clothing, shoes, and tail. Establish the recognizable silhouette and proportions before small detail. Build in a dedicated collection with named parts and materials. Do not mistake a pile of intersecting spheres for a finished character simply because the major colors are present.
 
-Render front, profile, and three-quarter views. Refine the facial shape, ear placement across angles, glove fingers, shoe shape, clothing transitions, and limb connections. If the request is animation-ready, additionally create deformation-appropriate topology, rig and weights, and test smiling/posing/walking as applicable. If it is a statue or render, do not add unnecessary game/rig requirements.
+Render front, profile, and three-quarter views. Refine the facial shape, ear placement across angles, finger shape, shoe shape, clothing transitions, and limb connections. If the request is animation-ready, additionally create deformation-appropriate topology, rig and weights, and test smiling/posing/walking as applicable. If it is a statue or render, do not add unnecessary game/rig requirements.
 
 ## Save and handoff
 
