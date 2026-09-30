@@ -155,14 +155,14 @@ or in `~/.claude.json` / a project `.mcp.json`:
 For development against the debug build, `LEAP_BIN=…/.build/out/Products/Debug/claude-leap`
 makes `scripts/mcp-call.py` use that binary instead.
 
-### Codex
+### OpenCode and Codex
 
-Register the same installed binary without changing the Claude Code registration:
+OpenCode: add `"leap": {"type": "local", "command": ["/Users/<you>/Applications/claude-leap.app/Contents/MacOS/claude-leap"]}`
+under `mcp` in `~/.config/opencode/opencode.json`.
 
-```bash
-codex mcp add leap -- "$HOME/Applications/claude-leap.app/Contents/MacOS/claude-leap"
-```
-
+Codex is intentionally not a Leap host in this setup: it uses its own computer-use service, and
+the installer does not copy Leap skills there (decision 2026-09-30). The server still works with
+Codex if registered manually (`codex mcp add leap -- "$HOME/Applications/claude-leap.app/Contents/MacOS/claude-leap"`).
 Restart the Codex session after registration or a server update. If startup reports
 `-32603` and “The data couldn’t be read because it isn’t in the correct format”,
 rebuild and install the current server. The Swift SDK's string-only decoding of
