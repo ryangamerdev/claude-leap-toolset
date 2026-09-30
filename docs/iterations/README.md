@@ -113,3 +113,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-29 — Device Hub, fast waits, multi-point hit_test](2026-09-29-device-hub-waits-hit-test.md): resolve Device Hub's real pid (Sky-style proc_pidpath/window owner), walk each AX element once, title relation advisory; waits keep the deciding read and end at timeout; hit_test probes five points.
 
 - [2026-09-29 — Xcode 27 agent tools](2026-09-29-xcode27-agent-tools.md): Apple's Xcode MCP DeviceInteraction tools (device-point touches, hitPoint hierarchy, device keyboard; iOS 27+ runtimes only) researched and probed; skill points agents to it for iOS 27 guest apps.
+
+- [2026-09-30 — v2 steps, verified paste, quieter diagnostics, macOS 27 indicator](2026-09-30-v2-steps-paste-indicator.md): native A/C/B retest passed; ui_perform gains perform_action/select_text/paste; paste inserts via AX with read-back; waits judge from the last complete read; menu titles wait to open (no re-press); checker reads MenuBarAgent extras.

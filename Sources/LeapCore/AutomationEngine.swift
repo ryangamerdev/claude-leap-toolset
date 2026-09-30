@@ -3,7 +3,8 @@ import AppKit
 import ApplicationServices
 
 extension Engine {
-    static let macActions:Set<String> = ["click","double_click","type_text","set_value","press_key","scroll","drag","activate"]
+    static let macActions:Set<String> = ["click","double_click","type_text","set_value","press_key","scroll","drag","activate",
+                                         "perform_action","select_text","paste"]
     static let deviceActions:Set<String> = ["click","double_click","type_text","drag","scroll","press_key","rotate","activate"]
 
     /// Called within the server's serial operation boundary. All v2 tools share the same
@@ -244,14 +245,19 @@ extension Engine {
             var last:(nodes:[[String:Any]],complete:Bool,snap:AXWindowSnapshot,native:AppSession)?
             repeat {
                 let remaining=end-ProcessInfo.processInfo.systemUptime
+                // A read that cannot finish in the time left comes back incomplete and would turn a
+                // clear mismatch into "unknown"; judge from the last complete read instead.
+                if last?.complete == true, remaining<0.3 {break}
                 // The first read always gets a normal budget so a zero-timeout assert still sees the UI.
                 guard let quick=try? await automationQuickRead(s,budget:last == nil ? 2:max(0.1,remaining)) else {break}
-                last=quick
+                // Keep the last complete read as the evidence unless this one is also complete.
+                if quick.complete || last?.complete != true {last=quick}
                 let verdict=AutomationModel.verdict(nodes:quick.nodes,complete:quick.complete,expectation:expectation)
-                if verdict == "passed" || ProcessInfo.processInfo.systemUptime>=end-0.05 {
+                if verdict == "passed" {
                     let evidence=try automationSaveObservation(s,try automationObservation(s,snap:quick.snap,native:quick.native),started:started)
                     return (verdict,evidence)
                 }
+                if ProcessInfo.processInfo.systemUptime>=end-0.05 {break}
                 let pause=min(0.25,end-ProcessInfo.processInfo.systemUptime)
                 if pause>0 {try await Task.sleep(nanoseconds:UInt64(pause*1_000_000_000))}
             } while ProcessInfo.processInfo.systemUptime<end
@@ -311,6 +317,10 @@ extension Engine {
                 case "press_key":keys=["key"]
                 case "scroll":keys=["direction","observation_region"]
                 case "rotate":keys=["orientation"]
+                // Sky's perform_secondary_action / select_text / paste primitives.
+                case "perform_action":keys=["name"]
+                case "select_text":keys=["text","prefix","suffix","selection_type"]
+                case "paste":keys=["text","html"]
                 default:keys=[]
                 }
                 if s.backend == "mac_ax" {
@@ -331,7 +341,10 @@ extension Engine {
                 }
                 if let button=a["button"] as? String,MouseButton(alias:button) == nil {throw AutomationModel.fail("Invalid mouse button")}
                 if s.backend == "wda",action == "press_key",!["Return","Enter","Backspace","Tab"].contains(a["key"] as? String ?? "") {throw AutomationModel.fail("Unsupported device key; no steps sent")}
-                if ["type_text","set_value"].contains(action),!(a["text"] is String) {throw AutomationModel.fail("Text action needs arguments.text")}
+                if ["type_text","set_value","select_text","paste"].contains(action),!(a["text"] is String) {throw AutomationModel.fail("Step \(stepIndex): \(action) needs arguments.text. No input sent")}
+                if ["perform_action","select_text"].contains(action),step["selector"] == nil {throw AutomationModel.fail("Step \(stepIndex): \(action) needs a selector. No input sent")}
+                if action == "perform_action",(a["name"] as? String ?? "").isEmpty {throw AutomationModel.fail("Step \(stepIndex): perform_action needs arguments.name (an action listed on the element). No input sent")}
+                if action == "select_text",let t=a["selection_type"] as? String,Engine.SelectionType(rawValue:t) == nil {throw AutomationModel.fail("Step \(stepIndex): selection_type must be text, cursor_before or cursor_after. No input sent")}
                 if action == "scroll", !["up","down","left","right"].contains(a["direction"] as? String ?? "") {throw AutomationModel.fail("Scroll needs valid direction")}
                 if action == "scroll",step["selector"] == nil, !(s.backend == "mac_ax" && a["x"] is NSNumber && a["y"] is NSNumber) {throw AutomationModel.fail("Scroll requires selector or Mac x/y with snapshot and space")}
                 if action == "rotate", !["PORTRAIT","PORTRAIT_UPSIDEDOWN","LANDSCAPE","LANDSCAPE_RIGHT"].contains(a["orientation"] as? String ?? "") {throw AutomationModel.fail("Invalid orientation")}
@@ -620,6 +633,11 @@ extension Engine {
         case "scroll":return try await scroll(app:s.app,target:target,direction:args["direction"] as? String ?? "down",pages:args["pages"] as? Double ?? 1,mode:mode)
         case "drag":return try await drag(app:s.app,from:Target(x:(args["from_x"] as? Double).map { CGFloat($0) },y:(args["from_y"] as? Double).map { CGFloat($0) }),to:Target(x:(args["to_x"] as? Double).map { CGFloat($0) },y:(args["to_y"] as? Double).map { CGFloat($0) }),modifiers:args["modifiers"] as? String,mode:mode)
         case "activate":return try await activate(app:s.app)
+        case "perform_action":guard let index else {throw AutomationModel.fail("perform_action requires selector")};return try await performAction(app:s.app,elementIndex:index,action:args["name"] as? String ?? "")
+        case "select_text":
+            guard let index else {throw AutomationModel.fail("select_text requires selector")}
+            return try await selectText(app:s.app,elementIndex:index,text:args["text"] as? String ?? "",prefix:args["prefix"] as? String,suffix:args["suffix"] as? String,selection:Engine.SelectionType(rawValue:args["selection_type"] as? String ?? "text") ?? .text)
+        case "paste":return try await paste(app:s.app,text:args["text"] as? String ?? "",html:args["html"] as? String,mode:mode)
         default:throw AutomationModel.fail("Unsupported action")
         }
     }

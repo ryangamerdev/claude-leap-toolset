@@ -44,8 +44,12 @@ Read only for text editing, menus, coordinates, screenshots or Simulator-specifi
   app-level shortcut. `press_key` targets the app; it cannot fire global shortcuts. With a pinned
   window that is not the app's key window, leap makes it key first or refuses with a clear message
   rather than typing into the wrong window.
-- `paste` is dispatched (⌘V) and restores the user's clipboard only if they did not copy something
-  in the meantime; verify insertion in the diff.
+- `paste(text)` into a focused text element inserts through accessibility and reads it back
+  (verified; clipboard untouched). With `html`, or when focus is not a text element, it posts ⌘V
+  and restores the clipboard unless the user copied meanwhile: dispatched, not verified. A
+  background app often ignores ⌘V (its Edit menu is disabled), so check the diff.
+- Clicking a background app's menu title waits up to 1 s for the menu to open; if it does not, the
+  result says so and nothing is re-pressed.
 
 ## Errors you will see and what to do
 

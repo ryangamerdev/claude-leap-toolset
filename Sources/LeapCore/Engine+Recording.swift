@@ -30,7 +30,10 @@ extension Engine {
     func recordSnapshot(_ snap:AXWindowSnapshot,session s:AppSession) throws -> String {
         guard let r=recordings[s.pid] else{return ""}
         if snap.readFailures > 0 || snap.deadlineExceeded || snap.truncated || snap.retainedEarlierObservation {
-            Diagnostics.shared.record(level:"warning",kind:"capture_quality",detail:"snapshot window=\(snap.title ?? "") failures=\(snap.readFailures) blocking=\(snap.blockingReadFailures) advisory=\(snap.advisoryReadFailures) deadline=\(snap.deadlineExceeded) truncated=\(snap.truncated) retainedEarlier=\(snap.retainedEarlierObservation); per-attribute details remain in retained snapshot",fields:["session":r.id,"app":s.displayName])
+            // Advisory-only failures (optional metadata, blocking=0) do not limit what the agent can do;
+            // keep them durable at info level instead of repeating a warning on every response.
+            let limiting=snap.blockingReadFailures>0 || snap.deadlineExceeded || snap.truncated || snap.retainedEarlierObservation
+            Diagnostics.shared.record(level:limiting ? "warning":"info",kind:"capture_quality",detail:"snapshot window=\(snap.title ?? "") failures=\(snap.readFailures) blocking=\(snap.blockingReadFailures) advisory=\(snap.advisoryReadFailures) deadline=\(snap.deadlineExceeded) truncated=\(snap.truncated) retainedEarlier=\(snap.retainedEarlierObservation); per-attribute details remain in retained snapshot",fields:["session":r.id,"app":s.displayName])
         }
         r.subscribe(snap)
         var ancestors:[(Int,String)]=[]

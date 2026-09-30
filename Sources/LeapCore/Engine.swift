@@ -569,6 +569,20 @@ public actor Engine {
                     Diagnostics.shared.record(level:"warning",kind:"indicator_suppressed",detail:"AXPress acknowledged; invalid/offscreen marker geometry. element=\(rec.index) frame=\(String(describing:rec.node.frame)) window=\(s.lastWindowFrame) offscreen=\(rec.node.offscreen). No pointer event sent.",fields:["session":recordings[s.pid]?.id ?? "","app":s.displayName])
                 }
                 await signal(marker, .click)
+                // A background app's menu can open a moment after AXPress returns; the settle loop may
+                // see two identical reads first. Wait (never re-press: a late-opening menu would close)
+                // until the menu shows items, like Sky returning the open menu after a title click.
+                if rec.node.role == "AXMenuBarItem" {
+                    var opened = false
+                    for _ in 0..<20 where !opened {
+                        opened = ((AX.attr(rec.node.element, kAXChildrenAttribute) as [AXUIElement]?) ?? []).contains { menu in
+                            guard let f = AX.frame(menu), f.width > 0, f.height > 0 else { return false }
+                            return !((AX.attr(menu, kAXVisibleChildrenAttribute) as [AXUIElement]?) ?? []).isEmpty
+                        }
+                        if !opened { try await Task.sleep(nanoseconds: 50_000_000) }
+                    }
+                    if !opened { return "pressed [\(rec.index)] via accessibility; the menu did not open within 1 s (not re-pressed; read the state)" }
+                }
                 return "pressed [\(rec.index)] via accessibility" + (marker == nil ? "; location indicator hidden: accessibility coordinates are unreliable" : "")
             }
             // A timeout/error is not proof that AXPress was rejected. A Save
@@ -1029,6 +1043,21 @@ public actor Engine {
         try requireAX()
         let s = try await actionSession(query, needsElements: false)
         defer { s.lastActionAt = Date() }
+        // Plain text into a focused text element: insert through the accessibility text API and
+        // read it back, like press_key super+v. A background app's Edit menu is disabled, so a
+        // posted ⌘V is often ignored (Sky's paste times out waiting for the clipboard read there).
+        // Rich (html) content and non-text focus keep the pasteboard + ⌘V route.
+        if html == nil, !mode.foreground, let focused: AXUIElement = AX.attr(s.axApp, kAXFocusedUIElementAttribute) {
+            switch AX.insertText(focused, text, replaceAll: false) {
+            case .verified:
+                await signal(indicatorPoint(s, nil), .edit)
+                return "pasted \(text.count) characters into the focused element via accessibility (verified; clipboard untouched)"
+            case .uncertain(let why):
+                throw LeapError.unsupported("Outcome uncertain: the paste changed the focused field but \(why). Not retried; read the state and decide.")
+            case .unchanged, .notText:
+                break
+            }
+        }
         try await withInput(s, mode) { d in try Input.paste(text, html: html, d) }
         await signal(indicatorPoint(s, nil), .edit)
         return "paste of \(text.count) characters dispatched (⌘V posted; check the state to verify insertion)"

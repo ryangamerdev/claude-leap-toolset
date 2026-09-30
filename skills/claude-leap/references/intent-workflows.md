@@ -39,7 +39,10 @@ evidence. For quick interactive work the get_app_state/click loop in SKILL.md is
 - Actions (mac_ax): click/double_click (selector, or x/y + snapshot + space; `button`,
   `modifiers`), type_text/set_value (`arguments.text`), press_key (`arguments.key`), scroll
   (selector or x/y + snapshot + space, direction, pages), drag (from/to + snapshot + space),
-  activate. `foreground: true` may be supplied to input actions. WDA: click, double_click,
+  activate, perform_action (selector, `arguments.name`: an action listed on the element, e.g.
+  `Confirm`, `ShowMenu`, a custom action), select_text (selector, `text`, optional `prefix`,
+  `suffix`, `selection_type` text|cursor_before|cursor_after), paste (`text`, optional `html`; restores
+  the clipboard). `foreground: true` may be supplied to input actions. WDA: click, double_click,
   type_text, drag, scroll (selector), press_key (Return/Enter/Backspace/Tab), rotate, activate.
 
 ## Outcomes

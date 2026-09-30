@@ -1,5 +1,13 @@
 [
   {"name": "get_app_state", "arguments": {"app": "Simulator", "window": "iPhone 16", "include_screenshot": false, "disable_diff": true}},
+  {"name": "@capture", "arguments": {"pattern": "\\[(\\d+)\\] Button desc=\"Home\"(?: id=house)? \\[rotated\\]", "var": "home"}},
+  {"name": "click", "arguments": {"app": "Simulator", "element_index": "$home", "then_state": false}},
+  {"name": "get_app_state", "arguments": {"app": "Simulator", "window": "iPhone 16", "include_screenshot": false, "disable_diff": true}},
+  {"name": "click", "arguments": {"app": "Simulator", "label": "Playbook", "then_state": false}},
+  {"name": "get_app_state", "arguments": {"app": "Simulator", "window": "iPhone 16", "include_screenshot": false, "disable_diff": true}},
+  {"name": "@capture", "arguments": {"pattern": "\\[(\\d+)\\] Button desc=\"Show plays\"", "var": "showPlays"}},
+  {"name": "click", "arguments": {"app": "Simulator", "element_index": "$showPlays", "then_state": false}},
+  {"name": "get_app_state", "arguments": {"app": "Simulator", "window": "iPhone 16", "include_screenshot": false, "disable_diff": true}},
   {"name": "@capture", "arguments": {"pattern": "\\[(\\d+)\\] TextField[^\\n]*Search plays", "var": "field"}},
   {"name": "set_value", "arguments": {"app": "Simulator", "element_index": "$field", "value": "", "then_state": false}},
   {"name": "type_text", "arguments": {"app": "Simulator", "element_index": "$field", "text": "SLIDE", "then_state": false}},
