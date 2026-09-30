@@ -75,3 +75,10 @@ Addendum (user direction): scripts/install.py no longer installs this repo's ski
 (`$CODEX_HOME/skills`). It removes stale copies on install, `--skills-only` and `--uninstall`. The
 claude-leap, leap-3d-game-workflows and app-store-screenshots copies were removed from ~/.codex/skills.
 AGENTS.md updated. Codex keeps Sky and the Xcode MCP.
+
+Addendum (user request): new `skills/xcode` skill covering Xcode 27 MCP setup, approval, the device
+session loop, command syntax, hierarchy reading, verification practice and limits, based on the
+2026-09-29 research and probes (docs/research/xcode27-device-interaction.md). claude-leap now routes
+iOS guest-app work on macOS 27+ to the xcode skill, and keeps Device Hub accessibility as the fallback
+for older runtimes or an unavailable `xcode` MCP. app-store-screenshots lists the Xcode MCP before
+Leap for navigation. Installed to ~/.claude/skills only (Codex excluded by the installer). No binary change.

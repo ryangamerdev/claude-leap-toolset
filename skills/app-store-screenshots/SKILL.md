@@ -25,6 +25,8 @@ bezel and is the display's scaled size. So capture with `simctl`, not with a win
      `XCUIScreen.main.screenshot()`, run with `xcodebuild test`. This is the Apple-native,
      CI-reproducible standard (what fastlane snapshot generates). It needs a UI-test target in the
      app project.
+- **Fallback on macOS 27+ with an iOS 27+ simulator: the Xcode MCP** (xcode skill) — tap and type
+  inside the device with `DeviceInteractionSynthesize`, then capture with `simctl` as below.
 - **Fallback: claude-leap** — if the app has no deep links, no launch-arg navigation, and you do
   not want to add a UI-test target, drive the UI with the leap MCP tools (`get_app_state`,
   `click`). This is fastest for a one-off; it is not reproducible in CI the way XCUITest is.
@@ -32,7 +34,7 @@ bezel and is the display's scaled size. So capture with `simctl`, not with a win
 
 Decide navigation once: check the app for `CFBundleURLTypes` and a UI-test target. If it has deep
 links, prefer them (no external driver, works headless). If it has a UI-test target, prefer
-`xcodebuild test`. Otherwise use leap.
+`xcodebuild test`. Otherwise use the Xcode MCP (macOS 27+, current-SDK runtime), else leap.
 
 ## Steps
 

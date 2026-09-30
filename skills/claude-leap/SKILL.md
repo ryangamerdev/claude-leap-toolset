@@ -1,6 +1,6 @@
 ---
 name: claude-leap
-description: Drive native macOS apps and the iOS Simulator through the leap MCP (get_app_state, click, set_value, type_text, select_text, press_key, scroll, drag, paste, perform_action, batch, wait_for, screenshot; ui_perform for verified multi-step workflows). Use for reading or operating any app's UI (Xcode, Simulator, Blender, Finder, System Settings, any Mac app) or when the user says "use leap" or "computer use". Prefer a dedicated API or CLI when one covers the task.
+description: Drive native macOS apps (and, as a fallback, iOS Simulator apps) through the leap MCP (get_app_state, click, set_value, type_text, select_text, press_key, scroll, drag, paste, perform_action, batch, wait_for, screenshot; ui_perform for verified multi-step workflows). Use for reading or operating any app's UI (Xcode, Simulator, Blender, Finder, System Settings, any Mac app) or when the user says "use leap" or "computer use". Prefer a dedicated API or CLI when one covers the task.
 ---
 
 # Leap: native computer use
@@ -28,6 +28,17 @@ window; a coloured pointer wedge and ripple show where you act.
 
 Verify by reading the tree (`"4 matching plays"`, `value="OSCAR"`), not by assumption. A current
 value does not prove saving: reopen to verify persistence.
+
+## iOS devices on macOS 27+: use the xcode skill first
+
+On macOS 27 or newer (Xcode 27, Device Hub), operate apps **inside** simulators and devices with
+the Xcode MCP: load the [xcode skill](../xcode/SKILL.md). It sends real touches in device points,
+handles orientation and uses the device keyboard. Use Leap for iOS only when that route is
+unavailable: the `xcode` MCP is not registered or not approved, or the device's runtime is older
+than the Xcode SDK (Xcode 27 refuses iOS 18 devices). In that case drive the guest app through
+Device Hub's accessibility tree (`get_app_state("Simulator", window: "<device>")`, press by
+index/label; see [UI details](references/ui-details.md)). Leap remains the tool for Mac apps,
+Device Hub's own window, and verified workflows with retained evidence.
 
 ## Tree essentials
 

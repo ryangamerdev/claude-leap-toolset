@@ -108,12 +108,8 @@ each screen (click the tab, read the text state to confirm you are there), then 
   ("Home" id=app.grid.3x3, "Screenshot", "Record", "Rotate Left"); the guest app's Home is
   `id=house`, so scope by role/id when labels repeat. Its Window menu lists devices as
   "iPhone 16 (iOS 18.0)".
-- Xcode 27 also ships an MCP server (`xcrun mcpbridge`, registered as `xcode`) whose
-  DeviceInteraction tools tap, swipe, type and rotate inside the device in device points and return
-  a hierarchy with `hitPoint`s. For a guest app on an **iOS 27+** simulator, prefer those tools when
-  the `xcode` MCP is available: real touches, correct orientation, the device keyboard. They refuse
-  older runtimes, need Xcode open and an approved agent, and press by coordinates only. Use Leap for
-  Mac apps, Device Hub itself, older runtimes, and verified workflows with retained evidence. tvOS exposes **no app content** — for Apple TV use screenshots and `press_key`
+- On macOS 27+, prefer the Xcode MCP for guest apps (see the xcode skill). What follows is the
+  fallback for older runtimes or when the `xcode` MCP is unavailable. tvOS exposes **no app content** — for Apple TV use screenshots and `press_key`
   Up/Down/Left/Right/Return, and confirm with a second screenshot.
 - Rotate / device switching: toolbar `Rotate` button, or the Window menu (see above).
 - After reinstalling the app under test, the tree comes back as a fresh subtree; read state again.
