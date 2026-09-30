@@ -39,3 +39,10 @@ though the host may cache skill text.
 
 - Decide whether to build a Leap `xcode` backend, or to register the `xcode` MCP alongside Leap.
 - The native retest of follow-up items A, C and B is still pending.
+
+Addendum (2026-09-29, user request): the Xcode MCP is registered as `xcode` (`/usr/bin/xcrun mcpbridge`)
+for Claude Code (user scope), Codex (`tool_timeout_sec = 600`, `startup_timeout_sec = 30`) and
+OpenCode (`~/.config/opencode/opencode.json`, timeout 600000). All three report it connected.
+Backups: `~/.codex/config.toml.bak-before-xcode`, `~/.config/opencode/opencode.json.bak-before-xcode`.
+Each host needs a restart to load it. Leap itself is registered in Claude Code only, not in Codex
+(removed at the 09-20 pause) or OpenCode.
