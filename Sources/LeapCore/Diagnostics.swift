@@ -113,7 +113,7 @@ public final class Diagnostics: @unchecked Sendable {
     /// line names synthesized key/text/wheel routes). They stay in the durable store but are
     /// not repeated in the response (Sky returns one message per call).
     public static let echoKinds:Set<String>=["tool_error","tool_completed","input_error","check_unmet",
-                                             "keyboard_route","text_keyboard_route","scroll_pointer_route"]
+                                             "keyboard_route","text_keyboard_route","scroll_pointer_route","indicator_suppressed"]
     public func warningSummary(interaction:String) -> String? {
         lock.lock();defer{lock.unlock()}
         let novel=warnings.filter { entry in !Self.echoKinds.contains(where:{entry.hasPrefix($0+":")}) }

@@ -39,4 +39,16 @@ final class ObservationTextTests: XCTestCase {
         XCTAssertFalse(once.contains("Tab 5"))
         XCTAssertEqual(Engine.collapseDisabledRuns(once, detailHint: hint), once)
     }
+    func testEachAccessibilityElementIsWalkedOnce() {
+        // Device Hub exposes the guest content group under two parents; CFEqual elements render once.
+        let visited = VisitedElements()
+        XCTAssertTrue(visited.insert(AXUIElementCreateApplication(4242)))
+        XCTAssertFalse(visited.insert(AXUIElementCreateApplication(4242)))
+        XCTAssertTrue(visited.insert(AXUIElementCreateApplication(4243)))
+    }
+    func testSimulatorHostsIncludeDeviceHub() {
+        XCTAssertTrue(AppResolver.simulatorHostBundles.contains("com.apple.dt.Devices"))
+        XCTAssertTrue(AppResolver.simulatorHostBundles.contains("com.apple.iphonesimulator"))
+        XCTAssertTrue(AX.nodeScopedAttributes.contains("AXServesAsTitleForUIElements"))
+    }
 }

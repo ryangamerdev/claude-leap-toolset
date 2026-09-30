@@ -1,5 +1,11 @@
 > **RESUMED 2026-09-28.** The current handoff is this first section; earlier handoffs follow unchanged.
 
+# Update — 2026-09-29 (Device Hub)
+
+Xcode 27 replaced Simulator.app with Device Hub (`com.apple.dt.Devices`); Leap supports it (and maps
+"Simulator" to it). Open follow-up items A, C, B fixed, awaiting native retest per
+docs/followup/2026-09-29-ui-ax-lessons-retest.md and iterations/2026-09-29-device-hub-waits-hit-test.md.
+
 # Update — 2026-09-29
 
 Read iterations/2026-09-29-history-review-fix-forward.md. Installed candidate: see its install line.

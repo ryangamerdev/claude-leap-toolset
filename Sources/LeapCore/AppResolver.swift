@@ -1,4 +1,5 @@
 import AppKit
+import Darwin
 import Foundation
 
 public enum LeapError: Error, CustomStringConvertible {
@@ -92,6 +93,12 @@ public enum AppResolver {
 
     public static func resolve(_ query: String, launch: Bool = true) async throws -> NSRunningApplication {
         if let running = try findRunning(query) { try enforceAllowList(running, query: query); return running }
+        // Xcode 27 replaced Simulator.app with Device Hub; old names keep working when the
+        // old host is not installed.
+        if ["simulator", "com.apple.iphonesimulator"].contains(normalized(query)),
+           NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.apple.iphonesimulator") == nil {
+            return try await resolve("com.apple.dt.Devices", launch: launch)
+        }
         guard launch else { throw LeapError.appNotFound(query) }
         if !query.contains("/") {
             let copies = NSWorkspace.shared.urlsForApplications(withBundleIdentifier: query)
@@ -113,6 +120,58 @@ public enum AppResolver {
         return app
     }
 
+    /// Bundle ids of the iOS Simulator host: Simulator.app (Xcode ≤ 26) and Device Hub (Xcode 27).
+    public static let simulatorHostBundles: Set<String> = ["com.apple.iphonesimulator", "com.apple.dt.Devices"]
+    public static func isSimulatorHost(_ app: NSRunningApplication) -> Bool {
+        simulatorHostBundles.contains(app.bundleIdentifier ?? "")
+    }
+
+    /// The real process id. Xcode 27's Device Hub is listed by NSRunningApplication with
+    /// processIdentifier -1 while its windows and AX server belong to a real process. Sky links
+    /// proc_pidpath and CGWindowListCopyWindowInfo; we use the same two sources: the process
+    /// whose executable is the app's executable, else the owner of a window named like the app.
+    public static func pid(of app: NSRunningApplication) -> pid_t {
+        let reported = app.processIdentifier
+        if reported > 0 { return reported }
+        if let exec = app.executableURL?.resolvingSymlinksInPath().path {
+            pidLock.lock(); let cached = pidCache[exec]; pidLock.unlock()
+            if let cached, executablePath(cached) == exec { return cached }
+            if let found = processes(executable: exec).first {
+                pidLock.lock(); pidCache[exec] = found; pidLock.unlock()
+                return found
+            }
+        }
+        if let name = app.localizedName,
+           let raw = CGWindowListCopyWindowInfo([.optionAll], kCGNullWindowID) as? [[String: Any]],
+           let owner = raw.first(where: { ($0[kCGWindowOwnerName as String] as? String) == name })?[kCGWindowOwnerPID as String] as? pid_t {
+            return owner
+        }
+        return reported
+    }
+    nonisolated(unsafe) private static var pidCache: [String: pid_t] = [:]
+    private static let pidLock = NSLock()
+
+    static func executablePath(_ pid: pid_t) -> String? {
+        var buf = [CChar](repeating: 0, count: 4 * Int(MAXPATHLEN))
+        guard proc_pidpath(pid, &buf, UInt32(buf.count)) > 0 else { return nil }
+        return URL(fileURLWithPath: String(cString: buf)).resolvingSymlinksInPath().path
+    }
+
+    static func processes(executable: String) -> [pid_t] {
+        let count = proc_listallpids(nil, 0)
+        guard count > 0 else { return [] }
+        var pids = [pid_t](repeating: 0, count: Int(count) + 32)
+        let n = proc_listallpids(&pids, Int32(pids.count * MemoryLayout<pid_t>.size))
+        guard n > 0 else { return [] }
+        return pids.prefix(Int(n)).filter { $0 > 0 && executablePath($0) == executable }
+    }
+
+    /// Frontmost check that also works for apps reporting processIdentifier -1.
+    public static func isFrontmost(_ pid: pid_t) -> Bool {
+        guard let front = NSWorkspace.shared.frontmostApplication else { return false }
+        return self.pid(of: front) == pid
+    }
+
     static func normalized(_ s: String) -> String {
         var t = s.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         if t.hasSuffix(".app") { t.removeLast(4) }
@@ -126,7 +185,7 @@ public enum AppResolver {
         if candidates.count <= 1 { return candidates.first }
         if let active = candidates.first(where: { $0.isActive }) { return active }
         let counts = WindowInfo.onScreenWindowCounts()
-        let withWindows = candidates.filter { (counts[$0.processIdentifier] ?? 0) > 0 }
+        let withWindows = candidates.filter { (counts[pid(of: $0)] ?? 0) > 0 }
         if withWindows.count == 1 { return withWindows[0] }
         throw LeapError.ambiguousApp(query, candidates.map { $0.bundleURL?.path ?? "pid \($0.processIdentifier)" })
     }
@@ -186,9 +245,9 @@ public enum AppResolver {
             let name = app.localizedName ?? app.bundleIdentifier ?? "pid \(app.processIdentifier)"
             seen.insert(normalized(name))
             result.append(AppInfo(
-                name: name, bundleId: app.bundleIdentifier, pid: app.processIdentifier,
+                name: name, bundleId: app.bundleIdentifier, pid: pid(of: app),
                 isRunning: true, isActive: app.isActive,
-                windowCount: windowsByPid[app.processIdentifier] ?? 0,
+                windowCount: windowsByPid[pid(of: app)] ?? 0,
                 path: app.bundleURL?.path))
         }
         result.sort { ($0.isActive ? 0 : 1, $0.name) < ($1.isActive ? 0 : 1, $1.name) }

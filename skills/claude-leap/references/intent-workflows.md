@@ -62,6 +62,11 @@ evidence. For quick interactive work the get_app_state/click loop in SKILL.md is
   keeps hidden layers in the tree. `hit_test` notes what the hit-test found at the target's
   center when it is not the target; it is a hint, not proof.
 - After a failure or `unknown`, dependent steps are skipped; a failure capture is retained.
+- Wait/assert/expect checks poll every 250 ms and keep the deciding read as evidence; they
+  return within one poll of the condition holding and end at `timeout`. `check_ms` is the time
+  spent judging; a failure screenshot is taken afterwards and is not part of it.
+- `hit_test` is reported only when none of five points inside the target (center and four
+  interior points) reaches it.
 
 ## Coordinates and scrolling
 

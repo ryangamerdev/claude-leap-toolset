@@ -92,7 +92,10 @@ enum AX {
     /// they can hide structure, so absence could not be established.
     static let nodeScopedAttributes: Set<String> = [kAXSubroleAttribute, kAXTitleAttribute,
         kAXDescriptionAttribute, kAXIdentifierAttribute, kAXPlaceholderValueAttribute, kAXValueAttribute,
-        kAXEnabledAttribute, kAXFocusedAttribute, kAXSelectedAttribute, kAXPositionAttribute, kAXSizeAttribute]
+        kAXEnabledAttribute, kAXFocusedAttribute, kAXSelectedAttribute, kAXPositionAttribute, kAXSizeAttribute,
+        // A label relation (used to fold title elements into their controls, as Sky does); a
+        // failure loses the folding, not structure. Device Hub buttons fail it with -25200.
+        "AXServesAsTitleForUIElements"]
     static func advisoryFailure(attribute: String, role: String?) -> Bool {
         nodeScopedAttributes.contains(attribute)
     }
@@ -311,6 +314,18 @@ enum AX {
     }
 }
 
+/// Elements already walked in one snapshot, by accessibility identity (CFEqual).
+final class VisitedElements {
+    private var buckets: [CFHashCode: [AXUIElement]] = [:]
+    /// False when the element was already visited.
+    func insert(_ el: AXUIElement) -> Bool {
+        let h = CFHash(el)
+        if buckets[h]?.contains(where: { CFEqual($0, el) }) == true { return false }
+        buckets[h, default: []].append(el)
+        return true
+    }
+}
+
 public struct AXWalker {
     public var maxNodes = 1500
     public var maxDepth = 60
@@ -382,7 +397,8 @@ public struct AXWalker {
         var nodes: [AXNode] = []
         var count = 0
         var truncated = false
-        walk(window, depth: 0, parentKey: "w", siblingOrdinal: 0, windowFrame: frame,
+        let visited = VisitedElements()
+        walk(window, depth: 0, parentKey: "w", siblingOrdinal: 0, windowFrame: frame, visited: visited,
              nodes: &nodes, count: &count, truncated: &truncated)
         if let bar: AXUIElement = AX.attr(app, kAXMenuBarAttribute) {
             walkMenuBar(bar, nodes: &nodes, count: &count, truncated: &truncated)
@@ -430,8 +446,12 @@ public struct AXWalker {
 
     private func walk(_ el: AXUIElement, depth: Int, parentKey: String, siblingOrdinal: Int,
                       windowFrame: CGRect, untransformed: Bool = false, prefetched: [String: CFTypeRef]? = nil,
+                      visited: VisitedElements? = nil,
                       nodes: inout [AXNode], count: inout Int, truncated: inout Bool) {
         if AX.budget?.expired == true || count >= maxNodes || depth > maxDepth { truncated = true; return }
+        // Xcode 27 Device Hub exposes the guest app's content group under two parents (the same
+        // AXUIElement, CFEqual). Render each element once, at its first position.
+        if let visited, !visited.insert(el) { return }
         count += 1
         let a = prefetched ?? AX.attrs(el, AXWalker.batchAttributes)
         let role = (a[kAXRoleAttribute] as? String) ?? "AXUnknown"
@@ -557,7 +577,7 @@ public struct AXWalker {
             let ordinal = ordinals[sig, default: 0]
             ordinals[sig] = ordinal + 1
             walk(child, depth: childDepth, parentKey: key, siblingOrdinal: ordinal, windowFrame: windowFrame,
-                 untransformed: untransformed || rotatedDevice, prefetched: ca, nodes: &nodes, count: &count, truncated: &truncated)
+                 untransformed: untransformed || rotatedDevice, prefetched: ca, visited: visited, nodes: &nodes, count: &count, truncated: &truncated)
             if truncated { return }
         }
     }

@@ -43,8 +43,10 @@ public final class AppSession {
 
     public init(app: NSRunningApplication) {
         self.app = app
-        self.pid = app.processIdentifier
-        self.axApp = AXUIElementCreateApplication(app.processIdentifier)
+        // Device Hub (Xcode 27) reports processIdentifier -1; resolve the real process.
+        let pid = AppResolver.pid(of: app)
+        self.pid = pid
+        self.axApp = AXUIElementCreateApplication(pid)
         // Chromium/Electron apps (ChatGPT, VS Code, Slack, browsers) build their accessibility
         // tree lazily and expose only the window chrome until an assistive client asks. These
         // two app-level attributes are the switch; the Sky computer-use service carries both.
@@ -229,7 +231,7 @@ public final class AppSession {
     static func header(snap: AXWindowSnapshot, session: AppSession) -> String {
         let f = snap.frame
         var h = "## \(session.displayName) — window \"\(snap.title ?? "")\" \(Int(f.width))x\(Int(f.height)) at screen (\(Int(f.minX)),\(Int(f.minY)))"
-        h += session.app.isActive ? " [frontmost]" : " [background]"
+        h += AppResolver.isFrontmost(session.pid) ? " [frontmost]" : " [background]"
         h += " — state #\(session.generation)"
         if let stable = session.lastSettleStable {
             h += stable ? " (settled)" : " (settle deadline reached: stability not established — verify before acting)"

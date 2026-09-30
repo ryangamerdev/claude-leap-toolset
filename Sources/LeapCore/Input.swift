@@ -166,7 +166,7 @@ public enum Input {
         guard setWindowLocation != nil else {
             throw LeapError.unsupported("This macOS version does not provide window-targeted pointer routing. No input was sent.")
         }
-        let isBackground = NSWorkspace.shared.frontmostApplication?.processIdentifier != pid
+        let isBackground = !AppResolver.isFrontmost(pid)
         if isBackground, case .commandClick = background { return try body(.maskCommand) }
         let needsSyntheticFocus = isBackground
         if needsSyntheticFocus {
@@ -176,7 +176,7 @@ public enum Input {
         }
         defer {
             // If the user really activates the app during the gesture, preserve it.
-            if needsSyntheticFocus, NSWorkspace.shared.frontmostApplication?.processIdentifier != pid {
+            if needsSyntheticFocus, !AppResolver.isFrontmost(pid) {
                 do { try activationEvent(windowID: window.id, active: false).postToPid(pid) }
                 catch { Diagnostics.shared.record(level:"error",kind:"synthetic_focus_cleanup_failed",detail:String(describing:error)) }
             }

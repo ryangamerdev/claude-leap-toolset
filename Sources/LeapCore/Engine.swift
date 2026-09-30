@@ -44,16 +44,17 @@ public actor Engine {
 
     public func session(for query: String, launch: Bool = true) async throws -> AppSession {
         let app = try await AppResolver.resolve(query, launch: launch)
-        if let s = sessions[app.processIdentifier], !s.app.isTerminated {try autoRecord(s); return s}
-        let identity = app.bundleURL?.path ?? app.bundleIdentifier ?? "pid \(app.processIdentifier)"
+        let pid = AppResolver.pid(of: app)
+        if let s = sessions[pid], !s.app.isTerminated {try autoRecord(s); return s}
+        let identity = app.bundleURL?.path ?? app.bundleIdentifier ?? "pid \(pid)"
         let s = AppSession(app: app)
-        if let oldPid = pidByIdentity[identity], oldPid != app.processIdentifier, sessions[oldPid] != nil {
+        if let oldPid = pidByIdentity[identity], oldPid != pid, sessions[oldPid] != nil {
             recordings.removeValue(forKey: oldPid)?.stop()
             sessions[oldPid] = nil
             s.relaunchedFrom = oldPid
         }
-        sessions[app.processIdentifier] = s
-        pidByIdentity[identity] = app.processIdentifier
+        sessions[pid] = s
+        pidByIdentity[identity] = pid
         try autoRecord(s)
         return s
     }
@@ -268,7 +269,7 @@ public actor Engine {
         let bundle = s.app.bundleIdentifier ?? ""
         var caps = ["Capabilities of \(s.displayName): accessibility actions and value/selection edits: yes (verified by read-back);",
                     "coordinate clicks/drags/scrolls: posted to the process, not verified;"]
-        if bundle == "com.apple.iphonesimulator" {
+        if AppResolver.simulatorHostBundles.contains(bundle) {
             caps.append("background keystrokes: NOT delivered to a Simulator window (use set_value / type_text with element_index, which go through accessibility); tvOS device windows expose no app tree (screenshots + press_key with foreground=true).")
         } else if bundle.contains("electron") || bundle.hasPrefix("com.openai.chat") || bundle.hasPrefix("com.microsoft.VSCode") || bundle.hasPrefix("com.google.Chrome") || bundle.hasPrefix("com.microsoft.edgemac") {
             caps.append("background keystrokes: Chromium/Electron apps often ignore them; prefer accessibility edits or a browser tool.")
@@ -485,13 +486,13 @@ public actor Engine {
     /// Activate the app and *verify* it became frontmost. Never returns normally while another
     /// app is active, so synthesized HID events can't leak into the user's current app.
     func activate(_ s: AppSession) async throws {
-        guard !s.app.isActive else { return }
-        Self.bringToFront(s.app)
+        guard !AppResolver.isFrontmost(s.pid) else { return }
+        Self.bringToFront(s.app, pid: s.pid)
         var deadline = Date().addingTimeInterval(1.0)
-        while !s.app.isActive && Date() < deadline {
+        while !AppResolver.isFrontmost(s.pid) && Date() < deadline {
             try await Task.sleep(nanoseconds: 30_000_000)
         }
-        if !s.app.isActive, let url = s.app.bundleURL {
+        if !AppResolver.isFrontmost(s.pid), let url = s.app.bundleURL {
             // LaunchServices fallback (works for apps that ignore AX frontmost).
             let config = NSWorkspace.OpenConfiguration()
             config.activates = true
@@ -499,11 +500,11 @@ public actor Engine {
             do {_ = try await NSWorkspace.shared.openApplication(at:url,configuration:config)}
             catch {Diagnostics.shared.record(level:"error",kind:"activation_fallback_failed",detail:String(describing:error))}
             deadline = Date().addingTimeInterval(1.5)
-            while !s.app.isActive && Date() < deadline {
+            while !AppResolver.isFrontmost(s.pid) && Date() < deadline {
                 try await Task.sleep(nanoseconds: 30_000_000)
             }
         }
-        guard s.app.isActive else {
+        guard AppResolver.isFrontmost(s.pid) else {
             throw LeapError.unsupported("Could not bring \(s.displayName) to the front to deliver input (macOS refused activation). No events were sent. Use an accessibility action (click by element_index / set_value) or retry with foreground=true.")
         }
         try await Task.sleep(nanoseconds: 80_000_000) // key window + first responder settle
@@ -511,8 +512,8 @@ public actor Engine {
 
     /// Accessibility-based activation works from any AX-trusted process, unlike
     /// `NSRunningApplication.activate()` which macOS 14 ignores for non-frontmost callers.
-    static func bringToFront(_ app: NSRunningApplication) {
-        let ax = AXUIElementCreateApplication(app.processIdentifier)
+    static func bringToFront(_ app: NSRunningApplication, pid: pid_t) {
+        let ax = AXUIElementCreateApplication(pid)
         AXUIElementSetAttributeValue(ax, kAXFrontmostAttribute as CFString, kCFBooleanTrue)
         if let window: AXUIElement = AX.attr(ax, kAXFocusedWindowAttribute) ?? AX.attr(ax, kAXMainWindowAttribute) {
             AXUIElementPerformAction(window, kAXRaiseAction as CFString)
@@ -912,7 +913,7 @@ public actor Engine {
                 }
             }
             // Simulator multiline AXValue readback can match without updating the binding.
-            let unsafeValue = s.app.bundleIdentifier == "com.apple.iphonesimulator" && rec.node.role == "AXTextArea"
+            let unsafeValue = AppResolver.isSimulatorHost(s.app) && rec.node.role == "AXTextArea"
             if !mode.foreground, !unsafeValue, rec.node.settable,
                let _ = try AX.appendValue(rec.node.element, text, placeholder: rec.node.placeholder) {
                 await signal(indicatorPoint(s, i), .edit)
@@ -922,7 +923,7 @@ public actor Engine {
         Diagnostics.shared.record(level:"warning",kind:"text_keyboard_route",detail:"Using synthesized text input; not verified. foreground=\(mode.foreground). Text omitted.")
         try await withInput(s, mode) { d in
             if let i = elementIndex { try self.requireTextFocus(try s.element(i).node.element, session: s) }
-            try Input.type(text, requirePhysical: s.app.bundleIdentifier == "com.apple.iphonesimulator", d)
+            try Input.type(text, requirePhysical: AppResolver.isSimulatorHost(s.app), d)
         }
         await signal(indicatorPoint(s, elementIndex), .edit)
         return "typed \(text.count) characters (keystrokes dispatched; not verified)"
@@ -953,7 +954,7 @@ public actor Engine {
         // the application binding. Simulator TextEditor reproduced this: immediate
         // readback matched, but save/reopen lost the notes. Respect the provider's
         // capability instead of probing an unsupported write or guessing keyboard focus.
-        let unsafeSimulatorTextValue = s.app.bundleIdentifier == "com.apple.iphonesimulator" && rec.node.role == "AXTextArea"
+        let unsafeSimulatorTextValue = AppResolver.isSimulatorHost(s.app) && rec.node.role == "AXTextArea"
         guard !unsafeSimulatorTextValue, AX.isSettable(rec.node.element, kAXValueAttribute) else {
             Diagnostics.shared.record(level:"warning",kind:"set_value_not_settable",detail:"Direct AX value replacement refused: unsupported value capability or Simulator multiline binding risk. No value write or keyboard fallback sent. Text omitted.")
             throw LeapError.unsupported("[\(elementIndex)] requires normal text input: direct value replacement is unsupported or unsafe for this multiline editor, and selection replacement was unavailable or unchanged. Direct value write was not sent. Focus the editable control, use type_text, and verify the saved result by reopening it.")
@@ -1000,7 +1001,7 @@ public actor Engine {
         try await withInput(s, mode) { d in
             try self.requireTextFocus(rec.node.element, session: s)
             try Input.press(KeyChord(keyCode: 0, flags: .maskCommand), d) // ⌘A
-            try Input.type(value, requirePhysical: s.app.bundleIdentifier == "com.apple.iphonesimulator", d)
+            try Input.type(value, requirePhysical: AppResolver.isSimulatorHost(s.app), d)
         }
         return "AX set failed (\(err.name)); focused [\(elementIndex)], selected all and typed instead"
     }

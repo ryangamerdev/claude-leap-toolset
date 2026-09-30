@@ -132,12 +132,12 @@ extension Engine {
     /// A plain walk of the target window: no settle loop, rendering, recording or delta. Used to poll
     /// waits cheaply (as the gameday ui-ax script does every 250 ms) and to resolve a target just before
     /// input. Evidence still comes from full observations.
-    func automationQuickRead(_ s:AutomationSession) async throws -> (nodes:[[String:Any]],complete:Bool,snap:AXWindowSnapshot) {
+    func automationQuickRead(_ s:AutomationSession,budget:Double=2) async throws -> (nodes:[[String:Any]],complete:Bool,snap:AXWindowSnapshot,native:AppSession) {
         let native=try await session(for:s.app,launch:false)
         guard native.pid == s.pid else {throw AutomationModel.fail("Target process changed; open a new session")}
-        let window=try await waitForWindow(native,timeout:2)
-        guard let snap=walker.snapshot(window:window,app:native.axApp,timeout:2) else {throw AutomationModel.fail("AX snapshot unavailable")}
-        return (Self.automationNodes(snap,native),snap.supportsStateChecks,snap)
+        let window=try await waitForWindow(native,timeout:min(2,max(0.05,budget)))
+        guard let snap=walker.snapshot(window:window,app:native.axApp,timeout:min(2,max(0.05,budget))) else {throw AutomationModel.fail("AX snapshot unavailable")}
+        return (Self.automationNodes(snap,native),snap.supportsStateChecks,snap,native)
     }
 
     /// Raw, unnormalized attributes for triage (the gameday ui-ax dump settled app-vs-tool questions).
@@ -182,6 +182,13 @@ extension Engine {
             var opts=StateOptions();opts.settle=settle
             _ = try await state(app:s.app,opts,window:s.window)
             guard let snap=native.automationSnapshot else {throw AutomationModel.fail("AX snapshot unavailable")}
+            observation=try automationObservation(s,snap:snap,native:native)
+        }
+        return try automationSaveObservation(s,observation,started:started)
+    }
+
+    /// Normalize one AX snapshot into an observation (window identity rules included).
+    func automationObservation(_ s:AutomationSession,snap:AXWindowSnapshot,native:AppSession) throws -> [String:Any] {
             var windowChanged=false
             if let identity=s.windowIdentity,!CFEqual(identity,snap.window) {
                 guard !s.explicitWindow else {throw AutomationModel.fail("Selected window changed; open a new explicitly targeted session")}
@@ -189,8 +196,11 @@ extension Engine {
             }
             s.windowIdentity=snap.window
             let nodes=Self.automationNodes(snap,native)
-            observation=["nodes":nodes,"complete":snap.supportsStateChecks && !snap.retainedEarlierObservation,"windowChanged":windowChanged,"coordinateSpace":"window_points","bounds":[snap.frame.minX,snap.frame.minY,snap.frame.width,snap.frame.height],"window":snap.title ?? "","pid":native.pid,"blockingReadFailures":snap.blockingReadFailures,"advisoryReadFailures":snap.advisoryReadFailures,"limitations":["AX acquisition is not atomic; frame intersection is not occlusion","Simulator host AX geometry can be invalid; prefer device backend"]]
-        }
+            return ["nodes":nodes,"complete":snap.supportsStateChecks && !snap.retainedEarlierObservation,"windowChanged":windowChanged,"coordinateSpace":"window_points","bounds":[snap.frame.minX,snap.frame.minY,snap.frame.width,snap.frame.height],"window":snap.title ?? "","pid":native.pid,"blockingReadFailures":snap.blockingReadFailures,"advisoryReadFailures":snap.advisoryReadFailures,"limitations":["AX acquisition is not atomic; frame intersection is not occlusion","Simulator host AX geometry can be invalid; prefer device backend"]]
+    }
+
+    func automationSaveObservation(_ s:AutomationSession,_ input:[String:Any],started:String) throws -> [String:Any] {
+        var observation=input
         observation["schemaVersion"]=2;observation["session_id"]=s.id;observation["backend"]=s.backend
         observation["started_at"]=started;observation["finished_at"]=ISO8601DateFormatter().string(from:Date())
         let (seq,file)=try s.save("snapshot",observation,interaction:recordingInteraction)
@@ -225,20 +235,33 @@ extension Engine {
 
     func automationCheck(_ s:AutomationSession,expectation:[String:Any],timeout:Double) async throws -> (String,[String:Any]) {
         let end=ProcessInfo.processInfo.systemUptime+max(0,timeout)
-        // Poll with quick reads every 250 ms; take one full observation (evidence, delta) when the
-        // condition resolves or time runs out.
-        var polled=false
-        if s.wda == nil, timeout>0 {
-            polled=true
-            // Leave room for the one evidence read so the step does not overrun its timeout.
-            while ProcessInfo.processInfo.systemUptime<end-0.3 {
-                guard let quick=try? await automationQuickRead(s) else {break}
-                if AutomationModel.verdict(nodes:quick.nodes,complete:quick.complete,expectation:expectation) == "passed" {break}
-                try await Task.sleep(nanoseconds:250_000_000)
+        // Poll quick reads every 250 ms and keep the read that decided the verdict as the evidence
+        // snapshot. A second, full observation after the fact cost about a second on Simulator host
+        // trees (already-true waits took 1.0-1.7 s) and pushed timed-out waits 1-2 s past their
+        // timeout. Each read is bounded by the time left, so the check ends at its timeout.
+        if s.wda == nil {
+            let started=ISO8601DateFormatter().string(from:Date())
+            var last:(nodes:[[String:Any]],complete:Bool,snap:AXWindowSnapshot,native:AppSession)?
+            repeat {
+                let remaining=end-ProcessInfo.processInfo.systemUptime
+                // The first read always gets a normal budget so a zero-timeout assert still sees the UI.
+                guard let quick=try? await automationQuickRead(s,budget:last == nil ? 2:max(0.1,remaining)) else {break}
+                last=quick
+                let verdict=AutomationModel.verdict(nodes:quick.nodes,complete:quick.complete,expectation:expectation)
+                if verdict == "passed" || ProcessInfo.processInfo.systemUptime>=end-0.05 {
+                    let evidence=try automationSaveObservation(s,try automationObservation(s,snap:quick.snap,native:quick.native),started:started)
+                    return (verdict,evidence)
+                }
+                let pause=min(0.25,end-ProcessInfo.processInfo.systemUptime)
+                if pause>0 {try await Task.sleep(nanoseconds:UInt64(pause*1_000_000_000))}
+            } while ProcessInfo.processInfo.systemUptime<end
+            if let last {
+                let verdict=AutomationModel.verdict(nodes:last.nodes,complete:last.complete,expectation:expectation)
+                return (verdict,try automationSaveObservation(s,try automationObservation(s,snap:last.snap,native:last.native),started:started))
             }
         }
         while true {
-            let snap=try await automationObserve(s,settle:!polled)
+            let snap=try await automationObserve(s,settle:s.wda != nil)
             let verdict=AutomationModel.verdict(nodes:snap["nodes"] as? [[String:Any]] ?? [],complete:snap["complete"] as? Bool == true,expectation:expectation)
             if verdict == "passed" || ProcessInfo.processInfo.systemUptime>=end {return(verdict,snap)}
             try await Task.sleep(nanoseconds:200_000_000)
@@ -437,7 +460,10 @@ extension Engine {
                         r["note"]="Expectation already held before input; a pass does not show the action's effect. Use a condition that distinguishes the new state (e.g. enabled, value, a unique label)."
                     }
                     let wait=type == "assert" ? 0:min(30,max(0,step["timeout"] as? Double ?? 5))
+                    let checkStarted=ProcessInfo.processInfo.systemUptime
                     let (v,snap)=try await automationCheck(s,expectation:expectation,timeout:min(wait,max(0,deadline-ProcessInfo.processInfo.systemUptime)))
+                    // Time spent judging the expectation; a failure screenshot taken afterwards is not part of it.
+                    r["check_ms"]=Int((ProcessInfo.processInfo.systemUptime-checkStarted)*1000)
                     post=snap;r["verification"]=v
                     if v != "passed" {stopped=true;overall=v}
                 } else if type == "action", Diagnostics.shared.insightsEnabled {post=try await automationObserve(s)}
@@ -539,12 +565,26 @@ extension Engine {
     func hitTestReport(_ app:String,_ index:Int) async -> String? {
         guard let native=try? await session(for:app,launch:false),let rec=try? native.element(index),
               !rec.node.offscreen,!rec.node.untransformedFrame,let frame=AX.frame(rec.node.element),frame.width>0,frame.height>0 else {return nil}
-        var hit:AXUIElement?
-        guard AXUIElementCopyElementAtPosition(native.axApp,Float(frame.midX),Float(frame.midY),&hit) == .success,let hit else {return nil}
-        var current:AXUIElement?=hit
-        for _ in 0..<40 {guard let c=current else {break};if CFEqual(c,rec.node.element) {return nil};current=AX.attr(c,kAXParentAttribute)}
-        var up:AXUIElement?=AX.attr(rec.node.element,kAXParentAttribute)
-        for _ in 0..<3 {guard let u=up else {break};if CFEqual(u,hit) {return nil};up=AX.attr(u,kAXParentAttribute)}
+        func reaches(_ hit:AXUIElement) -> Bool {
+            var current:AXUIElement?=hit
+            for _ in 0..<40 {guard let c=current else {break};if CFEqual(c,rec.node.element) {return true};current=AX.attr(c,kAXParentAttribute)}
+            var up:AXUIElement?=AX.attr(rec.node.element,kAXParentAttribute)
+            for _ in 0..<3 {guard let u=up else {break};if CFEqual(u,hit) {return true};up=AX.attr(u,kAXParentAttribute)}
+            return false
+        }
+        // SwiftUI's hit-test can return a hidden layer at one point of a visible, topmost control
+        // (the editor's Cancel reported the header's "Route library" at its center). Probe the
+        // center and four interior points; if any reaches the target, it is not reported covered.
+        // A control covered by an opaque layer (Create scenario under the notes editor) misses at all.
+        var centerHit:AXUIElement?
+        for (fx,fy) in [(0.5,0.5),(0.25,0.25),(0.75,0.25),(0.25,0.75),(0.75,0.75)] {
+            var hit:AXUIElement?
+            let x=frame.minX+frame.width*fx, y=frame.minY+frame.height*fy
+            guard AXUIElementCopyElementAtPosition(native.axApp,Float(x),Float(y),&hit) == .success,let hit else {continue}
+            if reaches(hit) {return nil}
+            if centerHit == nil {centerHit=hit}
+        }
+        guard let hit=centerHit else {return nil}
         let role:String=AX.attr(hit,kAXRoleAttribute) ?? "?"
         let label:String=AX.attr(hit,kAXTitleAttribute) ?? AX.attr(hit,kAXDescriptionAttribute) ?? AX.attr(hit,kAXPlaceholderValueAttribute) ?? ""
         return "\(role) \"\(label.prefix(60))\""

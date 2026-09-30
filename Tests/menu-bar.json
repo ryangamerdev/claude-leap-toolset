@@ -3,7 +3,7 @@
   {"name": "@capture", "arguments": {"pattern": "\\[(\\d+)\\] MenuBarItem \"Window\" actions", "var": "windowMenu"}},
 
   {"name": "click", "arguments": {"app": "Simulator", "element_index": "$windowMenu"}},
-  {"name": "@capture", "arguments": {"pattern": "\\+ \\[(\\d+)\\] MenuItem \"iPhone 16 – iOS 18.0\" id=makeKeyAndOrderFront:", "var": "iphoneItem"}},
+  {"name": "@capture", "arguments": {"pattern": "\\+ \\[(\\d+)\\] MenuItem \"iPhone 16 (?:– iOS 18.0|\\(iOS 18.0\\))\" id=makeKeyAndOrderFront:", "var": "iphoneItem"}},
   {"name": "@capture", "arguments": {"pattern": "~ \\[(\\d+)\\] MenuBarItem \"Window\" \\[selected\\]", "var": "openTitle"}},
   {"name": "@expect", "arguments": {"var": "openTitle", "value": "$windowMenu"}},
 

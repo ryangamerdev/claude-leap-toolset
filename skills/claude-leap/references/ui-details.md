@@ -98,7 +98,12 @@ each screen (click the tab, read the text state to confirm you are there), then 
 ## Simulator specifics
 
 - `get_app_state("Simulator", window: "iPhone 16")`; the simulated app's tree is exposed for
-  iPhone/iPad. tvOS exposes **no app content** — for Apple TV use screenshots and `press_key`
+  iPhone/iPad. Xcode 27 replaced Simulator.app with Device Hub (`com.apple.dt.Devices`);
+  "Simulator" resolves to it when Simulator.app is absent. Show a device with
+  `open "devices://device/open?id=<UDID>"`. Device Hub windows also hold its own buttons
+  ("Home" id=app.grid.3x3, "Screenshot", "Record", "Rotate Left"); the guest app's Home is
+  `id=house`, so scope by role/id when labels repeat. Its Window menu lists devices as
+  "iPhone 16 (iOS 18.0)". tvOS exposes **no app content** — for Apple TV use screenshots and `press_key`
   Up/Down/Left/Right/Return, and confirm with a second screenshot.
 - Rotate / device switching: toolbar `Rotate` button, or the Window menu (see above).
 - After reinstalling the app under test, the tree comes back as a fresh subtree; read state again.
