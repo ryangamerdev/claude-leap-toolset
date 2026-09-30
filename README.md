@@ -137,7 +137,7 @@ tools, with the service itself saying very little.
 Manual registration, if you prefer:
 
 ```bash
-claude mcp add --scope user leap -- /Users/ryan/src/claude-leap/dist/claude-leap.app/Contents/MacOS/claude-leap
+claude mcp add --scope user leap -- ~/Applications/claude-leap.app/Contents/MacOS/claude-leap
 ```
 
 or in `~/.claude.json` / a project `.mcp.json`:
@@ -146,7 +146,7 @@ or in `~/.claude.json` / a project `.mcp.json`:
 {
   "mcpServers": {
     "leap": {
-      "command": "/Users/ryan/src/claude-leap/dist/claude-leap.app/Contents/MacOS/claude-leap"
+      "command": "/Users/<you>/Applications/claude-leap.app/Contents/MacOS/claude-leap"
     }
   }
 }
