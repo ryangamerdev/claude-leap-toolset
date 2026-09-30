@@ -42,7 +42,8 @@ installed capabilities separately from native acceptance and planned features. S
 are authoritative; do not edit only the installed copies.
 
 Every development app installation must also run `python3 scripts/install.py --skills-only`.
-This refreshes Claude and Codex skill copies without touching the app or MCP registration.
+This refreshes the Claude skill copies (and removes any stale Codex copies: Leap stays out of Codex,
+user direction 2026-09-30) without touching the app or MCP registration.
 The standard installer does this automatically. Compare installed/source contents before
 handoff; record skill changes and synchronization in the iteration history. A documentation-only
 sync needs no binary rebuild; restart if the host cached skill discovery metadata.

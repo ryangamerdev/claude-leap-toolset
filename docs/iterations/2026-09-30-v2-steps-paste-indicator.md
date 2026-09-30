@@ -70,3 +70,8 @@
 Installed 2026-09-30T00:56:15Z via `make install` from the commit containing this entry. Binary SHA256
 `a32b70d4eafd1b40f6cf6d55bc852953b36c0b89c37314a10facb2b8f6fb4b7e`. Signature verified; claude-leap skills match; registration `leap` unchanged (Claude Code; OpenCode points
 at the same installed binary). Loaded MCP not yet restarted onto this build.
+
+Addendum (user direction): scripts/install.py no longer installs this repo's skills into Codex
+(`$CODEX_HOME/skills`). It removes stale copies on install, `--skills-only` and `--uninstall`. The
+claude-leap, leap-3d-game-workflows and app-store-screenshots copies were removed from ~/.codex/skills.
+AGENTS.md updated. Codex keeps Sky and the Xcode MCP.

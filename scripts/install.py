@@ -4,13 +4,15 @@
 Usage:
   install.py            # build+sign the app if needed, then install a self-contained copy
   install.py --no-build # skip the build step (use the existing dist/ app)
-  install.py --skills-only # refresh Claude and Codex skills without app/config changes
+  install.py --skills-only # refresh Claude skills without app/config changes
   install.py --uninstall
 
 This does NOT symlink into the repo. It copies the signed app bundle to
   ~/Applications/claude-leap.app
 and copies each skill to
-  ~/.claude/skills/<name> and $CODEX_HOME/skills/<name> (default ~/.codex/skills)
+  ~/.claude/skills/<name>
+(not Codex: Codex uses its own computer-use service, and Leap is not registered there; a stale
+Leap skill copy under $CODEX_HOME/skills is removed)
 then registers the MCP server at the installed path. After this the repo can be moved
 or deleted and the install keeps working. Re-run to update to a newer build.
 
@@ -31,8 +33,9 @@ INSTALL_APP = os.path.expanduser("~/Applications/claude-leap.app")
 INSTALLED_SERVER = os.path.join(INSTALL_APP, "Contents", "MacOS", "claude-leap")
 
 SKILLS_DIR = os.path.join(ROOT, "skills")
-SKILLS_DST_ROOTS = list(dict.fromkeys([os.path.expanduser("~/.claude/skills"),
-    os.path.join(os.path.expanduser(os.environ.get("CODEX_HOME", "~/.codex")), "skills")]))
+SKILLS_DST_ROOTS = [os.path.expanduser("~/.claude/skills")]
+# Leap stays out of Codex (user direction 2026-09-30); earlier installs copied skills there.
+CODEX_SKILLS = os.path.join(os.path.expanduser(os.environ.get("CODEX_HOME", "~/.codex")), "skills")
 
 
 def run(cmd, check=True):
@@ -88,6 +91,18 @@ def install_skills():
         _rm(dst)
         shutil.copytree(src, dst)
         print(f"skill: {dst}")
+    remove_codex_skills()
+
+
+def remove_codex_skills():
+    """Delete copies of this repo's skills that earlier installs put under Codex."""
+    if not os.path.isdir(SKILLS_DIR):
+        return
+    for name in sorted(os.listdir(SKILLS_DIR)):
+        stale = os.path.join(CODEX_SKILLS, name)
+        if os.path.exists(os.path.join(SKILLS_DIR, name, "SKILL.md")) and os.path.lexists(stale):
+            _rm(stale)
+            print(f"removed Codex skill copy: {stale}")
 
 
 def install_config():
@@ -126,6 +141,7 @@ def main():
             if os.path.exists(dst) or os.path.islink(dst):
                 _rm(dst)
                 print(f"removed {dst}")
+        remove_codex_skills()
         print("Uninstalled. Restart the Claude Code session.")
         return
 

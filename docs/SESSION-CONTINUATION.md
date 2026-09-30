@@ -3,7 +3,7 @@
 # Host registrations — 2026-09-29 (user direction)
 
 Leap is registered in Claude Code and OpenCode. Keep Leap OUT of Codex: Codex uses Sky
-(computer-use). The Xcode MCP (`xcode`, `xcrun mcpbridge`) is registered in all three.
+(computer-use); the installer no longer copies Leap skills there. The Xcode MCP (`xcode`, `xcrun mcpbridge`) is registered in all three.
 
 # Update — 2026-09-29 (Device Hub)
 
