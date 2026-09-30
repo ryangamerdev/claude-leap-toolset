@@ -35,7 +35,7 @@ alternative.
   screenshots.
 - Installer: removed cleanup of a pre-rename install and of another client's skill directory.
   `bundle.py` help shows a placeholder signing identity.
-- `run-legacy-scenarios.sh` skips scenarios that are not present.
+- `run-scenarios.sh` skips scenarios that are not present.
 - Added LICENSE (GPL-3.0 text), SPDX headers on all Swift, Python and shell sources,
   CONTRIBUTING.md, SECURITY.md, docs/WINDOWS-PORT.md, issue/PR templates and a macOS CI workflow
   (build and unit tests). README rewritten for public users.
@@ -55,3 +55,14 @@ alternative.
 
 - Windows implementation (tracked in the pinned issue; guide in docs/WINDOWS-PORT.md).
 - Portable desktop regression scenarios against built-in apps to replace the private-app set.
+
+## Addendum 2026-09-30: development history moved out of the repository
+
+The repository now contains only the project. Development-era material was moved, with paths
+preserved, to a local archive outside the repository (`~/docs/leap` on the maintainer's machine):
+research and trial notes, the old plan/specification/feature checklists, 63 earlier iteration
+entries, follow-up notes, test-run evidence, references, backups, the local `.leap` evidence store,
+scenarios tied to a private test app, and development-only scripts (including the export script).
+Unit-test fixtures now go to `artifacts/test-runs/unit-fixtures/`; the scenario runner is
+`scripts/run-scenarios.sh` and runs every `Tests/*.json` by default. `artifacts/` is entirely
+ignored.

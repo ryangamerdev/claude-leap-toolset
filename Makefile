@@ -23,7 +23,6 @@ skills:
 	python3 scripts/install.py --skills-only
 
 # Replay the interactive-tool regression scenarios (Tests/*.json) against the signed bundle.
-# Desktop set by default; `make scenarios SET=simulator` for the Simulator set.
-# Scenarios missing from Tests/ are skipped.
+# All scenarios by default; `make scenarios SET="menu-bar"` runs selected ones.
 scenarios: bundle
-	scripts/run-legacy-scenarios.sh $(SET)
+	scripts/run-scenarios.sh $(SET)

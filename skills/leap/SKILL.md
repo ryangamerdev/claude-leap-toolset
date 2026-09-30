@@ -79,5 +79,5 @@ permission.
 - **Proceed only if the request clearly covered it:** logging in, permission prompts, uploads,
   moving or renaming files, "are you sure?" dialogs, typing personal data into a form.
 
-During Leap development only: source skills are authoritative; docs/SESSION-CONTINUATION.md names
-the installed candidate. Do not load development history for ordinary application tasks.
+During Leap development only: source skills are authoritative; `scripts/install.py --skills-only`
+refreshes installed copies.

@@ -1,7 +1,0 @@
-[
- {"name":"get_app_state","arguments":{"app":"Simulator","window":"iPad","disable_diff":true}},
- {"name":"@capture","arguments":{"pattern":"\\[(\\d+)\\] TextField value=\"5yd In\"","var":"tf"}},
- {"name":"click","arguments":{"app":"Simulator","label":"5yd In","foreground":true,"then_state":false},"expect_error":"unrotated portrait"},
- {"name":"click","arguments":{"app":"Simulator","label":"Cancel","then_state":false}},
- {"name":"screenshot","arguments":{"app":"Simulator","window":"iPad","scale":0.5}}
-]

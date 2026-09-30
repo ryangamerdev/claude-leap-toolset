@@ -9,7 +9,7 @@ final class EvidenceTests:XCTestCase {
     var root:String = ""
     override func setUpWithError() throws {
         let repo=URL(fileURLWithPath:#filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
-        root=repo.appendingPathComponent("artifacts/test-runs/20260920-integrated/fixtures/\(UUID().uuidString)").path
+        root=repo.appendingPathComponent("artifacts/test-runs/unit-fixtures/integrated/\(UUID().uuidString)").path
         try FileManager.default.createDirectory(atPath:root+"/.leap",withIntermediateDirectories:true)
         // Give this fixture its own root so Evidence does not resolve the parent repository.
         let proc=Process();proc.executableURL=URL(fileURLWithPath:"/usr/bin/git");proc.arguments=["init","-q",root];try proc.run();proc.waitUntilExit()

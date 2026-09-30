@@ -157,7 +157,7 @@ python3 -B scripts/test-mcp-handshake.py     # protocol regression
 
 `script` mode runs every call against one server process, which is the only way element
 indices stay meaningful. `@capture` extracts a value from a result (`$var` substitutes it),
-`@expect`/`@absent` assert on it. `make scenarios SET=simulator` replays the Simulator set.
+`@expect`/`@absent` assert on it. `make scenarios` replays every scenario.
 `LEAP_BIN` selects the binary under test.
 
 ## Layout

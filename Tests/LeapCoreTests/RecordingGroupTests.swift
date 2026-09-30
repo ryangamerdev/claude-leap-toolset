@@ -8,7 +8,7 @@ import SQLite3
 final class RecordingGroupTests:XCTestCase {
     func testMigrationResumeAndRetainedHistory() throws {
         let repo=URL(fileURLWithPath:#filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
-        let root=repo.appendingPathComponent("artifacts/test-runs/20260920-timeline-filter/fixtures/\(UUID().uuidString)").path
+        let root=repo.appendingPathComponent("artifacts/test-runs/unit-fixtures/timeline-filter/\(UUID().uuidString)").path
         try FileManager.default.createDirectory(atPath:root+"/.leap",withIntermediateDirectories:true)
         let git=Process();git.executableURL=URL(fileURLWithPath:"/usr/bin/git");git.arguments=["init","-q",root];try git.run();git.waitUntilExit()
         var db:OpaquePointer?;XCTAssertEqual(sqlite3_open(root+"/.leap/leap.db",&db),SQLITE_OK)

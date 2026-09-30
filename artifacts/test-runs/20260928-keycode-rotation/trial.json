@@ -1,7 +1,0 @@
-[
- {"name":"get_app_state","arguments":{"app":"Simulator","window":"WIN","disable_diff":true}},
- {"name":"press_key","arguments":{"app":"Simulator","key":"super+a","foreground":true,"then_state":false}},
- {"name":"type_text","arguments":{"app":"Simulator","text":"Halftime: read the flat defender; attack inside leverage. AAA aaa Banana! (a/A) 42","foreground":true,"then_state":false}},
- {"name":"@shell","arguments":{"cmd":"sleep 1.5"}},
- {"name":"get_app_state","arguments":{"app":"Simulator"}}
-]

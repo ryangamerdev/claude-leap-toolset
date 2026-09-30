@@ -1,7 +1,0 @@
-[
- {"name":"session_open","arguments":{"project":"/Users/ryan/src/leap-mcp/.leap/tmp/harness-project","app":"Gameday"}},
- {"name":"@capture","arguments":{"pattern":"\"session_id\":\"([A-F0-9-]+)\"","var":"sid"}},
- {"name":"@capture","arguments":{"pattern":"\"snapshot\":(\\d+)","var":"snap"}},
- {"name":"ui_perform","arguments":{"session_id":"$sid","steps":[
-   {"type":"action","action":"click","arguments":{"x":248,"y":240,"snapshot":"$snap","space":"window_points"},"expect":{"selector":{"role":"AXSheet"},"condition":"absent"},"timeout":6}]}}
-]

@@ -21,4 +21,4 @@ Record installed binary identity, rollback location, restart and verification st
 
 ## Remaining work
 
-Known limits/regressions and the next specific acceptance cases. Update FEATURES/PLAN/handoff.
+Known limits/regressions and the next specific acceptance cases. Open GitHub issues for follow-up work.

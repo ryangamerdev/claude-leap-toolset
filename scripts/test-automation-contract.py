@@ -13,7 +13,7 @@ import threading
 ROOT=Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('scenario',ROOT/'scripts/run-scenario.py')
 m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
-OUT=ROOT/'artifacts/test-runs/20260920-rebuild'
+OUT=ROOT/'artifacts/test-runs/automation-contract'
 fixture=OUT/'fixtures/contract';fixture.mkdir(parents=True,exist_ok=True)
 # git boundary avoids sharing the live campaign writer or changing parent store.
 import subprocess

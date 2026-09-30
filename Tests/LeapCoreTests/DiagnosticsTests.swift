@@ -6,7 +6,7 @@ import XCTest
 
 final class DiagnosticsTests:XCTestCase {
     func directory() -> String {
-        URL(fileURLWithPath:#filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("artifacts/test-runs/20260920-diagnostics/fixtures/\(UUID().uuidString)").path
+        URL(fileURLWithPath:#filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("artifacts/test-runs/unit-fixtures/diagnostics/\(UUID().uuidString)").path
     }
     func testDurabilityFiltersAndLateWarning() throws {
         let path=directory()

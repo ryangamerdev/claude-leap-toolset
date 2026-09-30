@@ -7,7 +7,7 @@ description: Build and refine Blender models and Unity games using scripting for
 
 Produce editable assets and working projects, using Leap as the native UI interface. Combine direct scripting with visual feedback: constructing an object or compiling code is only an intermediate result. Inspect what the user will actually see and use.
 
-This is the intended workflow assuming the necessary Leap capabilities are available. Discover the installed tool schemas at execution time. Missing capabilities are gaps to report or implement within the user's authorized scope, not permission to invent tool calls or claim unobserved success. In the Leap repository, track those gaps in [FEATURES.md](../../docs/FEATURES.md), especially the ART rows; the checklist is not required when this skill is installed elsewhere.
+This is the intended workflow assuming the necessary Leap capabilities are available. Discover the installed tool schemas at execution time. Missing capabilities are gaps to report or implement within the user's authorized scope, not permission to invent tool calls or claim unobserved success. In the Leap repository, report them as GitHub issues.
 
 ## Select the route
 

@@ -1,7 +1,0 @@
-[
- {"name":"get_app_state","arguments":{"app":"Simulator","window":"iPad","disable_diff":true}},
- {"name":"type_text","arguments":{"app":"Simulator","text":"Read flat Aa banana","foreground":true,"then_state":false}},
- {"name":"@shell","arguments":{"cmd":"sleep 1"}},
- {"name":"get_app_state","arguments":{"app":"Simulator"}},
- {"name":"screenshot","arguments":{"app":"Simulator","window":"iPad","scale":0.5,"save_path":"artifacts/test-runs/20260928-keycode-rotation/after-type.png"}}
-]
