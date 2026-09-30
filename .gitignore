@@ -33,3 +33,6 @@ artifacts/reference/2026-09-20-recovered/*
 
 # Pinned XCTest runner products/endpoint manifests are local; curated identity is separate.
 artifacts/test-runs/wda/
+
+# Xcode-exported agent skills are Apple content; regenerate with `xcrun agent skills export <dir>`.
+artifacts/reference/xcode27-agent/skills/

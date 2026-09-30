@@ -111,3 +111,5 @@ reports, JSON results, test sources and install metadata preserve the reviewable
 - [2026-09-29 — History review and fix-forward](2026-09-29-history-review-fix-forward.md): the `a` had two Leap causes (keycode 0 text, keycode 0 flagsChanged), both fixed; restored the Sky-style playbook, removed echo trailers, collapse inactive views for every read, revived the 09-18 scenarios (`make scenarios`).
 
 - [2026-09-29 — Device Hub, fast waits, multi-point hit_test](2026-09-29-device-hub-waits-hit-test.md): resolve Device Hub's real pid (Sky-style proc_pidpath/window owner), walk each AX element once, title relation advisory; waits keep the deciding read and end at timeout; hit_test probes five points.
+
+- [2026-09-29 — Xcode 27 agent tools](2026-09-29-xcode27-agent-tools.md): Apple's Xcode MCP DeviceInteraction tools (device-point touches, hitPoint hierarchy, device keyboard; iOS 27+ runtimes only) researched and probed; skill points agents to it for iOS 27 guest apps.
