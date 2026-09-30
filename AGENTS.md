@@ -71,3 +71,14 @@ choosing a fix. Leap may deliberately differ where it has a better approach; sta
 why. Leap is a general-purpose any-application tool; Gameday is one test app. Recorded at user request
 on 2026-09-28. Minor typing glitches are accepted (Sky shows them too); prioritize observation and
 reliable actions. Commit and push frequently; evolve forward, never revert history.
+
+## Code navigation (Swift)
+
+Use the coder Swift tools as the default for Leap's Swift sources (recorded 2026-09-30):
+- Before changing a behavior, run `swift_references` / `swift_callers` on what changes (for example,
+  all 9 reads of `AXWindowSnapshot.supportsStateChecks` before redefining "complete").
+- Read declarations with `swift_function` / `swift_type` / `swift_property`, not `grep -A N`. Use
+  `swift_function` with `grep` for one statement inside a long function.
+- Results are index-accurate unless marked `[name-match]`. After heavy edits, run
+  `swift build --enable-index-store`. If the header reports the index was built at another path, rebuild.
+- Keep grep/read for docs, JSON scenarios, markdown, schema strings and scripts outside package targets.
