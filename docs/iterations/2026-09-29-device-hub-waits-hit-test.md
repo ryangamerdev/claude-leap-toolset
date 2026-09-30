@@ -90,3 +90,8 @@ other agent gave (A, C, B).
 Installed 2026-09-30T00:21:24Z via `make install` from the commit containing this entry. Binary SHA256 `637e6ee8c0db87865ec8c2a4ce63fcd39b8dcdb5db7d31449fbdcbb4987a5417`. Signature
 verified; source and installed claude-leap skill trees match (Claude and Codex); registration `leap`
 unchanged. Loaded MCP not yet restarted onto this build.
+
+Addendum 2026-09-30, native acceptance (OpenCode host, installed a176ad4): A, C and B passed; interaction
+IDs are recorded in the follow-up file. Remaining noise: each response still carries a `capture_quality`
+diagnostic for advisory-only read failures (blocking=0), which is the same information as the text-state
+line removed on 2026-09-29. Candidate: treat `capture_quality` with blocking=0 as an echo kind.

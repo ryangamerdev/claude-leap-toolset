@@ -8,8 +8,8 @@ Test app: Gameday, project `/Users/ryan/src/gameday`. The Mac app runs as `Gamed
 
 Fixes for A, C and B are in the commit that updated this file (2026-09-29, entry
 `docs/iterations/2026-09-29-device-hub-waits-hit-test.md`). Each item below keeps its original
-report and gains a **Fix** and a **Retest** line. Status: fixed in code and checked with the harness,
-awaiting native retest.
+report and gains a **Fix** and a **Retest** line. Status: **native retest passed 2026-09-30** (OpenCode,
+installed a176ad4) for A, C and B; see each item's **Native result** line.
 
 ### A. Device Hub (Xcode 27 simulator host) windows aren't found
 - **Background:** Xcode 27 replaced Simulator.app with Device Hub (`com.apple.dt.Devices`, `Xcode.app/Contents/Applications/DeviceHub.app`). `open -a Simulator` fails. Show a device with `open "devices://device/open?id=UDID"`; if no device window appears, run `open -b com.apple.dt.Devices`. Each device gets its own window, titled with the device name (e.g. "iPhone 16").
@@ -31,6 +31,7 @@ awaiting native retest.
   - Rotated-guest handling (`[rotated]`, press by accessibility) works unchanged: Device Hub keeps the `iOSContentGroup` subrole.
   - Harness evidence: `screenshot` and `get_app_state` on `{"app":"com.apple.dt.Devices","window":"iPhone 16"}` return the window; iPad `ui_observe` complete (blocking failures 0); `ui_perform` clicks on Route library then Playbook passed their expectations; the Simulator regression scenarios `ios-type-text`, `menu-bar`, `simulator-offscreen-press` pass against Device Hub.
 - **Retest:** the original repro (`screenshot` with `window:"iPhone 16"`), then a `ui_perform` click plus wait on the iPad. Check each guest control is listed once and `complete` is true.
+- **Native result (passed):** the screenshot repro returned the iPhone 16 window. iPad session `198823E8-87DA-4B54-8B04-42F32E050730`: `ui_observe` complete, 0 blocking failures, 39 buttons each listed once. Interaction `E45A0D61-2AC6-44E1-B0F6-69CDABB9730A`: Route library → Playbook clicks passed (`check_ms` 320 and 233).
 
 ### B. Misleading hit_test note on a visible, topmost control
 - **Repro:** Gameday Mac with the full-window play editor open. `click` the editor's Cancel (`{"role":"AXButton","label":"Cancel"}`, frame `[1160.5,45.5,94,45]`).
@@ -38,6 +39,7 @@ awaiting native retest.
 - **Needed:** no covered note when the target itself is the top element at that point.
 - **Fix:** the hit-test now probes the center and four interior points (25%/75% of width and height). If any point reaches the target, no note is given. A live read-only probe with the editor open: Cancel's center returned "Route library", but three of the five points reached Cancel. Create scenario missed at all five points (all hit the Coaching notes text area), so its correct covered note is kept. Sky asks what is under a point only to resolve coordinates and never reports covering, so this is a Leap-only advisory. Harness: editor Cancel click, interaction `49C7C0BF-4FA7-42E6-82F6-FCAE4F30CAE8` (harness project), `pressed [12]`, no `hit_test`, expectation passed.
 - **Retest:** the original repro (editor Cancel: no `hit_test`), and the "Create scenario" case under the editor (the note should still appear).
+- **Native result (passed):** interaction `9601C607-5794-402A-B49E-48A9629E1B22`: Create scenario under the editor was reported covered by "Coaching notes" (no visible effect, delta 0); editor Cancel had no `hit_test` and the editor closed (`Cancel` absent, passed).
 
 ### C. Simulator waits are still slow and overrun their timeouts
 - **Repro:** iPad Air, wait steps (session `AB0BF3D2-3440-4533-BAF0-75DF2DCB07E4`).
@@ -55,6 +57,7 @@ awaiting native retest.
 - **Fix:** the read that decided the verdict is saved as the evidence snapshot; no second read. Each read is limited to the time left. Steps report `check_ms` (time spent judging); a failure screenshot is taken afterwards and is not included. Sky has no wait step (it settles about 1 s plus up to 5 s after actions), so this is Leap-only behavior.
 - **Harness evidence (iPad, Device Hub):** already-true waits `check_ms` 278 and 403; `timeout: 5` gave `check_ms` 5007 and 5008, step total 5.07 s including the failure screenshot.
 - **Retest:** the four waits in the table; compare `check_ms`.
+- **Native result (passed):** already-true waits `check_ms` 258 and 209 (interaction `E45A0D61-2AC6-44E1-B0F6-69CDABB9730A`); `timeout: 5` gave 5007 (`CB8FCA05-B2CF-4BD7-A1E5-8F7F42C92FFB`); `timeout: 10` gave 10004 (`F9140EC9`-style case, interaction `F6D95A6F-A32B-44A2-87A0-273E709F18F1`). Verification is now `failed` rather than `unknown`, because reads are complete.
 
 ## Fixed and verified (no action)
 - `press_key` Escape reaches an open sheet, with and without `foreground`. Interactions `3AF50BCF-C2CE-4691-B9CF-0C92B4F3533F` and `441E6CD5-7926-4FDD-B49A-316D05EFC8EE`.
