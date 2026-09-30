@@ -46,3 +46,5 @@ OpenCode (`~/.config/opencode/opencode.json`, timeout 600000). All three report 
 Backups: `~/.codex/config.toml.bak-before-xcode`, `~/.config/opencode/opencode.json.bak-before-xcode`.
 Each host needs a restart to load it. Leap itself is registered in Claude Code only, not in Codex
 (removed at the 09-20 pause) or OpenCode.
+Leap was then registered in OpenCode as well (`leap`, installed app binary, timeout 600000);
+`opencode mcp list` reports it connected. Codex still has no Leap entry.
