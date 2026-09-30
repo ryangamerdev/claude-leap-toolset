@@ -31,3 +31,15 @@ A new bundle id is a new TCC identity: Accessibility and Screen Recording must b
 `make test` 69/69; the release bundle signs as `com.bridgetone.leap`; `claude mcp get leap` and
 `opencode mcp list` report the new binary connected. Native tool use awaits the restart and the
 permission grant.
+
+## Native acceptance after rename (2026-09-30, OpenCode)
+
+- Permissions: Accessibility granted to "Leap"; Screen Recording still reports MISSING in the running
+  process after the grant (macOS applies it to newly started processes; recheck after restart).
+- Gameday Mac verification guide, Leap in place of ui-ax: session 60796137. The 49 rendered receiver
+  route cards (name + "Used by N") match the read-only database exactly as multisets; the 20 unmatched
+  DB routes all sort after the last rendered card (lazy grid, as the guide notes). Interaction
+  D1C3F219: Finish editing routes (Used by absent) → Playbook → set_value → select_text → type_text
+  ("OSCAR TEMPO") → perform_action Confirm → select_text cursor_after → paste " X" (verified AX,
+  clipboard untouched) → cleared. All passed. This is the first native pass of the v2
+  select_text/perform_action/paste steps and of verified paste.
