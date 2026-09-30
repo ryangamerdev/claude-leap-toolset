@@ -79,6 +79,9 @@ Use the coder Swift tools as the default for Leap's Swift sources (recorded 2026
   all 9 reads of `AXWindowSnapshot.supportsStateChecks` before redefining "complete").
 - Read declarations with `swift_function` / `swift_type` / `swift_property`, not `grep -A N`. Use
   `swift_function` with `grep` for one statement inside a long function.
-- Results are index-accurate unless marked `[name-match]`. After heavy edits, run
-  `swift build --enable-index-store`. If the header reports the index was built at another path, rebuild.
+- Read the coder Swift guide (`swift_guide`) once per session. Members are `Owner.member`; selectors
+  are regex, so anchor with `^Name$`. Read the PARSE ERRORS / DUPLICATE DEFINITIONS trailers.
+- Results are index-accurate unless marked `[name-match]`. After heavy edits, a file move or a
+  directory rename, run `swift build --enable-index-store` first: `[name-match]` reads can be
+  unrelated locals (2026-09-30: three false reads of `Permissions.summary` after `Sources/leap` moved).
 - Keep grep/read for docs, JSON scenarios, markdown, schema strings and scripts outside package targets.
