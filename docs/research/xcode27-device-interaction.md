@@ -89,3 +89,10 @@ host-AX approach: real touch events in device coordinates, correct orientation, 
 Addendum 2026-09-30: `DeviceInteractionStartSession(deviceIdentifier: "My Mac")` was refused with the
 eligible list (iOS 27 and tvOS 27 simulators only). The Xcode MCP cannot operate Mac app UI; for
 GamedayMac it can build/run/test/debug, and Leap drives the UI.
+Rechecked at the user's request: with scheme GamedayMac active (run destination My Mac),
+`DeviceInteractionStartWorkspaceSession` returned "The device you are targeting is not supported for
+Device Interaction. Supported: iOS [Simulator] 27.0+; watchOS [Simulator] 27.0+; tvOS [Simulator] 27.0+."
+Apple's docs (Device Hub, Running your app) cover macOS only as a run destination ("My Mac"); the bundled
+device-interaction skill does not mention macOS. The documented Xcode route to scripted Mac UI is an
+XCUITest UI-test target (Gameday has none). The scheme and run destination were restored
+(GamedayiOS, iPhone 18 Pro).

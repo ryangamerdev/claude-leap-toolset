@@ -74,7 +74,10 @@ Apple's bundled skills (device-interaction, swiftui-specialist, …) export with
 - Xcode must be running with the agent approved (or headless mode enabled).
 - Presses are by coordinate. There is no element-identity press, no retained history, and no
   before/after checks. Use Leap's `ui_perform` when a workflow needs retained evidence.
-- Mac apps cannot be driven: "My Mac" is not an eligible device (verified 2026-09-30; only iOS and
-  tvOS simulators are listed). For a Mac app, Xcode can still build, run, test, read console
+- Mac apps cannot be driven. Even with a Mac scheme active and a workspace session, Xcode answers
+  "not supported for Device Interaction. Supported: iOS [Simulator] 27.0+; watchOS [Simulator]
+  27.0+; tvOS [Simulator] 27.0+" (verified 2026-09-30). Physical devices and visionOS are not
+  listed either. Scriptable Mac UI via Xcode means an XCUITest UI-test target run with
+  `RunSomeTests`. For a Mac app, Xcode can still build, run, test, read console
   output and debug it (`RunProject`, `RunAllTests`, `GetConsoleOutput`, `InvokeDebuggerCommand`);
   use Leap to operate its UI.
