@@ -74,4 +74,7 @@ Apple's bundled skills (device-interaction, swiftui-specialist, …) export with
 - Xcode must be running with the agent approved (or headless mode enabled).
 - Presses are by coordinate. There is no element-identity press, no retained history, and no
   before/after checks. Use Leap's `ui_perform` when a workflow needs retained evidence.
-- Mac apps are out of scope for these tools: use Leap.
+- Mac apps cannot be driven: "My Mac" is not an eligible device (verified 2026-09-30; only iOS and
+  tvOS simulators are listed). For a Mac app, Xcode can still build, run, test, read console
+  output and debug it (`RunProject`, `RunAllTests`, `GetConsoleOutput`, `InvokeDebuggerCommand`);
+  use Leap to operate its UI.

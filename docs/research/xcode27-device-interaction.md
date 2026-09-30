@@ -85,3 +85,7 @@ host-AX approach: real touch events in device coordinates, correct orientation, 
    - It needs a decision on requiring Xcode to be running and on its approval flow.
 3. The Gameday acceptance devices run iOS 18.0. Using Apple's route would need iOS 27 devices with
    Gameday installed (`DeviceInteractionInstallAndRun` builds and installs it).
+
+Addendum 2026-09-30: `DeviceInteractionStartSession(deviceIdentifier: "My Mac")` was refused with the
+eligible list (iOS 27 and tvOS 27 simulators only). The Xcode MCP cannot operate Mac app UI; for
+GamedayMac it can build/run/test/debug, and Leap drives the UI.
