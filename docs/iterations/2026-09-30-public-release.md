@@ -46,11 +46,12 @@ alternative.
 - `python3 scripts/test-install-options.py`: pass.
 - The public tree was produced by `scripts/export-public.py` (private repository only) and scanned
   for private names, local paths and addresses before the initial commit.
-- No behavior change, so no native MCP re-verification was required; CI on GitHub-hosted macOS
-  runners is untested at the time of writing.
+- No behavior change, so no native MCP re-verification was required.
+- Published as https://github.com/gignit/leap-mcp (single commit). GitHub detects GPL-3.0; the
+  first CI run (macos-15 runner, build and unit tests) passed. Issues #1 (Windows support, pinned)
+  and #2 (portable scenarios) opened.
 
 ## Remaining work
 
 - Windows implementation (tracked in the pinned issue; guide in docs/WINDOWS-PORT.md).
 - Portable desktop regression scenarios against built-in apps to replace the private-app set.
-- Confirm the CI toolchain on GitHub-hosted runners satisfies the MCP Swift SDK requirement.
