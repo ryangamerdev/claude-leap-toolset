@@ -1,5 +1,10 @@
 > **RESUMED 2026-09-28.** The current handoff is this first section; earlier handoffs follow unchanged.
 
+# Host registrations — 2026-09-29 (user direction)
+
+Leap is registered in Claude Code and OpenCode. Keep Leap OUT of Codex: Codex uses Sky
+(computer-use). The Xcode MCP (`xcode`, `xcrun mcpbridge`) is registered in all three.
+
 # Update — 2026-09-29 (Device Hub)
 
 Xcode 27 replaced Simulator.app with Device Hub (`com.apple.dt.Devices`); Leap supports it (and maps
